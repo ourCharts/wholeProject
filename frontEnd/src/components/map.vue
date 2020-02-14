@@ -15,9 +15,7 @@ export default {
       chart: echarts.ECharts,
       time: 1,
       timer: null,
-      dataset: [{coords: [[104.56238282, 30.73315923493018],
-        [104.0816238282, 30.923493],
-        [104.08166, 30.73315923493]] }]
+      dataset: [{coords: [] }]
     }
   },
   computed: {
@@ -68,13 +66,19 @@ export default {
       })
     },
     addSpect: function (x, y) {
-      this.dataset[0].coords = this.dataset[0].coords.splice(0, 0, [x, y])
+      this.dataset[0].coords.splice(0, 0, [x, y])
       this.options.bmap.center = [x, y]
       this.chart.setOption(this.options)
     },
     getsth: function (newid) {
       console.log('getting from server king')
       let _this = this
+      let bmap = this.chart.getModel().getComponent('bmap').getBMap()
+      // eslint-disable-next-line
+      bmap.addControl(new BMap.MapTypeControl())
+      bmap.setMapStyleV2({
+        styleId: '59a80bc22d507e09700207fce541bc16'
+      })
       $.ajax({
         type: 'GET',
         url: 'http://127.0.0.1:8000/track_onetime/',
@@ -91,11 +95,6 @@ export default {
         }
       })
     },
-    // addPoint: function () {
-    //   this.addData(0.1 * this.time)
-    //   this.time++
-    //   this.chart.setOption(this.options)
-    // },
     init: function () {
       this.chart = echarts.init(this.$refs.map)
       this.chart.setOption(this.options)
@@ -105,8 +104,6 @@ export default {
       bmap.setMapStyleV2({
         styleId: '59a80bc22d507e09700207fce541bc16'
       })
-      console.log(Array.isArray(this.dataset[0].coords))
-      // this.timer = setInterval(this.addPoint, 3000)
     }
   },
   mounted () {
