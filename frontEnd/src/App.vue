@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <el-container style="height: 100%">
-        <el-aside><amenu @added="hello"></amenu></el-aside>
+        <el-aside><amenu @added="changePro" @order="sendId"></amenu></el-aside>
         <el-main>
-          <Map :prop1=xx :prop2=yy></Map>
+          <Map :prop1=xx :prop2=yy :prop3=orderid ></Map>
         </el-main>
     </el-container>
   </div>
@@ -17,15 +17,17 @@ export default {
   data () {
     return {
       xx: 'asd',
-      yy: 'king'
+      yy: 'king',
+      orderid: ''
     }
   },
   methods: {
-    hello: function (data1, data2) {
-      // alert(data1)
-      // alert(data2)
+    changePro: function (data1, data2) {
       this.xx = data1
       this.yy = data2
+    },
+    sendId: function (data3) {
+      this.orderid = data3
     }
   },
   components: {

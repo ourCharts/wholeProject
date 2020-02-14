@@ -1,3 +1,7 @@
+import json
+
+from django.core.serializers import serialize
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from . import models
@@ -21,5 +25,19 @@ def initial_status(request):
     print(val)
     return JsonResponse(val)
 
+def track_onetime(request):
+    msg = request.GET.get("order_id", False)
+    try:
+        res = models.Position.objects.filter(order_id=msg).values()  # eb9dd4095d9850e6287cefd813775a6c
+    except:
+        res = "nothin got!"
+    print(type(res),"     ",res)
+    #val = serialize("json",res)
+    #print(val)
+    return JsonResponse(list(res),safe=False)
+
 def test(request):
     return render(request,"showuser.html")
+
+def track(request):
+    return render(request,"room.html")

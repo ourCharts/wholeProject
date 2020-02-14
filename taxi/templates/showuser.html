@@ -10,13 +10,16 @@
         function getSceneId() {
             var order_id = $('#order_id').val();
             $.ajax({
-                url: "/initial_status/",
+                url: "/track_onetime/",
                 type: "GET",
                 async: false,
                 data: {order_id:order_id},
                     success: function (data) {
-                    data = JSON.parse(data);
+                    alert(data);
+                    //data = JSON.parse(data);
+                        console.log(data);
                 }
+
             });
         }
     </script>
