@@ -23,7 +23,7 @@ export default {
       return {
         bmap: {
           center: [104.08166156238282, 30.73315923493018],
-          zoom: 16,
+          zoom: 13,
           roam: true
         },
         title: {
@@ -37,8 +37,8 @@ export default {
           polyline: true,
           lineStyle: {
             color: 'red',
-            opacity: 0.6,
-            width: 10
+            opacity: 1,
+            width: 8
           }
         }]
       }
@@ -66,18 +66,17 @@ export default {
     },
     addSpect: function (i, x, y) {
       this.dataset[i].coords.splice(0, 0, [x, y])
-      this.options.bmap.center = [x, y]
+      // this.options.bmap.center = [x, y]
       this.chart.setOption(this.options)
     },
     getsth: function (newid) {
       console.log('getting from server king')
       this.time++
-      console.log(this.dataset)
+      var tmptime = this.time
       var tmpObj = {
         coords: []
       }
       this.dataset.push(tmpObj)
-      console.log(this.dataset)
       let _this = this
       $.ajax({
         type: 'GET',
@@ -88,8 +87,8 @@ export default {
           var obj = response
           for (let i = 0; i < obj.length; i++) {
             _this.sleep(i * 100).then(function () {
-              _this.addSpect(_this.time, obj[i].longitude, obj[i].latitude)
-              console.log(_this.dataset)
+              _this.addSpect(tmptime, obj[i].longitude, obj[i].latitude)
+              // console.log(_this.dataset)
             })
           }
         }
@@ -100,7 +99,7 @@ export default {
       this.chart.setOption(this.options)
       let bmap = this.chart.getModel().getComponent('bmap').getBMap()
       // eslint-disable-next-line
-      bmap.addControl(new BMap.MapTypeControl())
+      bmap.addControl(new BMap.NavigationControl())
       bmap.setMapStyleV2({
         styleId: '59a80bc22d507e09700207fce541bc16'
       })

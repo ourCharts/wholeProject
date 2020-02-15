@@ -1,9 +1,11 @@
 <template>
   <div id="app">
     <el-container style="height: 100%">
-        <el-header>Header</el-header>
+        <el-header>
+          <i class="el-icon-location-outline" ></i>
+          基于大数据的拼车优化系统
+        </el-header>
         <el-container>
-          <el-aside><amenu @added="changePro" @order="sendId"></amenu></el-aside>
           <el-container>
             <el-main>
               <Map :prop1=xx :prop2=yy :prop3=orderid ></Map>
@@ -12,6 +14,7 @@
               footer
             </el-footer>
           </el-container>
+          <el-aside><amenu @added="changePro" @order="sendId"></amenu></el-aside>
         </el-container>
     </el-container>
   </div>
@@ -53,23 +56,28 @@ export default {
     margin: 0;
     background-color: #3F444C;
   }
-
   .anchorBL {
     display: none;
   }
-
+  .el-header{
+    text-align: left;
+    font-weight: bolder;
+    font-size: 150%;
+    letter-spacing: 2px;
+    font-family: Impact, Haettenschweiler, ‘Arial Narrow Bold’, sans-serif;
+    }
   .el-header, .el-footer {
       background-color: #2F4050;
       color: #9e7d60ff;
-      text-align: center;
-      line-height: 60px;
+      line-height: 10vh;
       border-radius: 10px;
+      height: 10% !important;
     }
   .el-aside{
     background-color: #41515F;
     border-radius: 10px;
     padding: 10px;
-    width: 30% !important;
+    width: 20% !important;
   }
   #app {
     width: 100%;
