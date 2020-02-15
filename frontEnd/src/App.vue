@@ -1,10 +1,18 @@
 <template>
   <div id="app">
     <el-container style="height: 100%">
-        <el-aside><amenu @added="changePro" @order="sendId"></amenu></el-aside>
-        <el-main>
-          <Map :prop1=xx :prop2=yy :prop3=orderid ></Map>
-        </el-main>
+        <el-header>Header</el-header>
+        <el-container>
+          <el-aside><amenu @added="changePro" @order="sendId"></amenu></el-aside>
+          <el-container>
+            <el-main>
+              <Map :prop1=xx :prop2=yy :prop3=orderid ></Map>
+            </el-main>
+            <el-footer>
+              footer
+            </el-footer>
+          </el-container>
+        </el-container>
     </el-container>
   </div>
 </template>
@@ -43,17 +51,26 @@ export default {
     height: 100%;
     width: 100%;
     margin: 0;
-    background-color: #545c64;
+    background-color: #3F444C;
   }
 
   .anchorBL {
     display: none;
   }
 
-  .el-main {
-    padding: 0;
+  .el-header, .el-footer {
+      background-color: #2F4050;
+      color: #9e7d60ff;
+      text-align: center;
+      line-height: 60px;
+      border-radius: 10px;
+    }
+  .el-aside{
+    background-color: #41515F;
+    border-radius: 10px;
+    padding: 10px;
+    width: 30% !important;
   }
-
   #app {
     width: 100%;
     height: 100%;

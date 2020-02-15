@@ -1,17 +1,20 @@
 <template>
-  <el-container>
-
-    <el-row :gutter="20">
-      <el-col><el-input v-model="input1" placeholder="请输入内容"></el-input></el-col>
-      <el-col><el-input v-model="input2" placeholder="请输入内容"></el-input></el-col>
-      <el-col><el-button type="primary" v-on:click="hello" id="king">主要按钮</el-button></el-col>
+  <div>
+    <el-row type="flex">
+      <el-input v-model="input1" placeholder="请输入内容"></el-input>
+      <el-input v-model="input2" placeholder="请输入内容"></el-input>
+      <el-button type="primary" v-on:click="hello" id="king">主要按钮</el-button>
     </el-row>
-    <el-row :gutter="20">
-
+    <el-row type="flex">
       <el-input v-model="input3" placeholder="Order_id"></el-input>
       <el-button type="primary" v-on:click="getsth">拿东西</el-button>
     </el-row>
-  </el-container>
+    <el-row>
+      <el-card class="box-card" shadow="hover">
+        asd
+      </el-card>
+    </el-row>
+  </div>
 
 </template>
 
@@ -42,4 +45,10 @@ export default {
 </script>
 
 <style>
+  .el-row{
+    margin-bottom: 10px
+  }
+  .el-card{
+    margin-bottom: 10px
+  }
 </style>
