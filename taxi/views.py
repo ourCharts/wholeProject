@@ -36,6 +36,14 @@ def track_onetime(request):
     #print(val)
     return JsonResponse(list(res),safe=False)
 
+def get_allId(request):
+    try:
+        res = models.Myorder.objects.values('order_id')  # eb9dd4095d9850e6287cefd813775a6c
+    except:
+        res = "nothing got!"
+    print(res)
+    return JsonResponse(list(res),safe=False)
+
 def test(request):
     return render(request,"showuser.html")
 

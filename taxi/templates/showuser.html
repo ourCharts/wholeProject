@@ -10,7 +10,7 @@
         function getSceneId() {
             var order_id = $('#order_id').val();
             $.ajax({
-                url: "/track_onetime/",
+                url: "/all_id/",
                 type: "GET",
                 async: false,
                 data: {order_id:order_id},

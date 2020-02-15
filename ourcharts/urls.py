@@ -25,4 +25,5 @@ urlpatterns = [
     path('chat/', include('chat.urls')),
     path('room/', taxi_view.track),
     url(r'^$', TemplateView.as_view(template_name="index.html")),
+    url(r'^all_id/$', taxi_view.get_allId),
 ]
