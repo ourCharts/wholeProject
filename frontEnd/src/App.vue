@@ -6,14 +6,9 @@
           基于大数据的拼车优化系统
         </el-header>
         <el-container>
-          <el-container>
             <el-main>
               <Map :prop1=xx :prop2=yy :prop3=orderid ></Map>
             </el-main>
-            <el-footer>
-              footer
-            </el-footer>
-          </el-container>
           <el-aside><amenu @added="changePro" @order="sendId"></amenu></el-aside>
         </el-container>
     </el-container>
