@@ -5,39 +5,17 @@
           <i class="el-icon-location-outline" ></i>
           基于大数据的拼车优化系统
         </el-header>
-        <el-container>
-            <el-main>
-              <Map :prop1=xx :prop2=yy :prop3=orderid ></Map>
-            </el-main>
-          <el-aside><amenu @added="changePro" @order="sendId"></amenu></el-aside>
-        </el-container>
+        <Map></Map>
     </el-container>
   </div>
 </template>
 
 <script>
 import Map from './components/map'
-import amenu from './components/menu'
 export default {
   name: 'App',
-  data () {
-    return {
-      xx: 'asd',
-      yy: 'king',
-      orderid: ''
-    }
-  },
-  methods: {
-    changePro: function (data1, data2) {
-      this.xx = data1
-      this.yy = data2
-    },
-    sendId: function (data3) {
-      this.orderid = data3
-    }
-  },
   components: {
-    Map, amenu
+    Map
   }
 
 }
