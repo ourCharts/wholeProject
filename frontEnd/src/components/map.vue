@@ -20,7 +20,7 @@
       </el-row>
       <i class="el-icon-document" id="diy"></i>
       <el-row>
-        <el-card class="box-card" shadow="hover" v-for="x in arr" :key="x">{{x}}</el-card>
+        <!-- <el-card class="box-card" shadow="hover" v-for="x in arr" :key="x">{{x}}</el-card> -->
       </el-row>
     </el-aside>
   </el-container>
@@ -62,10 +62,26 @@ export default {
           data: this.dataset,
           polyline: true,
           lineStyle: {
-            color: 'red',
-            opacity: 1,
-            width: 5
+            width: 0
+          },
+          effect: {
+          constantSpeed: 100,
+          show: true,
+          trailLength: 4,
+          symbolSize: 5
           }
+        },
+        {
+          type: 'lines',
+          coordinateSystem: 'bmap',
+          data: this.dataset,
+          polyline: true,
+          lineStyle: {
+            opacity: 0.5,
+            width: 6
+          },
+          progressiveThreshold: 500,
+          progressive: 200
         }]
       }
     }
@@ -88,15 +104,26 @@ export default {
     addSpect: function (i, x, y) {
       // this.dataset[i].coords.splice(0, 0, [x, y])性能未知
       this.dataset[i].coords.push([x, y])
-      this.chart.setOption(this.options)
+      // this.chart.setOption(this.options)
+    },
+    changeColor: function () {
+      var r = Math.round(255 * Math.random()).toString(16)
+      var g = Math.round(255 * Math.random()).toString(16)
+      var b = Math.round(255 * Math.random()).toString(16)
+      return '#' + r + g + b
     },
     getOrder: function (newid) {
       console.log('getting from server king')
       this.time++
       var tmptime = this.time
       var tmpObj = {
-        coords: []
+        coords: [],
+        lineStyle: {
+         normal: {
+          color: this.changeColor()
+        }
       }
+    }
       this.dataset.push(tmpObj)
       let _this = this
       $.ajax({
@@ -112,10 +139,11 @@ export default {
             // _this.addSpect(tmptime, obj[i].longitude, obj[i].latitude)
             // console.log(_this.dataset)
             // })
-            setTimeout(() => {
-              _this.addSpect(tmptime, obj[i].longitude, obj[i].latitude)
-            }, i * 100)
+            // setTimeout(() => {
+            _this.addSpect(tmptime, obj[i].longitude, obj[i].latitude)
+            // }, i * 100)
           }
+          _this.chart.setOption(_this.options)
         }
       })
     },
@@ -136,7 +164,7 @@ export default {
         async: true,
         success: function (response) {
           var obj = response
-          for (let i = 0; i < 10; i++) {
+          for (let i = 0; i < 200; i++) {
             _this.arr.push(obj[i].order_id)
           }
         }
