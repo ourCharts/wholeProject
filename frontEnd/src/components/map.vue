@@ -8,11 +8,11 @@
       <el-row type="flex">
         <el-button type="warning" v-on:click="backCenter">回到原中心</el-button>
       </el-row>
-      <el-row type="flex">
+      <!-- <el-row type="flex">
         <el-input v-model="input1"></el-input>
         <el-input v-model="input2"></el-input>
         <el-button type="warning" disabled="disabled">自定义添加点</el-button>
-      </el-row>
+      </el-row> -->
       <el-row type="flex">
         <el-input v-model="input4"></el-input>
         <el-button type="warning" v-on:click="addDIY">添加order</el-button>
@@ -25,16 +25,18 @@
       <el-row>
         <el-tag v-for="x in pageArr" :key="x.num" closable type="warning" @close="handleClose(x)" :disable-transitions="true" size="small"> {{x.num}}.{{x.order_id}} </el-tag>
       </el-row>
-      <el-row type="flex">
+      <el-row type="flex" justify="center">
         <!-- <el-button type="warning" v-on:click="nextPage(-1)">上一页</el-button> -->
-        <el-pagination v-show="totalPage" id="fenye"
-  layout="prev, pager, next" 
-  :page-count="totalPage" :pager-count="4"
+<el-pagination v-show="totalPage" id="fenye"
+  layout="prev, pager, next" small
+  :page-count="totalPage" :pager-count="5"
   @prev-click="nextPage(-1)" @current-change="goPage"
   @next-click="nextPage(1)">
 </el-pagination>
-        <el-button type="warning" v-on:click="clearPage()" v-show="totalPage">清空</el-button>
       </el-row>
+        <el-row type="flex" justify="center">
+          <el-button type="warning" v-on:click="clearPage()" v-show="totalPage">清空</el-button>
+        </el-row>
     </el-aside>
   </el-container>
 </template>
@@ -81,7 +83,7 @@ export default {
       return {
         bmap: {
           center: this.centerCoords,
-          zoom: 13,
+          zoom: 14,
           roam: true
         },
         series: [{
@@ -90,16 +92,15 @@ export default {
           data: this.dataset,
           polyline: true,
           lineStyle: {
-            width: 0,
+            width: 0
           },
           effect: {
             constantSpeed: 80,
             show: true,
             trailLength: 1,
-            // loop: false,
-            symbolSize: 3
-          },
-          zlevel: 1
+            symbolSize: 6
+          }
+          // zlevel: 1
         }]
       }
     }
@@ -111,7 +112,7 @@ export default {
       })
     },
     backCenter: function () {
-      this.centerCoords = [104.08166156238282, 30.73315923493018]
+      this.centerCoords = [104.08769817540933, 30.70018619836269]
       this.chart.setOption(this.options)
     },
     addDIY: function () {
@@ -138,9 +139,9 @@ export default {
       // this.chart.setOption(this.options)
     },
     changeColor: function () {
-      var r = Math.round(255 * Math.random()).toString(16)
-      var g = Math.round(255 * Math.random()).toString(16)
-      var b = Math.round(255 * Math.random()).toString(16)
+      var r = Math.round(105 + 150 * Math.random()).toString(16)
+      var g = Math.round(105 + 150 * Math.random()).toString(16)
+      var b = Math.round(105 + 150 * Math.random()).toString(16)
       return '#' + r + g + b
     },
     handleClose: function (x) {
@@ -159,6 +160,7 @@ export default {
       var _color = this.changeColor()
       this.pathNum++
       var tmpObj = {
+        zlevel: Math.ceil(Math.random() * 100),
         order_id: newid,
         num: this.pathNum,
         display: true,
@@ -191,7 +193,7 @@ export default {
     },
     init: function () {
       this.chart = echarts.init(this.$refs.map)
-      this.centerCoords = [104.08166156238282, 30.73315923493018]
+      this.centerCoords = [104.08769817540933, 30.70018619836269]
       this.chart.setOption(this.options)
       let bmap = this.chart.getModel().getComponent('bmap').getBMap()
       // eslint-disable-next-line
@@ -251,6 +253,11 @@ export default {
     border-color: #9e7d60ff !important;
     font-size: 10px;
     height: 8% !important
+  }
+  .el-pagination .btn-next, .el-pagination .btn-prev, .el-dialog, .el-pager li{
+    background-color: #2F4050!important;
+    color: #9e7d60ff !important;
+    border-color: #9e7d60ff !important;
   }
    .el-input__inner{
     background-color: #3F444C !important;
