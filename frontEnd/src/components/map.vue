@@ -3,8 +3,9 @@
     <el-main>
       <div ref="map" id="map-container"></div>
     </el-main>
-    <el-aside>
+    <el-aside v-loading="loading">
       <i class="el-icon-edit-outline" id="diy"></i>
+      <i class="el-icon-edit-outline" id="diy" v-show="!loading"></i>
       <el-row type="flex">
         <el-button type="warning" v-on:click="backCenter">回到原中心</el-button>
       </el-row>
@@ -50,6 +51,7 @@ export default {
   data () {
     return {
       chart: echarts.ECharts,
+      loading: false,
       dataset: [],
       displayeID: [],
       arr: [],
@@ -115,12 +117,6 @@ export default {
       this.centerCoords = [104.08769817540933, 30.70018619836269]
       this.chart.setOption(this.options)
     },
-    addDIY: function () {
-      var tt = this.input4
-      for (let i = 0; i < tt; i++) {
-        this.getOrder(this.arr[Math.ceil(Math.random() * this.arr.length)])
-      }
-    },
     addOne: function () {
       this.getOrder(this.input3)
     },
@@ -132,11 +128,6 @@ export default {
     },
     goPage: function (val) {
       this.page = val - 1
-    },
-    addSpect: function (i, x, y) {
-      // this.dataset[i].coords.splice(0, 0, [x, y])性能未知
-      this.dataset[i].coords.push([x, y])
-      // this.chart.setOption(this.options)
     },
     changeColor: function () {
       var r = Math.round(105 + 150 * Math.random()).toString(16)
@@ -154,7 +145,29 @@ export default {
       this.chart.setOption(this.options)
       this.pathNum = 0
     },
-    getOrder: function (newid) {
+    addDIY: function () {
+      var tt = this.input4
+      // for (let i = 0; i < tt; i++) {
+      //   this.getOrder(this.arr[Math.ceil(Math.random() * this.arr.length)])
+      // }
+      this.loading = true
+      var _this = this
+      const promises = this.arr.slice(0, tt).map(function (id) {
+        return _this.middleFunc(id)
+      })
+      Promise.all(promises).then(() => {
+        console.log('king you are good')
+        _this.loading = false
+      })
+    },
+    middleFunc: function (id) {
+      var _this = this
+      var p = new Promise(function (resolve, reject) {
+        _this.getOrder(id, resolve)
+      })
+      return p
+    },
+    getOrder: function (newid, resolve) {
       console.log('center is ' + this.centerCoords)
       console.log('getting from server king')
       var _color = this.changeColor()
@@ -188,6 +201,7 @@ export default {
           console.log(tmpObj)
           _this.dataset.push(tmpObj)
           _this.chart.setOption(_this.options)
+          resolve('ok')
         }
       })
     },
