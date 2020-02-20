@@ -88,7 +88,11 @@ class order:
         r = format(round((105+150*random.random())),'x')
         g = format(round((105+150*random.random())),'x')
         b = format(round((105+150*random.random())),'x')
-        self.lineStyle['color'] = '#'+r+g+b
+
+        temp = {}
+        temp['color'] = '#'+r+g+b
+        self.lineStyle['normal'] = temp
+        
     def __add__(self, other):
         self.coords = other
 
