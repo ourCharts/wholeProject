@@ -10,10 +10,10 @@
         function getSceneId() {
             var order_id = $('#order_id').val();
             $.ajax({
-                url: "/all_id/",
+                url: "/random_track/",
                 type: "GET",
                 async: false,
-                data: {order_id:order_id},
+                data: {track_num:order_id},
                     success: function (data) {
                     alert(data);
                     //data = JSON.parse(data);

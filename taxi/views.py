@@ -1,4 +1,5 @@
 import json
+import random
 
 from django.core.serializers import serialize
 from django.core.serializers.json import DjangoJSONEncoder
@@ -30,7 +31,7 @@ def track_onetime(request):
     try:
         res = models.Position.objects.filter(order_id=msg).values()  # eb9dd4095d9850e6287cefd813775a6c
     except:
-        res = "nothin got!"
+        res = "nothing got!"
     print(type(res),"     ",res)
     #val = serialize("json",res)
     #print(val)
@@ -49,3 +50,55 @@ def test(request):
 
 def track(request):
     return render(request,"room.html")
+
+def random_track(request):
+    num = int(request.GET.get("track_num", False))
+    try:
+        res = models.Myorder.objects.values('order_id')
+    except:
+        res = ""
+    random.seed()
+    order_id = random.sample(list(res),num)
+    print(order_id)
+    # print(order_id[1]['order_id'])
+    arr = []
+    try:
+        for id in order_id:
+            print(id['order_id'])
+            temp = order(id['order_id'])
+            res = models.Position.objects.filter(order_id=id['order_id']).values()
+            #print(res)
+            coor = [[i['longitude'],i['latitude']]  for i in res]
+            #print(coor)
+            temp.__add__(coor)
+            arr.append(temp.__str__())
+    except:
+        res = "nothing got!"
+        print("error error error error error error error error error error error error error error error")
+    #print(arr[0])
+
+    return JsonResponse(arr,safe=False)
+
+class order:
+    order_id  = ""
+    coords = []
+    lineStyle = {}
+    def __init__(self,o):
+        self.order_id = o
+        r = format(round((105+150*random.random())),'x')
+        g = format(round((105+150*random.random())),'x')
+        b = format(round((105+150*random.random())),'x')
+        self.lineStyle['color'] = '#'+r+g+b
+    def __add__(self, other):
+        self.coords = other
+
+    def __str__(self):
+        val = {}
+        val['order_id']=self.order_id
+        val['coords']=self.coords
+        val['lineStyle']=self.lineStyle
+        print(val)
+        return val
+
+
+
