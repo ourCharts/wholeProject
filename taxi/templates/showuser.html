@@ -17,7 +17,9 @@
                     success: function (data) {
                     alert(data);
                     //data = JSON.parse(data);
-                        console.log(data);
+                    console.log(data[0]['lineStyle']['normal']['color'],"      ",data[0]['order_id']);
+                    console.log(data[1]['lineStyle']['normal']['color'],"      ",data[1]['order_id']);
+                    console.log(data[2]['lineStyle']['normal']['color'],"      ",data[2]['order_id']);
                 }
 
             });
