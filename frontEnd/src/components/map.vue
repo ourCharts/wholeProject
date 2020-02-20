@@ -1,46 +1,64 @@
 <template>
-  <el-container>
-    <el-main>
-      <div ref="map" id="map-container"></div>
-    </el-main>
-    <el-aside v-loading="loading" element-loading-text="载入路径中.." 
-    element-loading-spinner="el-icon-loading" element-loading-background="rgba(65, 81, 95, 0.6)"> 
-      <i class="el-icon-edit-outline" id="diy"></i>
-      <el-row type="flex" justify="center">
-        <el-button type="warning" v-on:click="backCenter">回到原中心位置</el-button>
-      </el-row>
-      <!-- <el-row type="flex">
-        <el-input v-model="input1"></el-input>
-        <el-input v-model="input2"></el-input>
-        <el-button type="warning" disabled="disabled">自定义添加点</el-button>
-      </el-row> -->
-      <el-row type="flex">
-        <!-- <el-input v-model="input4"></el-input> -->
-        <el-input-number v-model="input4" :step="5" :min="5" controls-position="right"></el-input-number>
-        <el-button type="warning" v-on:click="addDIY">添加order</el-button>
-      </el-row>
-      <el-row type="flex">
-        <el-input v-model="input3" placeholder="Order_id"></el-input>
-        <el-button type="warning" v-on:click="addOne">添加订单路径</el-button>
-      </el-row>
-      <i class="el-icon-document" id="diy"></i>
-      <el-row>
-        <el-tag v-for="x in pageArr" :key="x.num" closable type="warning" @close="handleClose(x)" :disable-transitions="true" size="small"> {{x.num}}.{{x.order_id}} </el-tag>
-      </el-row>
-      <el-row type="flex" justify="center">
-        <!-- <el-button type="warning" v-on:click="nextPage(-1)">上一页</el-button> -->
-<el-pagination v-show="totalPage" id="fenye"
-  layout="prev, pager, next" small
-  :page-count="totalPage" :pager-count="5"
-  @prev-click="nextPage(-1)" @current-change="goPage"
-  @next-click="nextPage(1)">
-</el-pagination>
-      </el-row>
-        <el-row type="flex" justify="center">
-          <el-button type="warning" v-on:click="clearPage()" v-show="totalPage">清空</el-button>
-        </el-row>
-    </el-aside>
-  </el-container>
+    <el-container>
+        <el-main>
+            <div ref="map" id="map-container"></div>
+        </el-main>
+        <el-aside v-loading="loading" element-loading-text="载入路径中.." element-loading-spinner="el-icon-loading"
+            element-loading-background="rgba(65, 81, 95, 0.6)">
+            <el-tabs v-model="activeName" stretch>
+                <el-tab-pane label="操作栏" name="first">
+                    <i class="el-icon-edit-outline" id="diy"></i>
+                    <el-row type="flex" justify="center">
+                        <el-button type="warning" v-on:click="backCenter">回到原中心位置</el-button>
+                    </el-row>
+                    <!-- <el-row type="flex">
+          <el-input v-model="input1"></el-input>
+          <el-input v-model="input2"></el-input>
+          <el-button type="warning" disabled="disabled">自定义添加点</el-button>
+        </el-row> -->
+                    <el-row type="flex">
+                        <!-- <el-input v-model="input4"></el-input> -->
+                        <el-input-number v-model="input4" :step="5" :min="5" controls-position="right">
+                        </el-input-number>
+                        <el-button type="warning" v-on:click="addDIY">添加order</el-button>
+                    </el-row>
+                    <el-row type="flex">
+                        <el-input v-model="input3" placeholder="Order_id"></el-input>
+                        <el-button type="warning" v-on:click="addOne">添加订单路径</el-button>
+                    </el-row>
+                    
+                </el-tab-pane>
+                <el-tab-pane label="状态栏" name="second">
+                    <i class="el-icon-data-analysis" id="diy"></i>
+                    <el-row type="flex">
+                       <el-col :span="20"><p class="situationBar">原有路径总数</p></el-col>
+                      <el-input v-model="dataset.length" placeholder="Order_id" readonly></el-input>
+                    </el-row>
+                    <el-row type="flex">
+                       <el-col :span="20"><p class="situationBar">优化后总数</p></el-col>
+                      <el-input v-model="dataset.length" placeholder="Order_id" readonly></el-input>
+                    </el-row>
+                    <i class="el-icon-document" id="diy" style="display: inline-block"></i><p class="situationBar1">详细路径ID</p>
+                    <el-row>
+                        <el-tag v-for="x in pageArr" :key="x.num" closable type="warning" @close="handleClose(x)"
+                            :disable-transitions="true" size="small"> {{x.num}}.{{x.order_id}} </el-tag>
+                    </el-row>
+                    <el-row type="flex" justify="center">
+                        <!-- <el-button type="warning" v-on:click="nextPage(-1)">上一页</el-button> -->
+                        <el-pagination v-show="totalPage" id="fenye" layout="prev, pager, next" small
+                            :page-count="totalPage" :pager-count="5" @prev-click="nextPage(-1)" @current-change="goPage"
+                            @next-click="nextPage(1)">
+                        </el-pagination>
+                    </el-row>
+                    <el-row type="flex" justify="center">
+                        <el-button type="warning" v-on:click="clearPage()" v-show="totalPage">清空</el-button>
+                    </el-row>
+ 
+                </el-tab-pane>
+            </el-tabs>
+
+        </el-aside>
+    </el-container>
 </template>
 
 <script>
@@ -53,6 +71,7 @@ export default {
     return {
       chart: echarts.ECharts,
       loading: false,
+      activeName: 'first',
       dataset: [],
       displayeID: [],
       arr: [],
@@ -159,6 +178,7 @@ export default {
       Promise.all(promises).then(() => {
         console.log('king you are good')
         _this.loading = false
+        _this.activeName = 'second'
       })
     },
     middleFunc: function (id) {
@@ -299,8 +319,27 @@ export default {
     color: #9e7d60ff;
     border-color: #9e7d60ff
   }
-  .el-loading-spinner .el-loading-text, .el-icon-loading:before{
+  .el-tabs__active-bar{
+    background-color: #9e7d60ff !important;
+  }
+  .el-loading-spinner .el-loading-text, .el-icon-loading:before, .el-tabs__item.is-active, .el-tabs__item:hover{
     color: #9e7d60ff !important;
-
+    letter-spacing: 3px;
+    font-weight: bolder
+  }
+  .el-tabs__item{
+    color: #9e7d60ff !important;
+    letter-spacing: 3px;
+  }
+  .situationBar{
+    color: #9e7d60ff !important;
+    line-height: 10px;
+    letter-spacing: 2px;
+  }
+  .situationBar1{
+    display: inline-block;
+    color: #9e7d60ff !important;
+    line-height: 20px;
+    letter-spacing: 3px;
   }
 </style>
