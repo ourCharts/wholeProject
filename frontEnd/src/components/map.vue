@@ -3,11 +3,11 @@
     <el-main>
       <div ref="map" id="map-container"></div>
     </el-main>
-    <el-aside v-loading="loading">
+    <el-aside v-loading="loading" element-loading-text="载入路径中.." 
+    element-loading-spinner="el-icon-loading" element-loading-background="rgba(65, 81, 95, 0.6)"> 
       <i class="el-icon-edit-outline" id="diy"></i>
-      <i class="el-icon-edit-outline" id="diy" v-show="!loading"></i>
-      <el-row type="flex">
-        <el-button type="warning" v-on:click="backCenter">回到原中心</el-button>
+      <el-row type="flex" justify="center">
+        <el-button type="warning" v-on:click="backCenter">回到原中心位置</el-button>
       </el-row>
       <!-- <el-row type="flex">
         <el-input v-model="input1"></el-input>
@@ -15,7 +15,8 @@
         <el-button type="warning" disabled="disabled">自定义添加点</el-button>
       </el-row> -->
       <el-row type="flex">
-        <el-input v-model="input4"></el-input>
+        <!-- <el-input v-model="input4"></el-input> -->
+        <el-input-number v-model="input4" :step="5" :min="5" controls-position="right"></el-input-number>
         <el-button type="warning" v-on:click="addDIY">添加order</el-button>
       </el-row>
       <el-row type="flex">
@@ -58,7 +59,7 @@ export default {
       input1: 120,
       input2: 30,
       input3: '39a096b71376b82f35732eff6d95779b',
-      input4: 4,
+      input4: 10,
       centerCoords: [],
       page: 0,
       pathNum: 0
@@ -260,6 +261,9 @@ export default {
   .el-row{
     margin-bottom: 10px
   }
+  .loading{
+    color:red
+  }
   .el-tag{
     margin-bottom: 6px;
     background-color: #2F4050!important;
@@ -268,7 +272,7 @@ export default {
     font-size: 10px;
     height: 8% !important
   }
-  .el-pagination .btn-next, .el-pagination .btn-prev, .el-dialog, .el-pager li{
+  .el-pagination .btn-next, .el-pagination .btn-prev, .el-dialog, .el-pager li, .el-input-number__decrease, .el-input-number__increase{
     background-color: #2F4050!important;
     color: #9e7d60ff !important;
     border-color: #9e7d60ff !important;
@@ -290,9 +294,13 @@ export default {
     color: #9e7d60ff !important;
     border-color: #9e7d60ff !important
   }
-  .el-button:hover{
+  .el-button:hover, .el-input-number__decrease:hover, .el-input-number__increase:hover, .el-tag:hover{
     background-color: #3F444C !important;
     color: #9e7d60ff;
     border-color: #9e7d60ff
+  }
+  .el-loading-spinner .el-loading-text, .el-icon-loading:before{
+    color: #9e7d60ff !important;
+
   }
 </style>
