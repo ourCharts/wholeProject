@@ -7,11 +7,13 @@
         </el-header>
         <Map></Map>
     </el-container>
+    <!-- <copy></copy> -->
   </div>
 </template>
 
 <script>
 import Map from './components/map'
+// import copy from './components/trytable'
 export default {
   name: 'App',
   components: {
@@ -47,10 +49,10 @@ export default {
       height: 10% !important;
     }
   .el-aside{
-    background-color: #41515F;
+    background-color: rgb(65, 81, 95);
     border-radius: 10px;
     padding: 10px;
-    width: 20% !important;
+    width: 23% !important;
   }
   #app {
     width: 100%;
