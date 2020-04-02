@@ -12,10 +12,11 @@
 <script>
     var roomName = "{{ room_name|escapejs }}";
 
+    // 建立连接
     var chatSocket = new WebSocket(
         'ws://' + window.location.host +
         '/ws/track/');
-
+    //接收后台传来的数据
     chatSocket.onmessage = function(e) {
         var data = JSON.parse(e.data);
         var message = data['message'];
@@ -25,6 +26,7 @@
         document.querySelector('#chat-log').value += (message + '\n');
     };
 
+    //浏览器端关闭连接
     chatSocket.onclose = function(e) {
         console.error('Chat socket closed unexpectedly');
     };
@@ -39,6 +41,7 @@
     document.querySelector('#chat-message-submit').onclick = function(e) {
         var messageInputDom = document.querySelector('#chat-message-input');
         var message = messageInputDom.value;
+        // 发送查询条件
         chatSocket.send(JSON.stringify({
             'message': message
         }));

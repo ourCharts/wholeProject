@@ -12,9 +12,10 @@ class ChatConsumer(WebsocketConsumer):
     def disconnect(self, close_code):
         pass
 
+
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        message = text_data_json['message']
+        message = text_data_json['message'] # 接收前台查询条件
         print(message)
         msg = message
         try:
@@ -35,5 +36,7 @@ class ChatConsumer(WebsocketConsumer):
             self.send(text_data=json.dumps({
                 'message': message
             }))
-            time.sleep(0.1)#设置发送间隔时间单位（秒）
+            time.sleep(0.1)###  设置发送间隔时间单位（秒）
+
+        #传输完毕自动关闭连接
         self.disconnect()

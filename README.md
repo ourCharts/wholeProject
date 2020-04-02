@@ -49,3 +49,5 @@ $ python manage.py runserver
     "status":1,
     "state":"success",
     "message":"{'time_stamp': 1477969982, 'order_id': '39a096b71376b82f35732eff6d95779b', 'driver_id': '8f20c9188561b796ef8e26196de30be4', 'longitude': 104.11570293699263, 'latitude': 30.69954721859711}"
+
+#### 前端交互的例子taxi/templates/room.html  处理信息的文件taxi/consumers.py
