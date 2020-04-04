@@ -3,14 +3,13 @@ import json
 from chat import models
 import time
 from django.http import request
-
+from mTshare.main import *
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
-        self.send(text_data=json.dumps({
-                'message': 'hello'
-            }))
+        main(self)
+
     def disconnect(self, close_code):
         pass
 
@@ -41,4 +40,4 @@ class ChatConsumer(WebsocketConsumer):
             time.sleep(0.1)###  设置发送间隔时间单位（秒）
 
         #传输完毕自动关闭连接
-        self.disconnect()
+        # self.disconnect()

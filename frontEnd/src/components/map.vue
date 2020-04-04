@@ -237,6 +237,14 @@ export default {
         }
       })
     },
+    after_connect: function () {
+      var chatSocket = new WebSocket('ws://localhost:8000/ws/track/')
+      chatSocket.onmessage = function (e) {
+        var data = JSON.parse(e.data)
+        var message = data['message']
+        console.log(message)
+      }
+    },
     init: function () {
       this.chart = echarts.init(this.$refs.map)
       this.centerCoords = [104.08769817540933, 30.70018619836269]
@@ -253,6 +261,7 @@ export default {
         _this.centerCoords = [obj.lng, obj.lat]
         console.log('hello' + _this.centerCoords)
       })
+      this.after_connect()
       // 获得订单order
       // $.ajax({
       //   type: 'GET',
