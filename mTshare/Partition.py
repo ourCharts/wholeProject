@@ -8,6 +8,7 @@
 # fmt = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 # handle.setFormatter(fmt)
 # logger.addHandler(handle)
+print('载入Partition中')
 
 class Partition(object):
     def __init__(self, partition_id, node_list, taxi_list):

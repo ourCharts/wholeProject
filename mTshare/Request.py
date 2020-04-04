@@ -1,3 +1,4 @@
+print('载入Request中')
 class Request:
     pickup_deadline = 0
 

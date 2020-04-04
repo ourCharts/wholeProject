@@ -20,7 +20,7 @@ import copy
 from tqdm import tqdm
 import json
 
-
+print('载入main.py中')
 def get_an_order(idx):
     sql = 'SELECT * FROM myorder ORDER BY start_time LIMIT %d, 1' % idx
     cursor.execute(sql)
@@ -542,7 +542,6 @@ def main(socket1):
         if req_cnt > REQUESTS_TO_PROCESS:
             break
         now_time = time.time() - TIME_OFFSET
-        send_info({'message':now_time})
         reqs = request_fetcher(last_time, now_time)
         last_time = now_time
         if len(reqs) == 0:
@@ -565,9 +564,10 @@ def main(socket1):
                 """
                 start_node_id = ox.get_nearest_node(
                     osm_map, (req_item[4], req_item[3]))
-
+                socket_request = {'type':'request_pos', 'content':[[req_item[3], req_item[4]]]}
+                send_info(socket_request)
                 end_node_id = ox.get_nearest_node(
-                    osm_map, (req_item[4], req_item[3]))
+                    osm_map, (req_item[6], req_item[5]))
                 time_on_tour = node_distance_matrix[id_hash_map[start_node_id]
                                                     ][id_hash_map[end_node_id]]
 
@@ -592,8 +592,9 @@ def main(socket1):
                 print('secondary: ')
                 print(secondary_candidate_list)
                 # 发送的士的位置
-
-
+                socket_taxi_list = [[i.cur_lon, i.cur_lat] for i in taxi_list]
+                socket_taxi_list = {'type':'taxi_pos', 'content':socket_taxi_list}
+                send_info(socket_taxi_list)
                 divide_group2()
                 # 如果没有候选taxi会返回none
                 if candidate_taxi_list == None and secondary_candidate_list ==None:
@@ -609,7 +610,9 @@ def main(socket1):
                     chosen_taxi,cost = taxi_scheduling(secondary_candidate_list, req_item, req_item.request_id, 1)
                 show_taxi = taxi_list[chosen_taxi]
                 print('这个订单选中的taxi是{}'.format(chosen_taxi))
-
+                socket_chosen_taxi = {'type':'chosen_taxi','content':[[show_taxi.cur_lon, show_taxi.cur_lat]]
+                ,'content1':[[[node.lon,node.lat] for node in show_taxi.path.path_node_list]]}
+                send_info(socket_chosen_taxi)
                 show_taxi.show_schedule()
                 show_taxi.show_pos()
                 # 发送最新状态

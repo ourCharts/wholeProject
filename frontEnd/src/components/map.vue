@@ -12,7 +12,6 @@
                         <el-button type="warning" v-on:click="backCenter">回到原中心位置</el-button>
                     </el-row>
                     <el-row type="flex">
-                        <!-- <el-input v-model="input4"></el-input> -->
                         <el-input-number v-model="input4" :step="5" :min="5" controls-position="right">
                         </el-input-number>
                         <el-button type="warning" v-on:click="addTest">添加order</el-button>
@@ -65,6 +64,9 @@ export default {
       chart: echarts.ECharts,
       loading: false,
       activeName: 'first',
+      taxi_pos: [],
+      request_pos: [],
+      chosen_pos: [],
       dataset: [],
       arr: [],
       input1: 120,
@@ -100,60 +102,57 @@ export default {
           zoom: 14,
           roam: true
         },
-        series: [{
-          type: 'lines',
-          coordinateSystem: 'bmap',
-          data: this.dataset,
-          polyline: true,
-          lineStyle: {
-            width: 0
-          },
-          effect: {
-            constantSpeed: 80,
-            show: true,
-            trailLength: 1,
-            symbolSize: 6
-          }
+        series: [
+          {
+            type: 'lines',
+            coordinateSystem: 'bmap',
+            data: this.dataset,
+            polyline: true,
+            lineStyle: {
+              width: 10
+            }
+            // ,
+            // effect: {
+            //   constantSpeed: 80,
+            //   show: true,
+            //   trailLength: 1,
+            //   symbolSize: 6
+            // }
           // zlevel: 1
-        }]
+          },
+          {
+            type: 'scatter',
+            coordinateSystem: 'bmap',
+            data: this.taxi_pos,
+            itemStyle: {
+              color: 'black'
+            }
+          },
+          {
+            type: 'scatter',
+            coordinateSystem: 'bmap',
+            data: this.chosen_pos,
+            itemStyle: {
+              color: 'blue'
+            }
+          },
+          {
+            type: 'scatter',
+            coordinateSystem: 'bmap',
+            data: this.request_pos,
+            itemStyle: {
+              color: 'red'
+            }
+          }
+        ]
       }
     }
   },
   methods: {
-    addTest: function () {
-      this.loading = true
-      var tt = this.input4
-      var _this = this
-      var p = new Promise(function (resolve, reject) {
-        $.ajax({
-          type: 'GET',
-          url: 'http://127.0.0.1:8000/random_track/',
-          data: {track_num: tt},
-          async: true,
-          success: function (response) {
-            console.log(response)
-            _this.dataset = _this.dataset.concat(response)
-            _this.chart.setOption(_this.options)
-            resolve('ok')
-          }
-        })
-      })
-      p.then(() => {
-        _this.loading = false
-        _this.activeName = 'second'
-      })
-    },
     sleep: function (ms) {
       return new Promise(function (resolve, reject) {
         setTimeout(resolve, ms)
       })
-    },
-    backCenter: function () {
-      this.centerCoords = [104.08769817540933, 30.70018619836269]
-      this.chart.setOption(this.options)
-    },
-    addOne: function () {
-      this.getOrder(this.input3)
     },
     nextPage: function (aa) {
       if (this.totalPage === null) return
@@ -182,16 +181,12 @@ export default {
     },
     addDIY: function () {
       var tt = this.input4
-      // for (let i = 0; i < tt; i++) {
-      //   this.getOrder(this.arr[Math.ceil(Math.random() * this.arr.length)])
-      // }
       this.loading = true
       var _this = this
       const promises = this.arr.slice(0, tt).map(function (id) {
         return _this.middleFunc(id)
       })
       Promise.all(promises).then(() => {
-        console.log('king you are good')
         _this.loading = false
         _this.activeName = 'second'
       })
@@ -204,7 +199,6 @@ export default {
       return p
     },
     getOrder: function (newid, resolve) {
-      console.log('getting from server king')
       var _color = this.changeColor()
       this.pathNum++
       var tmpObj = {
@@ -239,10 +233,23 @@ export default {
     },
     after_connect: function () {
       var chatSocket = new WebSocket('ws://localhost:8000/ws/track/')
+      var _this = this
       chatSocket.onmessage = function (e) {
         var data = JSON.parse(e.data)
-        var message = data['message']
-        console.log(message)
+        if (data['type'] === 'taxi_pos') {
+          _this.taxi_pos = data['content']
+          _this.chart.setOption(_this.options)
+        }
+        else if (data['type'] === 'request_pos') {
+          _this.request_pos = data['content']
+          _this.chart.setOption(_this.options)
+        }
+        else if (data['type'] === 'chosen_taxi') {
+          _this.chosen_pos = data['content']
+          _this.taxi_pos = []
+          _this.dataset = data['content1']
+          _this.chart.setOption(_this.options)
+        }
       }
     },
     init: function () {
@@ -255,12 +262,12 @@ export default {
       bmap.setMapStyleV2({
         styleId: '59a80bc22d507e09700207fce541bc16'
       })
-      var _this = this
-      bmap.addEventListener('dragend', function () {
-        var obj = bmap.getCenter()
-        _this.centerCoords = [obj.lng, obj.lat]
-        console.log('hello' + _this.centerCoords)
-      })
+      // var _this = this
+      // bmap.addEventListener('dragend', function () {
+      //   var obj = bmap.getCenter()
+      //   _this.centerCoords = [obj.lng, obj.lat]
+      //   console.log('hello' + _this.centerCoords)
+      // })
       this.after_connect()
       // 获得订单order
       // $.ajax({

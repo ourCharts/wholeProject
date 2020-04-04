@@ -1,6 +1,7 @@
 from mTshare.MobilityVector import MobilityVector
 from mTshare.Tool.Tool import *
 from mTshare.Path import Path
+print('载入Taxi中')
 
 
 class Taxi:

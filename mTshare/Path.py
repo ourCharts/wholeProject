@@ -1,5 +1,6 @@
 import time
 from mTshare.Tool.Tool import *
+print('载入Path中')
 
 
 TYPICAL_SPEED = 13.8889  # 单位是m/s
