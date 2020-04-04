@@ -11,11 +11,6 @@
                     <el-row type="flex" justify="center">
                         <el-button type="warning" v-on:click="backCenter">回到原中心位置</el-button>
                     </el-row>
-                    <!-- <el-row type="flex">
-          <el-input v-model="input1"></el-input>
-          <el-input v-model="input2"></el-input>
-          <el-button type="warning" disabled="disabled">自定义添加点</el-button>
-        </el-row> -->
                     <el-row type="flex">
                         <!-- <el-input v-model="input4"></el-input> -->
                         <el-input-number v-model="input4" :step="5" :min="5" controls-position="right">

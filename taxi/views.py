@@ -73,7 +73,6 @@ def random_track(request):
     except:
         res = "nothing got!"
         print("error error error error error error error error error error error error error error error")
-    #print("\n\n\n\n\n\n\n\n\n\n\n\n      ",arr)
 
     return JsonResponse(arr,safe=False)
 
@@ -97,11 +96,6 @@ class order:
         self.coords = other
 
     def __str__(self):
-        # val = {}
-        # val['order_id']=self.order_id
-        # val['coords']=self.coords
-        # val['lineStyle']=self.lineStyle
-        # print(val['order_id'],"    ",val['lineStyle'])
         return {'order_id':self.order_id,'coords':self.coords,'lineStyle':self.lineStyle}
 
 

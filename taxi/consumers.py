@@ -8,7 +8,9 @@ from django.http import request
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
-
+        self.send(text_data=json.dumps({
+                'message': 'hello'
+            }))
     def disconnect(self, close_code):
         pass
 
