@@ -4,13 +4,15 @@ import pandas as pd
 import pickle
 import networkx as nx
 import time
-map_file = open('../mTshare/data/map.pickle', 'rb')
+import os
+print(os.getcwd())
+map_file = open('mTshare/data/map.pickle', 'rb')
 osm_map = pickle.load(map_file)  # osm地图, 在判断距离某个经纬点最近的道路节点时可以使用
 req_to_taxi_map = {} # req的id映射到taxi的id
 
 map_file.close()
 tool_node_list = []
-df = pd.read_csv('../mTshare/data/node_list_with_cluster.csv')
+df = pd.read_csv('mTshare/data/node_list_with_cluster.csv')
 tli = df.loc[:, 'real_id']
 cluster_li = df.loc[:, 'cluster_id']
 tmpp = [i for i in range(len(tli))]

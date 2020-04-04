@@ -30,15 +30,15 @@ def get_an_order(idx):
 
 def system_init():
     print('System Initiating...')
-    taxi_table = pd.read_csv('./data/taxi_info_list.csv')
-    df = pd.read_csv('./data/node_list_with_cluster.csv')
+    taxi_table = pd.read_csv('mTshare/data/taxi_info_list.csv')
+    df = pd.read_csv('mTshare/data/node_list_with_cluster.csv')
     for indexs in df.index:
         tmp = df.loc[indexs]
         node_list.append(
             Node(tmp['real_id'], tmp['lon'], tmp['lat'], int(tmp['cluster_id'])))
 
     # .里面包含的内容是每个partition的landmark的经纬度.其下标与partition_list的下标一一对应
-    landmark_table = pd.read_csv('./data/landmark.csv')
+    landmark_table = pd.read_csv('mTshare/data/landmark.csv')
     global landmark_list
     landmark_list = list(
         zip(landmark_table.loc[:, 'lon'], landmark_table.loc[:, 'lat'], landmark_table.loc[:, 'landmark_node_id']))
@@ -514,7 +514,7 @@ request_list = []
 partition_list = []
 landmark_list = []
 
-files = glob.glob('./data/node_distance/node_distance_*.csv')
+files = glob.glob('mTshare/data/node_distance/node_distance_*.csv')
 node_distance = pd.read_csv(files[0])
 node_distance = node_distance.loc[:, ~
                                   node_distance.columns.str.contains('^Unnamed')]
@@ -621,5 +621,5 @@ def main(socket1):
 
 # main()
 
-cursor.close()
-conn.close()
+# cursor.close()
+# conn.close()
