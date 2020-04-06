@@ -1,2 +1,1 @@
-import time
-print(time.time())
+print(str(hex(19))[2:4])

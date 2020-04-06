@@ -16,6 +16,7 @@ from mTshare.Tool.Tool import *
 from mTshare.Path import Path
 import os
 import glob
+import random
 import copy
 from tqdm import tqdm
 import json
@@ -530,6 +531,12 @@ socket = None
 def send_info(msg):
     socket.send(text_data=json.dumps(msg))
 
+def random_color():
+    r = str(hex(round(152 + 103 * random.random())))[2:4]
+    g = str(hex(round(103 + 103 * random.random())))[2:4]
+    b = str(hex(round(152 + 103 * random.random())))[2:4]
+    return '#' + r+g+b
+    
 def main(socket1):
     global socket
     global now_time
@@ -548,6 +555,7 @@ def main(socket1):
             continue
         else:
             for req_item in tqdm(reqs, desc='Processing requests...'):
+                color = random_color()
                 print('**********************************************************************')
                 print('**************************新订单{}**************************************'.format(req_cnt))
                 print('**********************************************************************')
@@ -564,7 +572,8 @@ def main(socket1):
                 """
                 start_node_id = ox.get_nearest_node(
                     osm_map, (req_item[4], req_item[3]))
-                socket_request = {'type':'request_pos', 'content':[[req_item[3], req_item[4]]]}
+                socket_request = {'type':'request_pos', 'content':{'value':[req_item[3], req_item[4]], 'itemStyle': {'color':color}},
+                                    'content1':{'value':[req_item[5], req_item[6]], 'itemStyle': {'color':color}}}
                 send_info(socket_request)
                 end_node_id = ox.get_nearest_node(
                     osm_map, (req_item[6], req_item[5]))
@@ -610,8 +619,8 @@ def main(socket1):
                     chosen_taxi,cost = taxi_scheduling(secondary_candidate_list, req_item, req_item.request_id, 1)
                 show_taxi = taxi_list[chosen_taxi]
                 print('这个订单选中的taxi是{}'.format(chosen_taxi))
-                socket_chosen_taxi = {'type':'chosen_taxi','content':[[show_taxi.cur_lon, show_taxi.cur_lat]]
-                ,'content1':[[node.lon,node.lat] for node in show_taxi.path.path_node_list]}
+                socket_chosen_taxi = {'type':'chosen_taxi','content':{'value':[show_taxi.cur_lon, show_taxi.cur_lat], 'itemStyle': {'color':color}}
+                ,'content1':{'coords':[[node.lon,node.lat] for node in show_taxi.path.path_node_list],'lineStyle':{'color':color}}}
                 send_info(socket_chosen_taxi)
                 show_taxi.show_schedule()
                 show_taxi.show_pos()
