@@ -611,7 +611,7 @@ def main(socket1):
                 show_taxi = taxi_list[chosen_taxi]
                 print('这个订单选中的taxi是{}'.format(chosen_taxi))
                 socket_chosen_taxi = {'type':'chosen_taxi','content':[[show_taxi.cur_lon, show_taxi.cur_lat]]
-                ,'content1':[[[node.lon,node.lat] for node in show_taxi.path.path_node_list]]}
+                ,'content1':[[node.lon,node.lat] for node in show_taxi.path.path_node_list]}
                 send_info(socket_chosen_taxi)
                 show_taxi.show_schedule()
                 show_taxi.show_pos()

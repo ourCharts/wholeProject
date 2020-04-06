@@ -8,9 +8,9 @@
             <el-tabs v-model="activeName" stretch>
                 <el-tab-pane label="操作栏" name="first">
                     <i class="el-icon-edit-outline" id="diy"></i>
-                    <el-row type="flex" justify="center">
+                    <!-- <el-row type="flex" justify="center">
                         <el-button type="warning" v-on:click="backCenter">回到原中心位置</el-button>
-                    </el-row>
+                    </el-row> -->
                     <el-row type="flex">
                         <el-input-number v-model="input4" :step="5" :min="5" controls-position="right">
                         </el-input-number>
@@ -123,6 +123,14 @@ export default {
           {
             type: 'scatter',
             coordinateSystem: 'bmap',
+            data: this.dataset[0],
+            itemStyle: {
+              color: 'green'
+            }
+          },
+          {
+            type: 'scatter',
+            coordinateSystem: 'bmap',
             data: this.taxi_pos,
             itemStyle: {
               color: 'black'
@@ -198,39 +206,6 @@ export default {
       })
       return p
     },
-    getOrder: function (newid, resolve) {
-      var _color = this.changeColor()
-      this.pathNum++
-      var tmpObj = {
-        zlevel: Math.ceil(Math.random() * 100),
-        order_id: newid,
-        num: this.pathNum,
-        coords: [],
-        lineStyle: {
-          color: _color
-        }
-      }
-      let _this = this
-      $.ajax({
-        type: 'GET',
-        url: 'http://127.0.0.1:8000/track_onetime/',
-        data: {order_id: newid},
-        async: true,
-        success: function (response) {
-          var obj = response
-          var len = obj.length
-          var tmparr = []
-          for (let i = 0; i < len; i++) {
-            tmparr.push([obj[i].longitude, obj[i].latitude])
-          }
-          tmpObj.coords = tmparr
-          console.log(tmpObj)
-          _this.dataset.push(tmpObj)
-          _this.chart.setOption(_this.options)
-          resolve('ok')
-        }
-      })
-    },
     after_connect: function () {
       var chatSocket = new WebSocket('ws://localhost:8000/ws/track/')
       var _this = this
@@ -247,14 +222,17 @@ export default {
         else if (data['type'] === 'chosen_taxi') {
           _this.chosen_pos = data['content']
           _this.taxi_pos = []
-          _this.dataset = data['content1']
+          _this.dataset = []
+          console.log(_this.dataset)
+          _this.dataset.push(data['content1'])
+          
           _this.chart.setOption(_this.options)
         }
       }
     },
     init: function () {
       this.chart = echarts.init(this.$refs.map)
-      this.centerCoords = [104.08769817540933, 30.70018619836269]
+      this.centerCoords = [104.06, 30.65918619836269]
       this.chart.setOption(this.options)
       let bmap = this.chart.getModel().getComponent('bmap').getBMap()
       // eslint-disable-next-line
@@ -262,12 +240,6 @@ export default {
       bmap.setMapStyleV2({
         styleId: '59a80bc22d507e09700207fce541bc16'
       })
-      // var _this = this
-      // bmap.addEventListener('dragend', function () {
-      //   var obj = bmap.getCenter()
-      //   _this.centerCoords = [obj.lng, obj.lat]
-      //   console.log('hello' + _this.centerCoords)
-      // })
       this.after_connect()
       // 获得订单order
       // $.ajax({
