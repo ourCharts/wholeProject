@@ -63,20 +63,14 @@ export default {
     return {
       chart: echarts.ECharts,
       loading: false,
-      activeName: 'first',
       taxi_pos: [],
       request_start_pos: [],
       request_end_pos: [],
+      temp_node: [],
+      temp_node_color: null,
+      // chosen_taxi: [{'value':[[104.06, 30.65918619836269],[104.07, 30.65918619836269]], 'itemStyle': {'color':'white'}}],
       chosen_taxi: [],
-      dataset: [],
-      arr: [],
-      input1: 120,
-      input2: 30,
-      input3: '39a096b71376b82f35732eff6d95779b',
-      input4: 10,
-      centerCoords: [],
-      page: 0,
-      pathNum: 0
+      dataset: []
     }
   },
   computed: {
@@ -100,9 +94,10 @@ export default {
           {
             type: 'scatter',
             coordinateSystem: 'bmap',
-            data: this.dataset[0],
+            data: this.temp_node,
             itemStyle: {
-              color: 'green'
+              color: this.temp_node_color
+              // color: 'red'
             }
           },
           {
@@ -110,7 +105,7 @@ export default {
             coordinateSystem: 'bmap',
             data: this.taxi_pos,
             itemStyle: {
-              color: 'black'
+              color: '#778899'
             }
           },
           {
@@ -141,11 +136,6 @@ export default {
     }
   },
   methods: {
-    clearPage: function () {
-      this.dataset = []
-      this.chart.setOption(this.options)
-      this.pathNum = 0
-    },
     after_connect: function () {
       var chatSocket = new WebSocket('ws://localhost:8000/ws/track/')
       var _this = this
@@ -165,6 +155,8 @@ export default {
           _this.chosen_taxi.push(data['content'])
           _this.taxi_pos = []
           alert('更新位置')
+          _this.temp_node = data['content1']['coords']
+          _this.temp_node_color = data['content1']['lineStyle']['color']
           _this.dataset.push(data['content1'])
           _this.chart.setOption(_this.options)
         }

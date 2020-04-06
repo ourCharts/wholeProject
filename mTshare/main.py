@@ -572,8 +572,8 @@ def main(socket1):
                 """
                 start_node_id = ox.get_nearest_node(
                     osm_map, (req_item[4], req_item[3]))
-                socket_request = {'type':'request_pos', 'content':{'value':[req_item[3], req_item[4]], 'itemStyle': {'color':color}},
-                                    'content1':{'value':[req_item[5], req_item[6]], 'itemStyle': {'color':color}}}
+                socket_request = {'type':'request_pos', 'content':{'value':wgs84_to_bd09(req_item[3], req_item[4]), 'itemStyle': {'color':color}},
+                                    'content1':{'value':wgs84_to_bd09(req_item[5], req_item[6]), 'itemStyle': {'color':color}}}
                 send_info(socket_request)
                 end_node_id = ox.get_nearest_node(
                     osm_map, (req_item[6], req_item[5]))
@@ -601,7 +601,7 @@ def main(socket1):
                 print('secondary: ')
                 print(secondary_candidate_list)
                 # 发送的士的位置
-                socket_taxi_list = [[i.cur_lon, i.cur_lat] for i in taxi_list]
+                socket_taxi_list = [wgs84_to_bd09(i.cur_lon, i.cur_lat) for i in taxi_list]
                 socket_taxi_list = {'type':'taxi_pos', 'content':socket_taxi_list}
                 send_info(socket_taxi_list)
                 divide_group2()
@@ -619,8 +619,8 @@ def main(socket1):
                     chosen_taxi,cost = taxi_scheduling(secondary_candidate_list, req_item, req_item.request_id, 1)
                 show_taxi = taxi_list[chosen_taxi]
                 print('这个订单选中的taxi是{}'.format(chosen_taxi))
-                socket_chosen_taxi = {'type':'chosen_taxi','content':{'value':[show_taxi.cur_lon, show_taxi.cur_lat], 'itemStyle': {'color':color}}
-                ,'content1':{'coords':[[node.lon,node.lat] for node in show_taxi.path.path_node_list],'lineStyle':{'color':color}}}
+                socket_chosen_taxi = {'type':'chosen_taxi','content':{'value':wgs84_to_bd09(show_taxi.cur_lon, show_taxi.cur_lat), 'itemStyle': {'color':color}}
+                ,'content1':{'coords':[wgs84_to_bd09(node.lon,node.lat) for node in show_taxi.path.path_node_list],'lineStyle':{'color':color}}}
                 send_info(socket_chosen_taxi)
                 show_taxi.show_schedule()
                 show_taxi.show_pos()
