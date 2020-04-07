@@ -89,6 +89,8 @@ def update(request):
     for req_id in req_to_taxi_map.keys():
         if request_list[req_id].delivery_deadline > now_time:
             aux_dict[req_id] = req_to_taxi_map[req_id]
+        else:
+            del request_list[req_id]
     req_to_taxi_map.clear()
     for req_id in aux_dict.keys():
         req_to_taxi_map[req_id] = aux_dict[req_id]
@@ -96,7 +98,7 @@ def update(request):
         taxi_it.update_status(request.release_time)
     mobility_cluster.clear()
     general_mobility_vector.clear()
-    for request_it in request_list:
+    for idx,request_it in request_list.items():
         vec1 = [request_it.start_lon, request_it.start_lat,
                 request_it.end_lon, request_it.end_lat]
         max_cos = -2
@@ -527,10 +529,10 @@ Lambda = 0.9
 node_list = []  # Node对象
 taxi_list = []  # Taxi对象
 taxi_status_queue = []  # taxi的事件队列
-request_list = []
+request_list = {}
 partition_list = []
 landmark_list = []
-
+print('再等等，好了我会告诉你')
 files = glob.glob('mTshare/data/node_distance/node_distance_*.csv')
 node_distance = pd.read_csv(files[0])
 node_distance = node_distance.loc[:, ~
@@ -547,11 +549,6 @@ socket = None
 def send_info(msg):
     socket.send(text_data=json.dumps(msg))
 
-def random_color():
-    r = str(hex(round(152 + 103 * random.random())))[2:4]
-    g = str(hex(round(103 + 103 * random.random())))[2:4]
-    b = str(hex(round(152 + 103 * random.random())))[2:4]
-    return '#' + r+g+b
     
 def main(socket1):
     global socket
@@ -588,8 +585,8 @@ def main(socket1):
                 """
                 start_node_id = ox.get_nearest_node(
                     osm_map, (req_item[4], req_item[3]))
-                socket_request = {'type':'request_pos', 'content':{'value':wgs84_to_bd09(req_item[3], req_item[4]), 'itemStyle': {'color':color}},
-                                    'content1':{'value':wgs84_to_bd09(req_item[5], req_item[6]), 'itemStyle': {'color':color}}}
+                socket_request = {'type':'request_pos', 'content':{'value':wgs84_to_bd09(req_item[3], req_item[4]), 'itemStyle': {'color':'white'}},
+                                    'content1':{'value':wgs84_to_bd09(req_item[5], req_item[6]), 'itemStyle': {'color':'white'}}}
                 send_info(socket_request)
                 end_node_id = ox.get_nearest_node(
                     osm_map, (req_item[6], req_item[5]))
@@ -597,16 +594,17 @@ def main(socket1):
                                                     ][id_hash_map[end_node_id]]
 
                 req_item = Request(req_cnt, req_item[3], req_item[4], req_item[5],
-                                   req_item[6], start_node_id, end_node_id, req_item[1], req_item[2])  # 打车的时候难道还能给你输入的ddl的吗???????????
+                                   req_item[6], start_node_id, end_node_id, req_item[1], req_item[2]) 
                 divide_group1()
                 print('现在时间：{}'.format(now_time))
                 print('订单消息：')  
-                print('起点经纬度：{}  {},终点经纬度：{}  {}'.format(req_item.start_lon,req_item.start_lat,req_item.end_lon,req_item.end_lat))
+                print('起点经纬度：{} ,终点经纬度：{} '.format(wgs84_to_bd09(req_item.start_lon,req_item.start_lat),wgs84_to_bd09(req_item.end_lon,req_item.end_lat)))
                 divide_group2()
-                req_cnt += 1
+                
                 req_item.config_pickup_deadline(
                     req_item.delivery_deadline - time_on_tour)
-                request_list.append(req_item)
+                request_list[req_cnt] = req_item
+                req_cnt += 1
                 # 用当前moment来更新所有taxi, mobility_cluster和general_cluster
                 update(req_item)
                 candidate_taxi_list, secondary_candidate_list = taxi_req_matching(
@@ -618,7 +616,7 @@ def main(socket1):
                 print(secondary_candidate_list)
                 # 发送的士的位置
                 socket_taxi_list = [wgs84_to_bd09(i.cur_lon, i.cur_lat) for i in taxi_list]
-                socket_taxi_list = {'type':'taxi_pos', 'content':socket_taxi_list}
+                socket_taxi_list = {'type':'all_taxi', 'content':socket_taxi_list}
                 send_info(socket_taxi_list)
                 divide_group2()
                 # 如果没有候选taxi会返回none
@@ -634,10 +632,36 @@ def main(socket1):
                 else:
                     chosen_taxi,cost = taxi_scheduling(secondary_candidate_list, req_item, req_item.request_id, 1)
                 show_taxi = taxi_list[chosen_taxi]
+                req_item.color = show_taxi.color
+                non_empty_taxi_set.add(show_taxi)
                 print('这个订单选中的taxi是{}'.format(chosen_taxi))
-                socket_chosen_taxi = {'type':'chosen_taxi','content':{'value':wgs84_to_bd09(show_taxi.cur_lon, show_taxi.cur_lat), 'itemStyle': {'color':color}}
-                ,'content1':{'coords':[wgs84_to_bd09(node.lon,node.lat) for node in show_taxi.path.path_node_list],'lineStyle':{'color':color}}}
+                
+                socket_chosen_taxi = {'type':'chosen_taxi'
+                ,'content':{'coords':[wgs84_to_bd09(node.lon,node.lat) for node in show_taxi.path.path_node_list]}}
                 send_info(socket_chosen_taxi)
+
+                
+
+                socket_all_request_start = {'type':'all_request_start','content':
+                                            [{'value':wgs84_to_bd09(item.start_lon,item.start_lat),'itemStyle':{'color':item.color},'name':"起点_{}".format(item.request_id)} for item in request_list.values()]}
+                send_info(socket_all_request_start)
+                socket_all_request_end = {'type':'all_request_end','content':
+                                            [{'value':wgs84_to_bd09(item.end_lon,item.end_lat),'itemStyle':{'color':item.color},'name':"终点_{}".format(item.request_id)} for item in request_list.values()]}
+                send_info(socket_all_request_end)
+                socket_all_non_empty_taxi = {'type':'all_non_empty_taxi','content':
+                                            [{'value':wgs84_to_bd09(item.cur_lon,item.cur_lat),'itemStyle':{'color':item.color},'name':"的士_{}".format(item.taxi_id)} for item in non_empty_taxi_set]}
+                send_info(socket_all_non_empty_taxi)
+
+
+
+                socket_taxi_path = {'type':'taxi_path',
+                    'content':[{'coords':[wgs84_to_bd09(node.lon,node.lat) for node in item.path.path_node_list],'lineStyle':{'color':item.color}}
+                                for item in non_empty_taxi_set]}
+                send_info(socket_taxi_path)
+                socket_taxi_path_start = {'type':'taxi_path_start',
+                    'content':[{'value':wgs84_to_bd09(item.path.path_node_list[0].lon, item.path.path_node_list[0].lat),'itemStyle':{'color':item.color},'name':"taxi_{}起点".format(item.taxi_id)}
+                                for item in non_empty_taxi_set]}
+                send_info(socket_taxi_path_start)
                 show_taxi.show_schedule()
                 show_taxi.show_pos()
                 # 发送最新状态
@@ -645,7 +669,7 @@ def main(socket1):
                 print('该订单结束//////////////////////////////////////')
                 divide_group2()
 
-
+print('载入完毕')
 
 # main()
 

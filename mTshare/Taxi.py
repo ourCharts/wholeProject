@@ -22,6 +22,7 @@ class Taxi:
         self.cur_total_cost = 0
         self.seat_left = seat_left
         self.capability = self.seat_left
+        self.color = random_color()
 
 
     def show_schedule(self):
@@ -90,6 +91,7 @@ class Taxi:
             self.schedule_list = [{'request_id': -1, 'schedule_type': 'NO_ORDER',
                                    'lon': self.cur_lon, 'lat': self.cur_lat, 'arrival_time': self.__last_update_time}]
             self.mobility_vector = None
+            non_empty_taxi_set.remove(self)
             print('update over')
             return
 
