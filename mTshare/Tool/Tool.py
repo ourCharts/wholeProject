@@ -5,13 +5,29 @@ import pickle
 import networkx as nx
 import time
 import json
-import urllib
+import random
+import urllib #坐标系转换的时候有用
+
+non_empty_taxi_set = set()
 
 x_pi = 3.14159265358979324 * 3000.0 / 180.0
 pi = 3.1415926535897932384626  # π
 a = 6378245.0  # 长半轴
 ee = 0.00669342162296594323  # 偏心率平方
 
+def random_color():
+    ran = round(3 * random.random())
+    rr = gg = bb = 60
+    if ran == 0:
+        rr = 195
+    elif ran == 1:
+        gg = 195
+    else:
+        bb = 195
+    r = str(hex(round(rr + 60 * random.random())))[2:4]
+    g = str(hex(round(gg + 60 * random.random())))[2:4]
+    b = str(hex(round(bb + 60 * random.random())))[2:4]
+    return '#' + r+g+b
 
 
 
