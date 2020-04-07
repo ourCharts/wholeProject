@@ -582,7 +582,7 @@ def main(socket1):
                 divide_group1()
                 print('现在时间：{}'.format(now_time))
                 print('订单消息：')  
-                print('起点经纬度：{}  {},终点经纬度：{}  {}'.format(req_item.start_lon,req_item.start_lat,req_item.end_lon,req_item.end_lat))
+                print('起点经纬度：{} ,终点经纬度：{} '.format(wgs84_to_bd09(req_item.start_lon,req_item.start_lat),wgs84_to_bd09(req_item.end_lon,req_item.end_lat)))
                 divide_group2()
                 
                 req_item.config_pickup_deadline(
@@ -617,11 +617,8 @@ def main(socket1):
                     chosen_taxi,cost = taxi_scheduling(secondary_candidate_list, req_item, req_item.request_id, 1)
                 show_taxi = taxi_list[chosen_taxi]
                 req_item.color = show_taxi.color
-                print("订单颜色："+req_item.color)
-                print("的士颜色："+show_taxi.color)
                 non_empty_taxi_set.add(show_taxi)
                 print('这个订单选中的taxi是{}'.format(chosen_taxi))
-                print("非空的士长度{}".format(len(non_empty_taxi_set)))
                 
                 socket_chosen_taxi = {'type':'chosen_taxi'
                 ,'content':{'coords':[wgs84_to_bd09(node.lon,node.lat) for node in show_taxi.path.path_node_list]}}
