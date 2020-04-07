@@ -34,7 +34,7 @@ export default {
   .anchorBL {
     display: none;
   }
-  .el-header{
+  .el-header {
     text-align: left;
     font-weight: bolder;
     font-size: 150%;
