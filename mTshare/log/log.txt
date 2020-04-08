@@ -1,0 +1,207 @@
+Django version 3.0.5, using settings 'ourcharts.settings'
+Starting ASGI/Channels version 2.4.0 development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+载入Request中
+载入Node中
+载入MobilityVector中
+载入Tool中
+载入Path中
+载入Taxi中
+载入Partition中
+载入main.py中
+再等等，好了我会告诉你
+载入完毕
+WebSocket HANDSHAKING /ws/track/ [127.0.0.1:61266]
+连接上客户端！
+WebSocket CONNECT /ws/track/ [127.0.0.1:61266]
+System Initiating...
+Processing requests...:   0%|                                                                    | 0/2 [00:00<?, ?it/s]**********************************************************************
+**************************新订单0**************************************
+**********************************************************************
+
+------------------------------------
+现在时间：1477929728.8767552
+订单消息：
+起点经纬度：[104.05324822163607, 30.64215805345013] ,终点经纬度：[104.08727279966432, 30.669319308747273]
+------------------------------------
+
+
+------------------------------------
+In update
+req_to_taxi_map is {}
+------------------------------------
+
+
+------------------------------------
+In taxi req matching
+search range is 7156.6873987396475
+余弦相似度是：1.0
+{}
+C_li is:
+[]
+------------------------------------
+
+
+------------------------------------
+candidate:
+[]
+secondary:
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 45, 46, 47, 48, 49, 50, 51, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 90, 91, 92, 94, 95, 96, 97, 99]
+------------------------------------
+
+
+------------------------------------
+In taxi scheduling
+正在处理的订单是： 0
+{'request_id': -1, 'schedule_type': 'NO_ORDER', 'lon': 104.0215647, 'lat': 30.6360192, 'arrival_time': 1477929720.0}
+{'request_id': 0, 'schedule_type': 'DEPART', 'lon': 104.04436, 'lat': 30.63833, 'arrival_time': None}
+{'request_id': 0, 'schedule_type': 'ARRIVAL', 'lon': 104.0782, 'lat': 30.66589, 'arrival_time': None}
+length of Slist is
+3
+len of filtered_partition
+2
+len of filtered_partition
+3
+writing log
+start_node is 2564226624
+start_node lon and lat is 104.0215647, 30.6360192
+end_node is 3582961906
+end_node lon and lat is 104.0442319, 30.638167
+{'request_id': -1, 'schedule_type': 'NO_ORDER', 'lon': 104.0215647, 'lat': 30.6360192, 'arrival_time': 1477929720.0}
+{'request_id': 0, 'schedule_type': 'DEPART', 'lon': 104.04436, 'lat': 30.63833, 'arrival_time': 1477929927.1530766}
+{'request_id': 0, 'schedule_type': 'ARRIVAL', 'lon': 104.0782, 'lat': 30.66589, 'arrival_time': None}
+length of Slist is
+3
+len of filtered_partition
+3
+len of filtered_partition
+4
+writing log
+start_node is 3582961906
+start_node lon and lat is 104.0442319, 30.638167
+end_node is 3034330085
+end_node lon and lat is 104.0781108, 30.6648183
+1->2 path
+[3582961906, 3582961924, 5628752504, 5213238352, 5213238496, 5628752365, 3390819399, 3523298663, 314622958, 5628752323, 5336411861, 5530492079, 5336411862, 3523294441, 314622924, 1312615996, 6167350395, 4550018925, 4550018912, 4550018628, 4550018781, 314622919, 1492399999, 1492389309, 1492389322, 6295901988, 1492384180, 1492390578, 441187183, 5530209334, 2217746800, 2217746797, 2217714910, 2217714914, 4548211254, 4794944071, 4298656985, 1159146549, 3445794964, 3445794963, 1159148556, 1159148358, 6356151552, 3034330084, 3034330085]
+{'request_id': -1, 'schedule_type': 'NO_ORDER', 'lon': 104.0215647, 'lat': 30.6360192, 'arrival_time': 1477929720.0}
+{'request_id': 0, 'schedule_type': 'DEPART', 'lon': 104.04436, 'lat': 30.63833, 'arrival_time': 1477929927.1530766}
+{'request_id': 0, 'schedule_type': 'ARRIVAL', 'lon': 104.0782, 'lat': 30.66589, 'arrival_time': 1477930149.5956748}
+length of Slist is
+3
+the lon and lat of taxi_pos_node: 104.0215647, 30.6360192
+
+length of Slist is
+3
+len of filtered_partition
+6
+len of filtered_partition
+7
+writing log
+start_node is 1159157306
+end_node is 3582961906
+length of Slist is
+3
+len of filtered_partition
+3
+len of filtered_partition
+4
+writing log
+start_node is 3582961906
+end_node is 3034330085
+length of Slist is
+3
+the lon and lat of taxi_pos_node: 104.0953469, 30.633998
+
+length of Slist is
+3
+len of filtered_partition
+3
+len of filtered_partition
+4
+writing log
+start_node is 3445813112
+end_node is 3582961906
+length of Slist is
+3
+len of filtered_partition
+3
+len of filtered_partition
+4
+writing log
+start_node is 3582961906
+end_node is 3034330085
+length of Slist is
+3
+the lon and lat of taxi_pos_node: 104.0764182, 30.6621634
+
+length of Slist is
+3
+len of filtered_partition
+6
+len of filtered_partition
+7
+writing log
+start_node is 4550770090
+end_node is 3582961906
+length of Slist is
+3
+len of filtered_partition
+3
+len of filtered_partition
+4
+writing log
+start_node is 3582961906
+end_node is 3034330085
+length of Slist is
+3
+the lon and lat of taxi_pos_node: 104.1058371, 30.632084000000006
+
+length of Slist is
+3
+len of filtered_partition
+2
+len of filtered_partition
+3
+writing log
+start_node is 3742070443
+end_node is 3582961906
+Processing requests...:   0%|                                                                    | 0/2 [00:10<?, ?it/s]
+Exception inside application: No path to 3582961906.
+  File "D:\Pycharm-project\wholeProject\venv\lib\site-packages\channels\sessions.py", line 183, in __call__
+    return await self.inner(receive, self.send)
+  File "D:\Pycharm-project\wholeProject\venv\lib\site-packages\channels\middleware.py", line 41, in coroutine_call
+    await inner_instance(receive, send)
+  File "D:\Pycharm-project\wholeProject\venv\lib\site-packages\channels\consumer.py", line 62, in __call__
+    await await_many_dispatch([receive], self.dispatch)
+  File "D:\Pycharm-project\wholeProject\venv\lib\site-packages\channels\utils.py", line 51, in await_many_dispatch
+    await dispatch(result)
+  File "D:\Pycharm-project\wholeProject\venv\lib\site-packages\asgiref\sync.py", line 269, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "D:\Anaconda-taye\lib\asyncio\tasks.py", line 388, in wait_for
+    return await fut
+  File "D:\Anaconda-taye\lib\concurrent\futures\thread.py", line 57, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "D:\Pycharm-project\wholeProject\venv\lib\site-packages\channels\db.py", line 14, in thread_handler
+    return super().thread_handler(loop, *args, **kwargs)
+  File "D:\Pycharm-project\wholeProject\venv\lib\site-packages\asgiref\sync.py", line 314, in thread_handler
+    return func(*args, **kwargs)
+  File "D:\Pycharm-project\wholeProject\venv\lib\site-packages\channels\consumer.py", line 105, in dispatch
+    handler(message)
+  File "D:\Pycharm-project\wholeProject\venv\lib\site-packages\channels\generic\websocket.py", line 39, in websocket_connect
+    self.connect()
+  File "D:\Pycharm-project\wholeProject\taxi\consumers.py", line 11, in connect
+    main(self)
+  File "D:\Pycharm-project\wholeProject\mTshare\main.py", line 690, in main
+    chosen_taxi, cost = taxi_scheduling(secondary_candidate_list, req_item, req_item.request_id, 1)
+  File "D:\Pycharm-project\wholeProject\mTshare\main.py", line 541, in taxi_scheduling
+    new_path, cost = basic_routing(Slist, taxi_it)  # 写完basic routing就ok了
+  File "D:\Pycharm-project\wholeProject\mTshare\main.py", line 465, in basic_routing
+    tmp_list = nx.dijkstra_path(subgraph, source=start_node, target=end_node, weight='length')
+  File "D:\Pycharm-project\wholeProject\venv\lib\site-packages\networkx\algorithms\shortest_paths\weighted.py", line 167, in dijkstra_path
+    weight=weight)
+  File "D:\Pycharm-project\wholeProject\venv\lib\site-packages\networkx\algorithms\shortest_paths\weighted.py", line 480, in single_source_dijkstra
+    weight=weight)
+  File "D:\Pycharm-project\wholeProject\venv\lib\site-packages\networkx\algorithms\shortest_paths\weighted.py", line 746, in multi_source_dijkstra
+    raise nx.NetworkXNoPath("No path to {}.".format(target))
+  No path to 3582961906.
+WebSocket DISCONNECT /ws/track/ [127.0.0.1:61266]

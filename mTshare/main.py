@@ -20,6 +20,7 @@ import random
 import copy
 from tqdm import tqdm
 import json
+# import sys
 
 print('载入main.py中')
 def get_an_order(idx):
@@ -321,8 +322,7 @@ def insertion_feasibility_check(taxi_id, req: Request, pos_i, pos_j):  # 在前�
         elif (taxi_list[taxi_id].schedule_list[i])['schedule_type'] == 'DEPART':
             ddl_ = request_list[req_id].pickup_deadline
 
-        tmp = (taxi_list[taxi_id].schedule_list[i])[
-            'arrival'] + dis / TYPICAL_SPEED
+        tmp = (taxi_list[taxi_id].schedule_list[i])['arrival'] + dis / TYPICAL_SPEED
         if tmp > ddl_:
             return False
         (taxi_list[taxi_id].schedule_list[i])['arrival'] += tmp
@@ -343,8 +343,8 @@ def partition_filter(node1, node2):  # 返回一个数组，组成元素是parti
     # print('partition2 is {}'.format(partition2))
     landmark2 = landmark_list[partition2]
 
-    node1 = ox.get_nearest_node(osm_map, (landmark1[0], landmark1[1]))
-    node2 = ox.get_nearest_node(osm_map, (landmark2[0], landmark2[1]))
+    node1 = ox.get_nearest_node(osm_map, (landmark1[1], landmark1[0]))
+    node2 = ox.get_nearest_node(osm_map, (landmark2[1], landmark2[0]))
 
     # lm1到lm2的travel cost
     cost_1to2 = node_distance_matrix[id_hash_map[node1]
@@ -362,7 +362,7 @@ def partition_filter(node1, node2):  # 返回一个数组，组成元素是parti
         if cosine_similarity(tmp_vec, forever_mobility_vector) < Lambda:
             continue
         # Travel cost rule
-        tmp_node = ox.get_nearest_node(osm_map, (tmp_lm[0], tmp_lm[1]))
+        tmp_node = ox.get_nearest_node(osm_map, (tmp_lm[1], tmp_lm[0]))
         cost_1totmp = node_distance_matrix[id_hash_map[node1]][id_hash_map[tmp_node]] / TYPICAL_SPEED
         cost_tmpto2 = node_distance_matrix[id_hash_map[tmp_node]][id_hash_map[node2]] / TYPICAL_SPEED
         if cost_1totmp + cost_tmpto2 <= (1 + partition_filter_param) * cost_1to2:
@@ -378,6 +378,16 @@ def partition_filter(node1, node2):  # 返回一个数组，组成元素是parti
         感觉要将第一个和最后一个地方换成确切的lon lat而不是partition
     
     '''
+    print('len of filtered_partition')
+    print(len(filtered_partition))
+    if partition_list[partition1] not in filtered_partition:
+        filtered_partition.append(partition_list[partition1])
+    if partition_list[partition2] not in filtered_partition:
+        filtered_partition.append(partition_list[partition2])
+    
+    print('len of filtered_partition')
+    print(len(filtered_partition))
+
     return filtered_partition
 
 
@@ -386,6 +396,9 @@ def basic_routing(Slist, taxi_it):    # 根据论文P7
     taxi_path = Path(now_time)
     sum_path_distance = 0
     for idx, s_node in enumerate(Slist):
+        if taxi_it == 0:
+            for slist_it in Slist:
+                print(slist_it)
         print('length of Slist is')
         print(len(Slist))
         if idx == len(Slist) - 1:
@@ -397,6 +410,17 @@ def basic_routing(Slist, taxi_it):    # 根据论文P7
         for filtered_partition_item in filtered_partition:
             for node_it in filtered_partition_item.node_list:
                 pre_subgraph_nodes.append(node_list[id_hash_map[node_it]].node_id)
+        
+        if taxi_it == 0 and idx == 0:
+            print('writing log')
+            nodes_in_filtered_partition_lon_file = open('./mTshare/log/nodes_in_filtered_partition_lon_file.txt', 'w+')
+            nodes_in_filtered_partition_lat_file = open('./mTshare/log/nodes_in_filtered_partition_lat_file.txt', 'w+')
+            for nn in pre_subgraph_nodes:
+                nodes_in_filtered_partition_lon_file.write('%f,\n' % node_list[id_hash_map[nn]].lon)
+                nodes_in_filtered_partition_lat_file.write('%f,\n' % node_list[id_hash_map[nn]].lat)
+            nodes_in_filtered_partition_lon_file.close()
+            nodes_in_filtered_partition_lat_file.close()
+
         pre_subgraph = osm_map.subgraph(pre_subgraph_nodes)
 
         isolate_cnt = 0
@@ -418,17 +442,40 @@ def basic_routing(Slist, taxi_it):    # 根据论文P7
                 to_remove_nodes += [x for x in it]
         subgraph.remove_nodes_from(to_remove_nodes)
         # 此时得到的subgraph是没有孤立点, 且只有一个连通分量
+
+        ###################################################################
+        # print('writing log')
+        # nodes_in_filtered_partition_lon_file = open('./mTshare/log/nodes_in_filtered_partition_lon_file.txt', 'w+')
+        # nodes_in_filtered_partition_lat_file = open('./mTshare/log/nodes_in_filtered_partition_lat_file.txt', 'w+')
+        # for nn in subgraph.nodes:
+        #     nodes_in_filtered_partition_lon_file.write('%f,\n' % node_list[id_hash_map[nn]].lon)
+        #     nodes_in_filtered_partition_lat_file.write('%f,\n' % node_list[id_hash_map[nn]].lat)
+        # nodes_in_filtered_partition_lon_file.close()
+        # nodes_in_filtered_partition_lat_file.close()
+        ###################################################################
+        
         start_node = ox.get_nearest_node(subgraph, (Slist[idx]['lat'], Slist[idx]['lon']))
         end_node = ox.get_nearest_node(subgraph, (Slist[idx + 1]['lat'], Slist[idx + 1]['lon']))
         print('start_node is {}'.format(start_node))
+        if taxi_it == 0:
+            print('start_node lon and lat is {}, {}'.format(node_list[id_hash_map[start_node]].lon, node_list[id_hash_map[start_node]].lat))
         print('end_node is {}'.format(end_node))
+        if taxi_it == 0:
+            print('end_node lon and lat is {}, {}'.format(node_list[id_hash_map[end_node]].lon, node_list[id_hash_map[end_node]].lat))
+        
+        tmp_list = nx.dijkstra_path(subgraph, source=start_node, target=end_node, weight='length')
 
-        tmp_list = nx.dijkstra_path(osm_map, source=start_node, target=end_node, weight='length')
+        #############################################
+        if taxi_it == 0 and idx == 1:
+            print('1->2 path')
+            print(tmp_list)
+        #############################################
+        
         tmp_list = [Node(x, node_list[id_hash_map[x]].lon, node_list[id_hash_map[x]].lat,
                         node_list[id_hash_map[x]].cluster_id_belongto) for x in tmp_list]
         
         taxi_path.path_node_list += tmp_list
-        path_distance = nx.dijkstra_path_length(osm_map, source=start_node, target=end_node, weight='length')
+        path_distance = nx.dijkstra_path_length(subgraph, source=start_node, target=end_node, weight='length')
 
 
         Slist[idx+1]['arrival_time'] = now_time + path_distance / TYPICAL_SPEED
@@ -441,7 +488,13 @@ def basic_routing(Slist, taxi_it):    # 根据论文P7
     taxi_to_first_slist_node_path = nx.shortest_path(osm_map, source=taxi_pos_node, target=taxi_path.path_node_list[0].node_id, weight='length')
     taxi_to_first_slist_node_path = [Node(x, node_list[id_hash_map[x]].lon, node_list[id_hash_map[x]].lat,node_list[id_hash_map[x]].cluster_id_belongto) for x in taxi_to_first_slist_node_path]
     
+    # if taxi_it == 0:
+    #     print('check path')
+    #     for kk in taxi_path.path_node_list:
+    #         print(kk.node_id)
+
     taxi_path.path_node_list =  taxi_to_first_slist_node_path + taxi_path.path_node_list
+
     # 加上了taxi目前位置到slist第一个节点的路径,因为上面的路径是不包括taxi原本位置的，只包括了slist里面的
 
     sum_path_distance += nx.shortest_path_length(osm_map, source=taxi_pos_node, target=taxi_path.path_node_list[0].node_id, weight='length')
@@ -495,6 +548,10 @@ def taxi_scheduling(candidate_taxi_list, req, req_id, mode=1):
                 selected_taxi = taxi_it
                 selected_taxi_path = new_path
 
+    print('path node id!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    for path_node_item in selected_taxi_path.path_node_list:
+        print(path_node_item.node_id)
+
     taxi_list[selected_taxi].schedule_list = copy.deepcopy(res)
     taxi_list[selected_taxi].seat_left -= 1
     req_to_taxi_map[req_id] = selected_taxi
@@ -524,7 +581,7 @@ TAXI_TOTAL_NUM = 100
 REQUESTS_TO_PROCESS = 100  # 总共要处理多少个request
 partition_filter_param = 1.0
 
-Lambda = 0.9
+Lambda = 0.5
 # alpha = 0.999999921837146
 node_list = []  # Node对象
 taxi_list = []  # Taxi对象
@@ -554,6 +611,7 @@ def main(socket1):
     global socket
     global now_time
     socket = socket1
+    # sys.stdout = open('D:\\Pycharm-project\\wholeProject\\mTshare\\log\\log.txt', 'w+')
     req_cnt = 0
     system_init()
     order_index = 0
@@ -626,11 +684,11 @@ def main(socket1):
                     input('天啊！居然出现了没有人回应的订单！！！点击回车继续')
                     divide_group2()                    
                 elif len(candidate_taxi_list) != 0:
-                    chosen_taxi,cost = taxi_scheduling(candidate_taxi_list, req_item, req_item.request_id, 1)
+                    chosen_taxi, cost = taxi_scheduling(candidate_taxi_list, req_item, req_item.request_id, 1)
                     if cost == None:
-                        chosen_taxi,cost = taxi_scheduling(secondary_candidate_list, req_item, req_item.request_id, 1)
+                        chosen_taxi, cost = taxi_scheduling(secondary_candidate_list, req_item, req_item.request_id, 1)
                 else:
-                    chosen_taxi,cost = taxi_scheduling(secondary_candidate_list, req_item, req_item.request_id, 1)
+                    chosen_taxi, cost = taxi_scheduling(secondary_candidate_list, req_item, req_item.request_id, 1)
                 show_taxi = taxi_list[chosen_taxi]
                 req_item.color = show_taxi.color
                 non_empty_taxi_set.add(show_taxi)
