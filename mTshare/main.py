@@ -69,7 +69,6 @@ def system_init():
     # 初始化邻接矩阵
     global node_distance_matrix
     node_distance_matrix = copy.copy(node_distance.values)
-    # print(node_distance_matrix)
 
 
 def request_fetcher(time_slot_start, time_slot_end):
@@ -96,7 +95,7 @@ def update(request):
     for req_id in aux_dict.keys():
         req_to_taxi_map[req_id] = aux_dict[req_id]
     for taxi_it in taxi_list:
-        taxi_it.update_status(request.release_time)
+        taxi_it.update_status(now_time)
     mobility_cluster.clear()
     general_mobility_vector.clear()
     for idx,request_it in request_list.items():
@@ -190,12 +189,13 @@ def taxi_req_matching(req: Request):
                                                            ][id_hash_map[nearest_end_id]] / TYPICAL_SPEED - req.release_time
     # 得到搜索范围的半径
     search_range = delta_t * TYPICAL_SPEED
+    send_info({'type':'circle','content':{'lon':u_lon, 'lat':u_lat, 'range': search_range}})
     print('search range is {}'.format(search_range))
     partition_intersected = set()
     for idx,node_it in enumerate(node_list):
         if node_it.cluster_id_belongto in partition_intersected:
             continue
-        dis = get_shortest_path_length(req_start_node, node_it.node_id)
+        dis = node_distance_matrix[id_hash_map[req_start_node]][id_hash_map[node_it.node_id]]
         if dis <= search_range:
             partition_intersected.add(node_it.cluster_id_belongto)
 
@@ -220,26 +220,20 @@ def taxi_req_matching(req: Request):
         if cos_val > max_cos:
             max_cos = cos_val
             max_idx = idx
-    # if max_idx == -1:  # 说明cluster为空，所以CaLt是空的
-    #     candidate_taxi = taxi_in_intersected
-    #     print('Empty CaLt!')
     '''
         cluster不可能为空
     '''
     # 计算出CaLt
     C = mobility_cluster[max_idx]
-    # print(C)
     C_li = []
     for it in C:
         if it.vector_type == 'TAXI':
-            print('IT\'S TYPE IS TAXI!!!!!!!!!!')
             C_li.append(it.ID)
         else:
             print(req_to_taxi_map)
             if not it.ID in req_to_taxi_map:
                 continue
             # 此时的类型为req
-            print('现在的mv类型是req, 这个req的id是{}, 它对应的taxi的id是{}'.format(it.ID, req_to_taxi_map[it.ID]))
             C_li.append(req_to_taxi_map[it.ID])
             
 
@@ -337,10 +331,7 @@ def partition_filter(node1, node2):  # 返回一个数组，组成元素是parti
     partition2 = check_in_which_partition(node2['lon'], node2['lat'])
     if partition1 == partition2:
         return [partition_list[partition1]]
-    # print('landmark_list is {}'.format(landmark_list))
-    # print('partition1 is {}'.format(partition1))
     landmark1 = landmark_list[partition1]
-    # print('partition2 is {}'.format(partition2))
     landmark2 = landmark_list[partition2]
 
     node1 = ox.get_nearest_node(osm_map, (landmark1[1], landmark1[0]))
@@ -378,15 +369,15 @@ def partition_filter(node1, node2):  # 返回一个数组，组成元素是parti
         感觉要将第一个和最后一个地方换成确切的lon lat而不是partition
     
     '''
-    print('len of filtered_partition')
-    print(len(filtered_partition))
+    # print('len of filtered_partition')
+    # print(len(filtered_partition))
     if partition_list[partition1] not in filtered_partition:
         filtered_partition.append(partition_list[partition1])
     if partition_list[partition2] not in filtered_partition:
         filtered_partition.append(partition_list[partition2])
     
-    print('len of filtered_partition')
-    print(len(filtered_partition))
+    # print('len of filtered_partition')
+    # print(len(filtered_partition))
 
     return filtered_partition
 
@@ -396,11 +387,11 @@ def basic_routing(Slist, taxi_it):    # 根据论文P7
     taxi_path = Path(now_time)
     sum_path_distance = 0
     for idx, s_node in enumerate(Slist):
-        if taxi_it == 0:
-            for slist_it in Slist:
-                print(slist_it)
-        print('length of Slist is')
-        print(len(Slist))
+        # if taxi_it == 0:
+        #     for slist_it in Slist:
+        #         print(slist_it)
+        # print('length of Slist is')
+        # print(len(Slist))
         if idx == len(Slist) - 1:
             break
         path_distance = 0
@@ -412,7 +403,7 @@ def basic_routing(Slist, taxi_it):    # 根据论文P7
                 pre_subgraph_nodes.append(node_list[id_hash_map[node_it]].node_id)
         
         if taxi_it == 0 and idx == 0:
-            print('writing log')
+            # print('writing log')
             nodes_in_filtered_partition_lon_file = open('./mTshare/log/nodes_in_filtered_partition_lon_file.txt', 'w+')
             nodes_in_filtered_partition_lat_file = open('./mTshare/log/nodes_in_filtered_partition_lat_file.txt', 'w+')
             for nn in pre_subgraph_nodes:
@@ -456,19 +447,19 @@ def basic_routing(Slist, taxi_it):    # 根据论文P7
         
         start_node = ox.get_nearest_node(subgraph, (Slist[idx]['lat'], Slist[idx]['lon']))
         end_node = ox.get_nearest_node(subgraph, (Slist[idx + 1]['lat'], Slist[idx + 1]['lon']))
-        print('start_node is {}'.format(start_node))
-        if taxi_it == 0:
-            print('start_node lon and lat is {}, {}'.format(node_list[id_hash_map[start_node]].lon, node_list[id_hash_map[start_node]].lat))
-        print('end_node is {}'.format(end_node))
-        if taxi_it == 0:
-            print('end_node lon and lat is {}, {}'.format(node_list[id_hash_map[end_node]].lon, node_list[id_hash_map[end_node]].lat))
+        # print('start_node is {}'.format(start_node))
+        # if taxi_it == 0:
+        #     print('start_node lon and lat is {}, {}'.format(node_list[id_hash_map[start_node]].lon, node_list[id_hash_map[start_node]].lat))
+        # print('end_node is {}'.format(end_node))
+        # if taxi_it == 0:
+        #     print('end_node lon and lat is {}, {}'.format(node_list[id_hash_map[end_node]].lon, node_list[id_hash_map[end_node]].lat))
         
         tmp_list = nx.dijkstra_path(subgraph, source=start_node, target=end_node, weight='length')
 
         #############################################
-        if taxi_it == 0 and idx == 1:
-            print('1->2 path')
-            print(tmp_list)
+        # if taxi_it == 0 and idx == 1:
+        #     print('1->2 path')
+        #     print(tmp_list)
         #############################################
         
         tmp_list = [Node(x, node_list[id_hash_map[x]].lon, node_list[id_hash_map[x]].lat,
@@ -483,7 +474,7 @@ def basic_routing(Slist, taxi_it):    # 根据论文P7
         sum_path_distance += path_distance
         # 获得两个partition的landmark的最短路径
     taxi_pos_node = ox.get_nearest_node(osm_map, (taxi_list[taxi_it].cur_lat, taxi_list[taxi_it].cur_lon))
-    print('the lon and lat of taxi_pos_node: {}, {}\n'.format(node_list[id_hash_map[taxi_pos_node]].lon, node_list[id_hash_map[taxi_pos_node]].lat))
+    # print('the lon and lat of taxi_pos_node: {}, {}\n'.format(node_list[id_hash_map[taxi_pos_node]].lon, node_list[id_hash_map[taxi_pos_node]].lat))
     
     taxi_to_first_slist_node_path = nx.shortest_path(osm_map, source=taxi_pos_node, target=taxi_path.path_node_list[0].node_id, weight='length')
     taxi_to_first_slist_node_path = [Node(x, node_list[id_hash_map[x]].lon, node_list[id_hash_map[x]].lat,node_list[id_hash_map[x]].cluster_id_belongto) for x in taxi_to_first_slist_node_path]
@@ -518,26 +509,19 @@ def taxi_scheduling(candidate_taxi_list, req, req_id, mode=1):
     selected_taxi_path = None
     res = []
 
-    for taxi_it in candidate_taxi_list:
+    for taxi_it in tqdm(candidate_taxi_list,'scheduling'):
         possible_insertion.clear()
         bnd = len(taxi_list[taxi_it].schedule_list)
-        if bnd == 1:
-            possible_insertion.append((1, 2))
-        else:
-            for i in range(1, bnd):
-                for j in range(i + 1, bnd):
-                    flag = insertion_feasibility_check(taxi_it, req, i, j)
-                    if flag:
-                        possible_insertion.append((i, j))
         ori_cost = taxi_list[taxi_it].cur_total_cost
-        for insertion in possible_insertion:
+        if bnd == 1:
+            # possible_insertion.append((1, 2))
             Slist = copy.deepcopy(taxi_list[taxi_it].schedule_list)
             start_point = {'request_id': req.request_id, 'schedule_type': 'DEPART', 'lon': req.start_lon,
                            'lat': req.start_lat, 'arrival_time': None}  # arrival_time在之后routing的时候确定
             end_point = {'request_id': req.request_id, 'schedule_type': 'ARRIVAL',
                          'lon': req.end_lon, 'lat': req.end_lat, 'arrival_time': None}
-            Slist.insert(insertion[0], start_point)
-            Slist.insert(insertion[1], end_point)
+            Slist.insert(1, start_point)
+            Slist.insert(2, end_point)
             if mode:
                 new_path, cost = basic_routing(Slist, taxi_it)  # 写完basic routing就ok了
             else:
@@ -547,22 +531,47 @@ def taxi_scheduling(candidate_taxi_list, req, req_id, mode=1):
                 minimum_cost = cost - ori_cost
                 selected_taxi = taxi_it
                 selected_taxi_path = new_path
+        else:
+            for i in range(1, bnd):
+                for j in range(i + 1, bnd):
+                    flag = insertion_feasibility_check(taxi_it, req, i, j)
+                    if flag:
+                        possible_insertion.append((i, j))
 
-    print('path node id!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    for path_node_item in selected_taxi_path.path_node_list:
-        print(path_node_item.node_id)
+            for insertion in possible_insertion:
+                Slist = copy.deepcopy(taxi_list[taxi_it].schedule_list)
+                start_point = {'request_id': req.request_id, 'schedule_type': 'DEPART', 'lon': req.start_lon,
+                           'lat': req.start_lat, 'arrival_time': None}  # arrival_time在之后routing的时候确定
+                end_point = {'request_id': req.request_id, 'schedule_type': 'ARRIVAL',
+                         'lon': req.end_lon, 'lat': req.end_lat, 'arrival_time': None}
+                Slist.insert(insertion[0], start_point)
+                Slist.insert(insertion[1], end_point)
+                if mode:
+                    new_path, cost = basic_routing(Slist, taxi_it)  # 写完basic routing就ok了
+                else:
+                    new_path, cost = possibility_routing(Slist, taxi_it)
+                if cost - ori_cost < minimum_cost:
+                    res = Slist
+                    minimum_cost = cost - ori_cost
+                    selected_taxi = taxi_it
+                    selected_taxi_path = new_path
+
+
+    if not selected_taxi_path:
+        taxi_list[selected_taxi].path.path_node_list = []
+        return selected_taxi, None
+    # print('path node id!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    # for path_node_item in selected_taxi_path.path_node_list:
+    #     print(path_node_item.node_id)
 
     taxi_list[selected_taxi].schedule_list = copy.deepcopy(res)
     taxi_list[selected_taxi].seat_left -= 1
     req_to_taxi_map[req_id] = selected_taxi
     print('req_to_taxi_map[req_id] = {}'.format(req_to_taxi_map[req_id]))
     divide_group2()
-    if not selected_taxi_path:
-        taxi_list[selected_taxi].path.path_node_list = []
-        return selected_taxi, None
-    else:
-        taxi_list[selected_taxi].path.path_node_list = selected_taxi_path.path_node_list
-        return selected_taxi, selected_taxi_path.path_node_list
+
+    taxi_list[selected_taxi].path.path_node_list = selected_taxi_path.path_node_list
+    return selected_taxi, selected_taxi_path.path_node_list
 
 
 # ==================================全局变量==============================================
@@ -644,7 +653,7 @@ def main(socket1):
                 start_node_id = ox.get_nearest_node(
                     osm_map, (req_item[4], req_item[3]))
                 socket_request = {'type':'request_pos', 'content':{'value':wgs84_to_bd09(req_item[3], req_item[4]), 'itemStyle': {'color':'white'}},
-                                    'content1':{'value':wgs84_to_bd09(req_item[5], req_item[6]), 'itemStyle': {'color':'white'}}}
+                                    'content1':{'value':wgs84_to_bd09(req_item[5], req_item[6]), 'itemStyle': {'color':'white'}}, 'time':time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(now_time))}
                 send_info(socket_request)
                 end_node_id = ox.get_nearest_node(
                     osm_map, (req_item[6], req_item[5]))
@@ -654,7 +663,6 @@ def main(socket1):
                 req_item = Request(req_cnt, req_item[3], req_item[4], req_item[5],
                                    req_item[6], start_node_id, end_node_id, req_item[1], req_item[2]) 
                 divide_group1()
-                print('现在时间：{}'.format(now_time))
                 print('订单消息：')  
                 print('起点经纬度：{} ,终点经纬度：{} '.format(wgs84_to_bd09(req_item.start_lon,req_item.start_lat),wgs84_to_bd09(req_item.end_lon,req_item.end_lat)))
                 divide_group2()
@@ -663,6 +671,7 @@ def main(socket1):
                     req_item.delivery_deadline - time_on_tour)
                 request_list[req_cnt] = req_item
                 req_cnt += 1
+                print('release time is {}'.format(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(req_item.release_time))))
                 # 用当前moment来更新所有taxi, mobility_cluster和general_cluster
                 update(req_item)
                 candidate_taxi_list, secondary_candidate_list = taxi_req_matching(
@@ -698,6 +707,8 @@ def main(socket1):
                 ,'content':{'coords':[wgs84_to_bd09(node.lon,node.lat) for node in show_taxi.path.path_node_list]}}
                 send_info(socket_chosen_taxi)
 
+
+                # socket_order_details = 
                 
 
                 socket_all_request_start = {'type':'all_request_start','content':
@@ -709,7 +720,9 @@ def main(socket1):
                 socket_all_non_empty_taxi = {'type':'all_non_empty_taxi','content':
                                             [{'value':wgs84_to_bd09(item.cur_lon,item.cur_lat),'itemStyle':{'color':item.color},'name':"的士_{}".format(item.taxi_id)} for item in non_empty_taxi_set]}
                 send_info(socket_all_non_empty_taxi)
-
+                print('的士的位置：')
+                for item in non_empty_taxi_set:
+                    print('taxi_{}:{}    {}'.format(item.taxi_id,item.cur_lon,item.cur_lat))
 
 
                 socket_taxi_path = {'type':'taxi_path',

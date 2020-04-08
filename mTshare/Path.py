@@ -21,6 +21,7 @@ class Path:
 
 
     def get_position(self, moment):
+        print('&&&&&&&&&&&&&&&&&gettin position\n')
         index = self.is_over(moment)
         if index == -1:
             length = len(self.path_node_list)
@@ -34,9 +35,10 @@ class Path:
         drive_distance = delta_time * TYPICAL_SPEED
         for idx, node in enumerate(self.path_node_list):
             length = get_shortest_path_length(self.path_node_list[0].node_id, node.node_id)
-            if drive_distance > length:
+            if drive_distance < length:
                 '''
                 可能可以换成distance_matrix
                 '''
                 return self.path_node_list[idx-1]
+        print('&&&&&&&&&&&&over了傻逼'.format(delta_time))
         return -1

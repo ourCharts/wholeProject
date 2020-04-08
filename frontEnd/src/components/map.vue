@@ -6,18 +6,18 @@
         <el-aside v-loading="loading" element-loading-text="载入路径中.." element-loading-spinner="el-icon-loading"
             element-loading-background="rgba(65, 81, 95, 0.6)">
             <el-tabs v-model="activeName" stretch>
-                <el-tab-pane label="操作栏" name="first">
-                    <i class="el-icon-edit-outline" id="diy"></i>
+                <el-tab-pane label="当前订单信息" name="first">
+                    <i class="el-icon-alarm-clock" id="diy"></i>
                     <!-- <el-row type="flex" justify="center">
                         <el-button type="warning" v-on:click="backCenter">回到原中心位置</el-button>
                     </el-row> -->
-                    <!-- <el-row type="flex">
-                        <el-input-number v-model="input4" :step="5" :min="5" controls-position="right">
-                        </el-input-number>
-                        <el-button type="warning" v-on:click="addTest">添加order</el-button>
-                    </el-row>
                     <el-row type="flex">
-                        <el-input v-model="input3" placeholder="Order_id"></el-input>
+                      <el-input v-model="now_time" readonly></el-input>
+                        <!-- <el-input-number v-model="now_time" :step="5" :min="5" controls-position="right">
+                        </el-input-number> -->
+                        <!-- <el-button type="warning" v-on:click="addTest">添加order</el-button> -->
+                    </el-row>
+                    <!-- <el-row type="flex">
                         <el-button type="warning" v-on:click="addOne">添加订单路径</el-button>
                     </el-row> -->
                 </el-tab-pane>
@@ -55,15 +55,19 @@
 
 <script>
 // import $ from 'jquery'
+/* eslint-disable */
 import echarts from 'echarts'
 import 'echarts/extension/bmap/bmap.js'
 export default {
   name: 'Map',
   data () {
     return {
+      now_time: '加载中，请稍后',
+      activeName: 'first',
       chart: echarts.ECharts,
       loading: false,
       all_taxi: [],
+      circle: null,
       taxi_path: [],
       all_request_start: [],
       all_request_end: [],
@@ -72,7 +76,8 @@ export default {
       all_non_empty_taxi: [],
       // chosen_taxi: [{'value':[[104.06, 30.65918619836269],[104.07, 30.65918619836269]], 'itemStyle': {'color':'white'}}],
       chosen_taxi: [],
-      dataset: []
+      dataset: [],
+      mapContorller: null
     }
   },
   computed: {
@@ -119,12 +124,6 @@ export default {
             symbolSize: 30,
             symbol: 'path://M874.666667 469.333333c17.28 42.666667 42.666667 85.333333 42.666666 128v213.333334c0 27.946667-23.893333 42.666667-64 42.666666s-64-17.28-64-42.666666v-42.666667H234.666667v42.666667c0 25.386667-23.893333 42.666667-64 42.666666s-64-14.72-64-42.666666V597.333333c0-42.666667 25.386667-85.333333 42.666666-128s-64-37.333333-64-64 5.333333-42.666667 42.666667-42.666666h64s30.293333-87.04 42.666667-128 64-64 106.666666-64h341.333334c42.666667 0 94.293333 23.04 106.666666 64s42.666667 128 42.666667 128h64c37.333333 0 42.666667 16 42.666667 42.666666s-81.28 21.333333-64 64z m-469.333334 149.333334a21.333333 21.333333 0 0 0 21.333334 21.333333h170.666666a21.333333 21.333333 0 0 0 21.333334-21.333333v-21.333334a21.333333 21.333333 0 0 0-21.333334-21.333333h-170.666666a21.333333 21.333333 0 0 0-21.333334 21.333333v21.333334zM192 618.666667a64 64 0 1 0 64-64 64 64 0 0 0-64 64z m597.333333-256c0-21.333333-42.666667-106.666667-42.666666-106.666667H277.333333s-42.666667 85.333333-42.666666 106.666667v21.333333a42.666667 42.666667 0 0 0 42.666666 42.666667h469.333334a42.666667 42.666667 0 0 0 42.666666-42.666667v-21.333333z m-21.333333 192a64 64 0 1 0 64 64 64 64 0 0 0-64-64z',
             data: this.all_non_empty_taxi,
-            // label: {
-            //   show: true,
-            //   position: 'top',
-            //   formatter: '的士：{c}',
-            //   backgroundColor: 'white'
-            // }
           },
           {
             type: 'scatter',
@@ -164,39 +163,44 @@ export default {
         else if (data['type'] === 'chosen_taxi') { // 显示被选中的taxi的路径点
           _this.temp_node = data['content']['coords']
           _this.all_taxi = []
-          
           _this.chart.setOption(_this.options)
         }
         else if (data['type'] === 'request_pos') { // 显示被选中的taxi的路径点
           _this.all_request_start.push(data['content'])
+          _this.now_time = data['time']
           _this.all_request_end.push(data['content1'])
           alert('更新订单')
           _this.chart.setOption(_this.options)
         }
+        else if (data['type'] === 'circle') { // 显示被选中的taxi的路径点
+          var tmp = data['content']
+          var point = new BMap.Point(tmp.lon, tmp.lat)
+          _this.circle = new BMap.Circle(point,tmp.range,{strokeColor:'white', strokeWeight:1, strokeOpacity:0})
+          _this.mapContorller.addOverlay(_this.circle)
+        }
         else if (data['type'] === 'taxi_path') { // 所有taxi的路径
           _this.taxi_path = data['content']
-          console.log('路径:' + _this.all_request_start[0].color)
+          _this.mapContorller.removeOverlay(_this.circle)
           _this.chart.setOption(_this.options)
         }
         else if (data['type'] === 'all_request_start') {
           _this.all_request_start = data['content']
-          console.log('起点：' + _this.all_request_start[0].color)
           _this.chart.setOption(_this.options)
         }
         else if (data['type'] === 'all_request_end') {
           _this.all_request_end = data['content']
-          console.log('终点：' + _this.all_request_start[0].color)
           _this.chart.setOption(_this.options)
         }
         else if (data['type'] === 'all_non_empty_taxi') {
           _this.all_non_empty_taxi = data['content']
-          console.log('的士：' + _this.all_request_start['content']['color'])
           _this.chart.setOption(_this.options)
         }
         else if (data['type'] === 'taxi_path_start') {
           _this.taxi_path_start = data['content']
-          alert('asdasdsa')
           _this.chart.setOption(_this.options)
+        }
+        else if (data['type'] === 'debug') {
+          alert(data['content'])
         }
       }
     },
@@ -210,6 +214,8 @@ export default {
       bmap.setMapStyleV2({
         styleId: '59a80bc22d507e09700207fce541bc16'
       })
+      this.mapContorller = bmap
+
       this.after_connect()
     }
   },

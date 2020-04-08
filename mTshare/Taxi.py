@@ -1,6 +1,7 @@
 from mTshare.MobilityVector import MobilityVector
 from mTshare.Tool.Tool import *
 from mTshare.Path import Path
+import time
 print('载入Taxi中')
 
 
@@ -28,7 +29,7 @@ class Taxi:
     def show_schedule(self):
         print('showing schedule: This is taxi {}'.format(self.taxi_id))
         for idx,node in enumerate(self.schedule_list):
-            print('{}. {},经纬度：{},{}, 到达时间：{}'.format(idx,node['schedule_type'],node['lon'],node['lat'],node['arrival_time']))
+            print('{}. {},经纬度：{},{}, 到达时间：{}'.format(idx,node['schedule_type'],node['lon'],node['lat'],time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(node['arrival_time']))))
 
     def show_pos(self):
         print('Taxi {}的位置是：{}   {}'.format(self.taxi_id,self.cur_lon,self.cur_lat))
@@ -54,6 +55,7 @@ class Taxi:
         if len(self.schedule_list) == 1 and self.schedule_list[0]['request_id'] == -1:
             return
         print('taxi {} 正在更新状态：'.format(self.taxi_id))
+        # self.show_path_list()
         del_list =[]
         for idx, schedule_node in enumerate(self.schedule_list):
             if schedule_node['arrival_time'] < moment:
@@ -92,7 +94,7 @@ class Taxi:
                                    'lon': self.cur_lon, 'lat': self.cur_lat, 'arrival_time': self.__last_update_time}]
             self.mobility_vector = None
             non_empty_taxi_set.remove(self)
-            print('update over')
+            print('taxi_{}update over(path over)'.format(self.taxi_id))
             return
 
         # mobility-vector的更新
@@ -108,4 +110,4 @@ class Taxi:
         average_lon /= sum_item
         self.mobility_vector = MobilityVector(
             self.cur_lon, self.cur_lat, average_lon, average_lat, "TAXI", self.taxi_id)
-        print('update over')
+        print('taxi_{} update over'.format(self.taxi_id))
