@@ -1,25 +1,27 @@
-import pymysql
-from mTshare.Request import Request
-import math
-import time
+import copy
 import datetime
-import pandas as pd
-from mTshare.Node import Node
-from mTshare.Taxi import Taxi
-from mTshare.MobilityVector import MobilityVector
+import glob
+import json
+import math
+import os
+import pickle
+import random
+import time
+
 import numpy as np
+import osmnx as ox
+import pandas as pd
+import pymysql
+from tqdm import tqdm
+
+from mTshare.MobilityVector import MobilityVector
 from mTshare.Node import Node
 from mTshare.Partition import Partition
-import osmnx as ox
-import pickle
-from mTshare.Tool.Tool import *
 from mTshare.Path import Path
-import os
-import glob
-import random
-import copy
-from tqdm import tqdm
-import json
+from mTshare.Request import Request
+from mTshare.Taxi import Taxi
+from mTshare.Tool.Tool import *
+
 # import sys
 
 print('载入main.py中')
