@@ -23,11 +23,6 @@ import json
 # import sys
 
 print('载入main.py中')
-def get_an_order(idx):
-    sql = 'SELECT * FROM myorder ORDER BY start_time LIMIT %d, 1' % idx
-    cursor.execute(sql)
-    ret = cursor.fetchall()
-    return ret
 
 
 def system_init():
@@ -72,8 +67,7 @@ def system_init():
 
 
 def request_fetcher(time_slot_start, time_slot_end):
-    sql = 'SELECT * FROM myorder WHERE start_time >= {} AND start_time <= {}'.format(
-        time_slot_start, time_slot_end)
+    sql = "SELECT * FROM myorder WHERE  start_time between {} and {} AND start_longitude between 104.0299 and 104.1013 AND end_longitude between 104.0299 and 104.1013 AND start_latitude between 30.6364 and 30.6868 AND end_latitude between 30.6364 and 30.6868 ".format(time_slot_start, time_slot_end)
     cursor.execute(sql)
     ret = cursor.fetchall()
     return ret
