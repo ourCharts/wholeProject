@@ -6,13 +6,22 @@ from mTshare.main import *
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
-        print('连接上客户端！')
         self.accept()
+        print('连接上客户端!')
         main(self)
 
     def disconnect(self, close_code):
+        print("bye bye", close_code)
         pass
 
+    def receive(self, text_data):
+        # print(text_data)
+        # 对前端的心跳包作出回应
+        if text_data=="ping":
+            self.send(text_data=json.dumps({
+                  'message': "pong"
+            }))
+            # print("pong")
 
     # def receive(self, text_data):
     #     text_data_json = json.loads(text_data)

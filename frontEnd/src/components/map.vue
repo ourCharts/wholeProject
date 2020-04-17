@@ -154,7 +154,39 @@ export default {
     after_connect: function () {
       var chatSocket = new WebSocket('ws://localhost:8000/ws/track/')
       var _this = this
-      chatSocket.onmessage = function (e) {
+
+      // 心跳检测，防止websocket自动断开连接
+        let heartCheck = {
+            timeout: 60000, // 60s发送一次心跳
+            timeoutObj: null,
+            serverTimeoutObj: null,
+            reset: function(){
+                // console.log("reset setTimeOut!");
+                clearTimeout(this.serverTimeoutObj);
+                clearTimeout(this.timeoutObj);
+                return this;
+            },
+            start: function(){
+                this.timeoutObj = setTimeout(()=>{
+                    chatSocket.send('ping');
+                    // console.log("ping!");
+                    this.serverTimeoutObj = setTimeout(_=>{
+                        chatSocket.close();
+                        // console.log("ws连接已断开！");
+                    }, this.timeout*2); // 如果两倍心跳间隔内还未回复说明ws连接已断开
+                }, this.timeout);
+            }
+        }
+      chatSocket.onopen = ()=>{
+          heartCheck.reset().start();
+        //   console.log("websocket连接成功！");
+      }
+      chatSocket.onerror = ()=>{
+          heartCheck.reset();
+      }
+      chatSocket.onmessage = function (e) {        
+        heartCheck.reset().start(); // 收到服务器任何响应都应重置计时器
+        // console.log("pong");
         var data = JSON.parse(e.data)
         if (data['type'] === 'all_taxi') {
           _this.all_taxi = data['content']
@@ -201,7 +233,7 @@ export default {
         }
         else if (data['type'] === 'debug') {
           alert(data['content'])
-        }
+        }        
       }
     },
     init: function () {

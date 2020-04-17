@@ -25,101 +25,106 @@
 <script>
 export default {
   name: 'pages',
-  data() {
+  data () {
     return {
-      tableData: [{name: 'hello'},{name: 'hello'},{name: 'hello'},{name: 'hello'}], // 表格数据
-      multipleSelectionAll: [], //所有选中的数据包含跨页数据
+      tableData: [
+        { name: 'hello' },
+        { name: 'hello' },
+        { name: 'hello' },
+        { name: 'hello' }
+      ], // 表格数据
+      multipleSelectionAll: [], // 所有选中的数据包含跨页数据
       multipleSelection: [], // 当前页选中的数据
-      idKey: "barcode", // 标识列表数据中每一行的唯一键的名称
+      idKey: 'barcode', // 标识列表数据中每一行的唯一键的名称
       page: {
-        //每页数据量
+        // 每页数据量
         pnum: 10,
-        //数据总数
+        // 数据总数
         pageTotal: 0,
-        //当前页，从1开始
+        // 当前页，从1开始
         currentPage: 1
       }
     }
   },
   methods: {
-    handleCurrentChange() {
-      this.changePageCoreRecordData();
-      if (!this.$isNull(this.page.pageTotal)) this.getGoodsList();
+    handleCurrentChange () {
+      this.changePageCoreRecordData()
+      if (!this.$isNull(this.page.pageTotal)) this.getGoodsList()
     },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
-      //实时记录选中的数据
+    handleSelectionChange (val) {
+      this.multipleSelection = val
+      // 实时记录选中的数据
       setTimeout(() => {
-        this.changePageCoreRecordData();
-      }, 50);
+        this.changePageCoreRecordData()
+      }, 50)
     },
-    setSelectRow() {
+    setSelectRow () {
       if (!this.multipleSelectionAll || this.multipleSelectionAll.length <= 0) {
-        return;
+        return
       }
       // 标识当前行的唯一键的名称
-      let idKey = this.idKey;
-      let selectAllIds = [];
-      let that = this;
+      let idKey = this.idKey
+      let selectAllIds = []
+      //   let that = this
       this.multipleSelectionAll.forEach(row => {
-        selectAllIds.push(row[idKey]);
-      });
-      this.$refs.table.clearSelection();
+        selectAllIds.push(row[idKey])
+      })
+      this.$refs.table.clearSelection()
       for (var i = 0; i < this.tableData.length; i++) {
         if (selectAllIds.indexOf(this.tableData[i][idKey]) >= 0) {
           // 设置选中，记住table组件需要使用ref="table"
-          this.$refs.table.toggleRowSelection(this.tableData[i], true);
+          this.$refs.table.toggleRowSelection(this.tableData[i], true)
         }
       }
     },
     // 记忆选择核心方法
-    changePageCoreRecordData() {
+    changePageCoreRecordData () {
       // 标识当前行的唯一键的名称
-      let idKey = this.idKey;
-      let that = this;
+      let idKey = this.idKey
+      let that = this
       // 如果总记忆中还没有选择的数据，那么就直接取当前页选中的数据，不需要后面一系列计算
       if (this.multipleSelectionAll.length <= 0) {
-        this.multipleSelectionAll = this.multipleSelection;
-        return;
+        this.multipleSelectionAll = this.multipleSelection
+        return
       }
       // 总选择里面的key集合
-      let selectAllIds = [];
+      let selectAllIds = []
       this.multipleSelectionAll.forEach(row => {
-        selectAllIds.push(row[idKey]);
-      });
-      let selectIds = [];
+        selectAllIds.push(row[idKey])
+      })
+      let selectIds = []
       // 获取当前页选中的id
       this.multipleSelection.forEach(row => {
-        selectIds.push(row[idKey]);
+        selectIds.push(row[idKey])
         // 如果总选择里面不包含当前页选中的数据，那么就加入到总选择集合里
         if (selectAllIds.indexOf(row[idKey]) < 0) {
-          that.multipleSelectionAll.push(row);
+          that.multipleSelectionAll.push(row)
         }
-      });
-      let noSelectIds = [];
+      })
+      let noSelectIds = []
       // 得到当前页没有选中的id
       this.tableData.forEach(row => {
         if (selectIds.indexOf(row[idKey]) < 0) {
-          noSelectIds.push(row[idKey]);
+          noSelectIds.push(row[idKey])
         }
-      });
+      })
       noSelectIds.forEach(id => {
         if (selectAllIds.indexOf(id) >= 0) {
           for (let i = 0; i < that.multipleSelectionAll.length; i++) {
-            if (that.multipleSelectionAll[i][idKey] == id) {
+            if (that.multipleSelectionAll[i][idKey] === id) {
               // 如果总选择中有未被选中的，那么就删除这条
-              that.multipleSelectionAll.splice(i, 1);
-              break;
+              that.multipleSelectionAll.splice(i, 1)
+              break
             }
           }
         }
-      });
+      })
     },
-    //请求接口部分
-    getGoodsList() {
-      let data = {};
-      data["page"] = this.page.currentPage
-      data["pnum"] = this.page.pnum
+    // 请求接口部分
+    getGoodsList () {
+      let data = {}
+      data['page'] = this.page.currentPage
+      data['pnum'] = this.page.pnum
       var _this = this
       // 获得订单order
       $.ajax({
@@ -128,16 +133,17 @@ export default {
         async: true,
         success: function (response) {
           var obj = response
-          for (let i = 0; i < 200; i++) { // 记得改200！！！
-            let tmp = {name: obj[i].order_id}
+          for (let i = 0; i < 200; i++) {
+            // 记得改200！！！
+            let tmp = { name: obj[i].order_id }
             _this.tableData.push(tmp)
           }
         }
       })
     }
   },
-  created() {
-    this.getGoodsList();
+  created () {
+    this.getGoodsList()
   }
-};
+}
 </script>

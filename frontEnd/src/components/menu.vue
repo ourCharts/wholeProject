@@ -1,5 +1,5 @@
 <template>
-
+    <div></div>
 
 </template>
 
@@ -23,7 +23,7 @@ export default {
     },
     debugg: function () {
       console.log('debugging')
-    },
+    }
   },
   mounted () {
     this.init()

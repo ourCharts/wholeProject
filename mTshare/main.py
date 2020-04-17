@@ -578,7 +578,7 @@ def taxi_scheduling(candidate_taxi_list, req, req_id, mode=1):
 
 
 conn = pymysql.connect(host='127.0.0.1', user='root',
-                       passwd='', db='tenman', port=3308, charset='utf8')
+                       passwd='', db='tenman', port=3306, charset='utf8')
 cursor = conn.cursor(pymysql.cursors.SSCursor)
 
 mobility_cluster = []
