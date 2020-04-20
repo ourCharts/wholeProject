@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import {Container, Main, Aside, Tabs, TabPane, Row, Input, Col, Tag, Pagination, Button, TableColumn, Table, Header} from 'element-ui'
+import {Container, Main, Aside, Tabs, TabPane, Row, Input, Col, Tag, Pagination, Button, TableColumn, Table, Header, Loading, Message} from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
 Vue.config.productionTip = false
@@ -21,6 +21,9 @@ Vue.use(Button)
 Vue.use(TableColumn)
 Vue.use(Table)
 Vue.use(Header)
+Vue.use(Loading.directive)
+
+Vue.prototype.$message = Message
 
 /* eslint-disable no-new */
 new Vue({

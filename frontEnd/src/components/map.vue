@@ -1,9 +1,9 @@
 <template>
     <el-container>
-        <el-main>
+        <el-main  v-loading="loading">
             <div ref="map" id="map-container"></div>
         </el-main>
-        <el-aside v-loading="loading" element-loading-text="载入路径中.." element-loading-spinner="el-icon-loading"
+        <el-aside element-loading-text="载入路径中.." element-loading-spinner="el-icon-loading"
             element-loading-background="rgba(65, 81, 95, 0.6)">
             <el-tabs v-model="activeName" stretch>
                 <el-tab-pane label="当前订单信息" name="first">
@@ -32,20 +32,20 @@
                       <el-input v-model="dataset.length" placeholder="Order_id" readonly></el-input>
                     </el-row>
                     <i class="el-icon-document" id="diy" style="display: inline-block"></i><p class="situationBar1">详细路径ID</p>
-                    <el-row>
+                    <!-- <el-row>
                         <el-tag v-for="x in pageArr" :key="x.num" closable type="warning" @close="handleClose(x)"
                             :disable-transitions="true" size="small"> {{x.num}}.{{x.order_id}} </el-tag>
-                    </el-row>
-                    <el-row type="flex" justify="center">
+                    </el-row> -->
+                    <!-- <el-row type="flex" justify="center"> -->
                         <!-- <el-button type="warning" v-on:click="nextPage(-1)">上一页</el-button> -->
-                        <el-pagination v-show="totalPage" id="fenye" layout="prev, pager, next" small
+                        <!-- <el-pagination v-show="totalPage" id="fenye" layout="prev, pager, next" small
                             :page-count="totalPage" :pager-count="5" @prev-click="nextPage(-1)" @current-change="goPage"
                             @next-click="nextPage(1)">
                         </el-pagination>
-                    </el-row>
-                    <el-row type="flex" justify="center">
+                    </el-row> -->
+                    <!-- <el-row type="flex" justify="center">
                         <el-button type="warning" v-on:click="clearPage()" v-show="totalPage">清空</el-button>
-                    </el-row>
+                    </el-row> -->
                 </el-tab-pane>
             </el-tabs>
 
@@ -65,7 +65,7 @@ export default {
       now_time: '加载中，请稍后',
       activeName: 'first',
       chart: echarts.ECharts,
-      loading: false,
+      loading: true,
       all_taxi: [],
       circle: null,
       taxi_path: [],
@@ -187,6 +187,7 @@ export default {
       chatSocket.onmessage = function (e) {        
         heartCheck.reset().start(); // 收到服务器任何响应都应重置计时器
         // console.log("pong");
+        _this.loading = false;
         var data = JSON.parse(e.data)
         if (data['type'] === 'all_taxi') {
           _this.all_taxi = data['content']
@@ -201,7 +202,8 @@ export default {
           _this.all_request_start.push(data['content'])
           _this.now_time = data['time']
           _this.all_request_end.push(data['content1'])
-          alert('更新订单')
+          //alert('更新订单')
+          _this.$message('更新订单')
           _this.chart.setOption(_this.options)
         }
         else if (data['type'] === 'circle') { // 显示被选中的taxi的路径点
@@ -232,7 +234,8 @@ export default {
           _this.chart.setOption(_this.options)
         }
         else if (data['type'] === 'debug') {
-          alert(data['content'])
+          //alert(data['content'])
+          _this.$message(data['content']);
         }        
       }
     },

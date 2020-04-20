@@ -16,18 +16,18 @@ a = 6378245.0  # 长半轴
 ee = 0.00669342162296594323  # 偏心率平方
 ran = 0
 def random_color():
-    global ran
-    rr = gg = bb = 60
-    if ran == 0:
-        rr = 195
-    elif ran == 1:
-        gg = 195
-    else:
-        bb = 195
-    ran = (ran + 1)%3
-    r = str(hex(round(rr + 60 * random.random())))[2:4]
-    g = str(hex(round(gg + 60 * random.random())))[2:4]
-    b = str(hex(round(bb + 60 * random.random())))[2:4]
+    tmp = round(255 * random.random())
+    if tmp < 140:
+        tmp += 100
+    r = str(hex(tmp))[2:4]
+    tmp = round(255 * random.random())
+    if tmp < 140:
+        tmp += 90
+    g = str(hex(tmp))[2:4]
+    tmp = round(255 * random.random())
+    if tmp < 140:
+        tmp += 90
+    b = str(hex(tmp))[2:4]
     return '#' + r+g+b
 
 

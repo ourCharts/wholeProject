@@ -3,15 +3,17 @@ import json
 import time
 from django.http import request
 from mTshare.main import *
+import os
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
         print('连接上客户端!')
+        # os.system(main(self))
         main(self)
 
     def disconnect(self, close_code):
-        print("bye bye", close_code)
+        print("bye bye!", close_code)
         pass
 
     def receive(self, text_data):
