@@ -3,14 +3,26 @@ import json
 import time
 from django.http import request
 from mTshare.main import *
-import os
+import threading
+
 
 class ChatConsumer(WebsocketConsumer):
+    __thread = False
+    # def __init__(self, scope):
+    #     self.scope = scope
+
     def connect(self):
         self.accept()
         print('连接上客户端!')
         # os.system(main(self))
-        main(self)
+        if ChatConsumer.__thread!=False:
+            defSwitch()
+            while(isThreadAlive==False): # 阻塞直到前一刷新前的程序已经退出才开始下一次进程
+                time.sleep(1)
+        ChatConsumer.__thread = True
+        th = threading.Thread(target=main, args=[self])
+        print('{} start'.format(threading.currentThread().getName()))
+        th.start()
 
     def disconnect(self, close_code):
         print("bye bye!", close_code)

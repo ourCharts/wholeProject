@@ -20,7 +20,8 @@ import random
 import copy
 from tqdm import tqdm
 import json
-# import sys
+import sys
+import threading
 
 print('载入main.py中')
 
@@ -605,21 +606,29 @@ for idx in range(1, len(files)):
 node_distance_matrix = []
 now_time = 0
 socket = None
+isThreadAlive = True # 判断当前进程是否已经停止
 # ==================================全局变量==============================================
 def send_info(msg):
     socket.send(text_data=json.dumps(msg))
 
+def defSwitch():  # 切换进程状态的标志
+    global isThreadAlive
+    print("original thread has exited  QAQ")
+    isThreadAlive = not isThreadAlive
     
 def main(socket1):
     global socket
     global now_time
+    global isThreadAlive # 判断当前进程是否已经停止
+    print("initial thread state __________________",isThreadAlive)
+    # isThreadAlive = True
     socket = socket1
     # sys.stdout = open('D:\\Pycharm-project\\wholeProject\\mTshare\\log\\log.txt', 'w+')
     req_cnt = 0
     system_init()
     order_index = 0
     last_time = SYSTEM_INIT_TIME - TIME_OFFSET  # 初始化为开始时间
-    while True:
+    while isThreadAlive==True:
         if req_cnt > REQUESTS_TO_PROCESS:
             break
         now_time = time.time() - TIME_OFFSET
@@ -681,7 +690,11 @@ def main(socket1):
                 send_info(socket_taxi_list)
                 divide_group2()
                 # 如果没有候选taxi会返回none
-                if candidate_taxi_list == None and secondary_candidate_list ==None:
+                print(isThreadAlive,'   current thread: {}'.format(threading.currentThread().getName()),"      \n",)
+                if isThreadAlive==False:
+                    sys.exit(0)
+                    print("886886886886886886886886886886886886886")
+                elif candidate_taxi_list == None and secondary_candidate_list ==None:
                     print('这个订单没有taxi')
                     print('该订单结束//////////////////////////////////////')
                     input('天啊！居然出现了没有人回应的订单！！！点击回车继续')
@@ -733,6 +746,9 @@ def main(socket1):
 
                 print('该订单结束//////////////////////////////////////')
                 divide_group2()
+    defSwitch()
+    # print("886       886             886            886\n\n")
+    # sys.exit(0)
 
 print('载入完毕')
 
