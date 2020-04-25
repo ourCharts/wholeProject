@@ -183,7 +183,8 @@ def taxi_req_matching(req: Request):
                                                            ][id_hash_map[nearest_end_id]] / TYPICAL_SPEED - req.release_time
     # 得到搜索范围的半径
     search_range = delta_t * TYPICAL_SPEED
-    send_info({'type':'circle','content':{'lon':u_lon, 'lat':u_lat, 'range': search_range}})
+    after_tranform = wgs84_to_bd09(u_lon,u_lat)
+    send_info({'type':'circle','content':{'lon':after_tranform[0], 'lat':after_tranform[1], 'range': search_range}})
     print('search range is {}'.format(search_range))
     partition_intersected = set()
     for idx,node_it in enumerate(node_list):
@@ -203,7 +204,7 @@ def taxi_req_matching(req: Request):
                 taxi_in_intersected.append(taxi_list[taxi_it].taxi_id)
 
     if len(taxi_in_intersected) == 0:  # 在规定时间内没有taxi能来，所以放弃订单
-        return None,None                    # 放弃订单了
+        return None,None,None                    # 放弃订单了
     vec = [req.start_lon, req.start_lat, req.end_lon, req.end_lat]
     max_cos = -2
     max_idx = -1
@@ -235,13 +236,22 @@ def taxi_req_matching(req: Request):
     print(C_li)
     
     best_candidate_taxi = set(taxi_in_intersected).intersection(set(C_li))  # 取交集, 计算出所有候选taxi的list
-    secondary_candidate_taxi = set(taxi_in_intersected).difference(set(C_li))
+    secondary_candidate_non_empty_taxi = set(taxi_in_intersected).difference(best_candidate_taxi)
+    secondary_candidate_empty_taxi =list()
+
+    for taxi_id in secondary_candidate_non_empty_taxi:
+        if taxi_list[taxi_id].is_empty():
+            secondary_candidate_empty_taxi.append(taxi_id)
+
+    secondary_candidate_non_empty_taxi = secondary_candidate_non_empty_taxi.difference(set(secondary_candidate_empty_taxi))
+
 
     best_candidate_taxi = list(best_candidate_taxi)
-    secondary_candidate_taxi = list(secondary_candidate_taxi)
+    secondary_candidate_non_empty_taxi = list(secondary_candidate_non_empty_taxi)
     divide_group2()
-    return best_candidate_taxi, secondary_candidate_taxi
-    # best_candidate_taxi是mv也符合的车，secondary_candidate_taxi是能到达但mv不符合的车
+    return best_candidate_taxi, secondary_candidate_empty_taxi, secondary_candidate_non_empty_taxi
+    # best_candidate_taxi是mv也符合的车，secondary_candidate_empty_taxi是能到达但mv不符合的空车，
+    # secondary_candidate_non_empty_taxi是能到达但mv不符合的非空车
 
 
 def insertion_feasibility_check(taxi_id, req: Request, pos_i, pos_j):  # 在前面插入
@@ -552,11 +562,8 @@ def taxi_scheduling(candidate_taxi_list, req, req_id, mode=1):
 
 
     if not selected_taxi_path:
-        taxi_list[selected_taxi].path.path_node_list = []
+        # taxi_list[selected_taxi].path.path_node_list = []   2020/4/21不知道这里用来干嘛的
         return selected_taxi, None
-    # print('path node id!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    # for path_node_item in selected_taxi_path.path_node_list:
-    #     print(path_node_item.node_id)
 
     taxi_list[selected_taxi].schedule_list = copy.deepcopy(res)
     taxi_list[selected_taxi].seat_left -= 1
@@ -567,6 +574,40 @@ def taxi_scheduling(candidate_taxi_list, req, req_id, mode=1):
     taxi_list[selected_taxi].path.path_node_list = selected_taxi_path.path_node_list
     return selected_taxi, selected_taxi_path.path_node_list
 
+def empty_taxi_scheduling(candidate_taxi_list, req, req_id, mode=1):
+    divide_group1()
+    print('In empty_taxi_scheduling')
+    print('正在处理的订单是： {}'.format(req_id))
+    selected_taxi = -1
+    min_distance = 1000000
+    order_start_point = ox.get_nearest_node(osm_map, (req.start_lat, req.start_lon))
+    for taxi_it in tqdm(candidate_taxi_list,'scheduling'):
+        taxi_pos_node = ox.get_nearest_node(osm_map, (taxi_list[taxi_it].cur_lat, taxi_list[taxi_it].cur_lon))
+        distance_taxi2order = node_distance_matrix[id_hash_map[order_start_point]][id_hash_map[taxi_pos_node]]
+        if min_distance >= distance_taxi2order:
+            min_distance = distance_taxi2order
+            selected_taxi = taxi_it
+
+    Slist = copy.deepcopy(taxi_list[selected_taxi].schedule_list)
+    start_point = {'request_id': req.request_id, 'schedule_type': 'DEPART', 'lon': req.start_lon,
+                   'lat': req.start_lat, 'arrival_time': None}  # arrival_time在之后routing的时候确定
+    end_point = {'request_id': req.request_id, 'schedule_type': 'ARRIVAL',
+                 'lon': req.end_lon, 'lat': req.end_lat, 'arrival_time': None}
+    Slist.insert(1, start_point)
+    Slist.insert(2, end_point)
+    if mode:
+        new_path, cost = basic_routing(Slist, taxi_it)  # 写完basic routing就ok了
+    else:
+        new_path, cost = possibility_routing(Slist, taxi_it)
+    selected_taxi_path = new_path
+    res = Slist
+    taxi_list[selected_taxi].schedule_list = copy.deepcopy(res)
+    taxi_list[selected_taxi].seat_left -= 1
+    req_to_taxi_map[req_id] = selected_taxi
+    print('req_to_taxi_map[req_id] = {}'.format(req_to_taxi_map[req_id]))
+    divide_group2()
+    taxi_list[selected_taxi].path.path_node_list = selected_taxi_path.path_node_list
+    return selected_taxi, selected_taxi_path.path_node_list
 
 # ==================================全局变量==============================================
 
@@ -609,12 +650,11 @@ socket = None
 def send_info(msg):
     socket.send(text_data=json.dumps(msg))
 
-    
+
 def main(socket1):
     global socket
     global now_time
     socket = socket1
-    # sys.stdout = open('D:\\Pycharm-project\\wholeProject\\mTshare\\log\\log.txt', 'w+')
     req_cnt = 0
     system_init()
     order_index = 0
@@ -655,12 +695,12 @@ def main(socket1):
                                                     ][id_hash_map[end_node_id]]
 
                 req_item = Request(req_cnt, req_item[3], req_item[4], req_item[5],
-                                   req_item[6], start_node_id, end_node_id, req_item[1], req_item[2]) 
+                                   req_item[6], start_node_id, end_node_id, req_item[1], req_item[2])
                 divide_group1()
-                print('订单消息：')  
+                print('订单消息：')
                 print('起点经纬度：{} ,终点经纬度：{} '.format(wgs84_to_bd09(req_item.start_lon,req_item.start_lat),wgs84_to_bd09(req_item.end_lon,req_item.end_lat)))
                 divide_group2()
-                
+
                 req_item.config_pickup_deadline(
                     req_item.delivery_deadline - time_on_tour)
                 request_list[req_cnt] = req_item
@@ -668,30 +708,33 @@ def main(socket1):
                 print('release time is {}'.format(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(req_item.release_time))))
                 # 用当前moment来更新所有taxi, mobility_cluster和general_cluster
                 update(req_item)
-                candidate_taxi_list, secondary_candidate_list = taxi_req_matching(
+                candidate_taxi_list, candidate_empty_list, candidate_non_empty_list = taxi_req_matching(
                     req_item)
                 divide_group1()
-                print('candidate: ')
+                print('mv符合的非空车: ')
                 print(candidate_taxi_list)
-                print('secondary: ')
-                print(secondary_candidate_list)
+                print('mv 不 符合的空车: ')
+                print(candidate_empty_list)
+                print('mv 不 符合的非空车: ')
+                print(candidate_non_empty_list)
                 # 发送的士的位置
                 socket_taxi_list = [wgs84_to_bd09(i.cur_lon, i.cur_lat) for i in taxi_list]
                 socket_taxi_list = {'type':'all_taxi', 'content':socket_taxi_list}
                 send_info(socket_taxi_list)
                 divide_group2()
                 # 如果没有候选taxi会返回none
-                if candidate_taxi_list == None and secondary_candidate_list ==None:
+                cost = None
+                if candidate_taxi_list == None and candidate_empty_list == None and candidate_non_empty_list == None:
                     print('这个订单没有taxi')
                     print('该订单结束//////////////////////////////////////')
                     input('天啊！居然出现了没有人回应的订单！！！点击回车继续')
                     divide_group2()                    
                 elif len(candidate_taxi_list) != 0:
                     chosen_taxi, cost = taxi_scheduling(candidate_taxi_list, req_item, req_item.request_id, 1)
-                    if cost == None:
-                        chosen_taxi, cost = taxi_scheduling(secondary_candidate_list, req_item, req_item.request_id, 1)
-                else:
-                    chosen_taxi, cost = taxi_scheduling(secondary_candidate_list, req_item, req_item.request_id, 1)
+                if cost == None and len(candidate_empty_list) != 0:
+                    chosen_taxi, cost = empty_taxi_scheduling(candidate_empty_list, req_item, req_item.request_id, 1)
+                if cost == None and len(candidate_non_empty_list) != 0:
+                    chosen_taxi, cost = taxi_scheduling(candidate_non_empty_list, req_item, req_item.request_id, 1)
                 show_taxi = taxi_list[chosen_taxi]
                 req_item.color = show_taxi.color
                 non_empty_taxi_set.add(show_taxi)

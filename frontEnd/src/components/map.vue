@@ -169,7 +169,7 @@ export default {
           _this.all_request_start.push(data['content'])
           _this.now_time = data['time']
           _this.all_request_end.push(data['content1'])
-          alert('更新订单')
+         // alert('更新订单')
           _this.chart.setOption(_this.options)
         }
         else if (data['type'] === 'circle') { // 显示被选中的taxi的路径点
