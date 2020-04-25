@@ -1,2 +1,4 @@
 /venv/
 *.whl
+/mTshare/__pycache__/
+/.vscode/
