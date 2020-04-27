@@ -2,3 +2,4 @@
 *.whl
 /mTshare/__pycache__/
 /.vscode/
+taxi/__pycache__/
