@@ -28,8 +28,8 @@ class Taxi:
 
     def show_schedule(self):
         print('showing schedule: This is taxi {}'.format(self.taxi_id))
-        for idx,node in enumerate(self.schedule_list):
-            print('{}. {},经纬度：{},{}, 到达时间：{}'.format(idx,node['schedule_type'],node['lon'],node['lat'],time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(node['arrival_time']))))
+        for idx, node in enumerate(self.schedule_list):
+            print('{}. {},经纬度：{},{}, 到达时间：{}, 时间戳: {}'.format(idx,node['schedule_type'],node['lon'],node['lat'],time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(node['arrival_time'])), node['arrival_time']))
 
     def show_pos(self):
         print('Taxi {}的位置是：{}   {}'.format(self.taxi_id,self.cur_lon,self.cur_lat))
@@ -52,6 +52,7 @@ class Taxi:
 
     def update_schedule(self, moment):
         
+        print('in update_schedule, this is taxi {}'.format(self.taxi_id))
         if len(self.schedule_list) == 1 and self.schedule_list[0]['request_id'] == -1:
             return
         print('taxi {} 正在更新状态：'.format(self.taxi_id))
@@ -60,14 +61,19 @@ class Taxi:
         for idx, schedule_node in enumerate(self.schedule_list):
             if schedule_node['arrival_time'] < moment:
                 del_list.append(idx)
-        for i in range(len(del_list)-1,-1,-1):
+        for i in range(len(del_list)-1, -1, -1):
             if self.schedule_list[del_list[i]]['schedule_type'] == 'ARRIVAL':
                 self.seat_left += 1
             del self.schedule_list[del_list[i]]
-        print("更新后：")
+        print('这个是del_list {}'.format(del_list))
+        print('更新前的schedule_list')
+        self.show_schedule()
+        print("更新后的schedule_list")
         self.show_schedule()
 
     def update_status(self, moment):
+        if self.schedule_list[0]['schedule_type'] == 'NO_ORDER' and len(self.schedule_list) == 1:
+            return 
         # 状态： cur_lon、cur_lon、__last_update_time
         #		 schedule_list 、partition_id_belongto、mobility_vector
         self.__last_update_time = moment
@@ -106,6 +112,7 @@ class Taxi:
             average_lat += sch_node['lon']
             average_lon += sch_node['lat']
             sum_item += 1
+        print('in taxi\'s update_status, len(self.schedule_list) is {}, self.schedule_list is {}, sum_item is {}'.format(len(self.schedule_list), self.schedule_list, sum_item))
         average_lat /= sum_item
         average_lon /= sum_item
         self.mobility_vector = MobilityVector(
