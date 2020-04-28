@@ -26,11 +26,11 @@ class Path:
         if index == -1:
             length = len(self.path_node_list)
             return self.path_node_list[length-1].lon, self.path_node_list[length-1].lat
-        return index.lon, index.lat
+        return index[0].lon, index[0].lat, index[1]
 
         # -1是因为当前index是比moment大的，所以应返回前面一个才是比moment小的
 
-    def is_over(self, moment):  # 结束返回-1，否则返回node对象
+    def is_over(self, moment):  # 结束返回-1，否则返回node对象和节点序号
         delta_time = moment - self.create_time
         drive_distance = delta_time * TYPICAL_SPEED
         for idx, node in enumerate(self.path_node_list):
@@ -39,6 +39,6 @@ class Path:
                 '''
                 可能可以换成distance_matrix
                 '''
-                return self.path_node_list[idx-1]
+                return self.path_node_list[idx-1], idx
         print('&&&&&&&&&&&&over了傻逼'.format(delta_time))
         return -1

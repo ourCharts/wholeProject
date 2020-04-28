@@ -19,7 +19,7 @@ from mTshare.Node import Node
 from mTshare.Partition import Partition
 from mTshare.Path import Path
 from mTshare.Request import Request
-from mTshare.Taxi import Taxi
+from mTshare.Taxi import *
 from mTshare.Tool.Tool import *
 
 import sys
@@ -575,12 +575,6 @@ def taxi_scheduling(candidate_taxi_list, req, req_id, mode=1):
     taxi_list[selected_taxi].schedule_list = copy.deepcopy(res)
     taxi_list[selected_taxi].seat_left -= 1
     req_to_taxi_map[req_id] = selected_taxi
-    if selected_taxi == 97:
-        print('this is taxi 97')
-        print('its schedule_list is')
-        print(taxi_list[selected_taxi].schedule_list)
-        print('res is')
-        print(res)
     print('req_to_taxi_map[req_id] = {}'.format(req_to_taxi_map[req_id]))
     divide_group2()
 
@@ -635,7 +629,7 @@ def empty_taxi_scheduling(candidate_taxi_list, req, req_id, mode=1):
 
 
 conn = pymysql.connect(host='127.0.0.1', user='root',
-                       passwd='', db='tenman', port=3306, charset='utf8')
+                       passwd='', db='tenman', port=3308, charset='utf8')
 cursor = conn.cursor(pymysql.cursors.SSCursor)
 
 mobility_cluster = []
@@ -773,6 +767,7 @@ def main(socket1):
                 if cost == None and len(candidate_non_empty_list) != 0:
                     chosen_taxi, cost = taxi_scheduling(candidate_non_empty_list, req_item, req_item.request_id, 1)
                 show_taxi = taxi_list[chosen_taxi]
+                show_taxi.add_guest(req_cnt-1)
                 req_item.color = show_taxi.color
                 non_empty_taxi_set.add(show_taxi)
                 print('这个订单选中的taxi是{}'.format(chosen_taxi))
@@ -799,8 +794,9 @@ def main(socket1):
                                     'content': [{
                                                 'coords': [wgs84_to_bd09(node.lon, node.lat) for node in item.path.path_node_list], 
                                                 'lineStyle':{'color': item.color},
-                                                'name': "的士_{}".format(item.taxi_id),
-                                                'ok': 21,
+                                                'name': "的士编号：{}".format(item.taxi_id),
+                                                'ok': round(item.complete_index/len(item.path.path_node_list)*100),
+                                                'guest':[i for i in item.get_guest()]
                                                 }
                                                 for item in non_empty_taxi_set]}
                 send_info(socket_taxi_path)
@@ -811,7 +807,9 @@ def main(socket1):
                 show_taxi.show_schedule()
                 show_taxi.show_pos()
                 # 发送最新状态
-
+                print("king_make_order_finished: {}".format(king_make_order_finished))
+                socket_order_finished = {'type':'order_finished','content':[i for i in king_make_order_finished],'num':req_cnt}
+                send_info(socket_order_finished)
                 print('该订单结束//////////////////////////////////////')
                 global total_detour_cost
                 f.write('total served requests: %d\n' % req_cnt)

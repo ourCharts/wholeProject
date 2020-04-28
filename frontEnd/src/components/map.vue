@@ -21,40 +21,51 @@
         </el-tab-pane>
         <el-tab-pane label="订单信息" name="first">
           <i class="el-icon-document" id="diy" style="display: inline-block"></i>
-          <p class="situationBar1">详细路径ID</p>
-          
-       <el-row>
-            <el-tag
-              closable
-              type="warning"
-            >
-            
+          <p class="situationBar1">出租车信息</p>
+
+          <el-row>
+            <el-tag v-for="x in taxi_path" :key="x.name" type="warning" :disable-transitions="true">
+              {{x.name}}
+              <p>处理订单：{{x.guest}}</p>
+              <el-progress
+                :text-inside="true"
+                :stroke-width="20"
+                :percentage="x.ok"
+                :color="x.lineStyle.color"
+              ></el-progress>
             </el-tag>
-            <div>
-              hello
-            </div>
-            <progressing :progress_s = '100'></progressing>
           </el-row>
         </el-tab-pane>
         <el-tab-pane label="状态栏" name="third">
           <i class="el-icon-data-analysis" id="diy"></i>
           <el-row type="flex">
             <el-col :span="20">
-              <p class="situationBar">原有路径总数</p>
+              <p class="situationBar">处理订单总数</p>
             </el-col>
-            <el-input v-model="dataset.length" placeholder="Order_id" readonly></el-input>
+            <el-input v-model="order_processed" readonly></el-input>
           </el-row>
           <el-row type="flex">
             <el-col :span="20">
-              <p class="situationBar">优化后总数</p>
+              <p class="situationBar">完成订单总数</p>
             </el-col>
-            <el-input v-model="dataset.length" placeholder="Order_id" readonly></el-input>
+            <el-input v-model="order_finished.length" readonly></el-input>
           </el-row>
+
           <i class="el-icon-document" id="diy" style="display: inline-block"></i>
-          <p class="situationBar1">详细路径ID</p>
+          <p class="situationBar1">已完成订单清单</p>
+
+          <el-row>
+            <el-tag
+              v-for="x in order_finished"
+              :key="x"
+              type="warning"
+              :disable-transitions="true"
+            >{{x}}</el-tag>
+          </el-row>
+
           <!-- <el-row>
-                        <el-tag v-for="x in pageArr" :key="x.num" closable type="warning" @close="handleClose(x)"
-                            :disable-transitions="true" size="small"> {{x.num}}.{{x.order_id}} </el-tag>
+                        <el-tag v-for="x in taxi_path" :key="x.name" closable type="warning" 
+                            :disable-transitions="true" size="small"> 111 </el-tag>
           </el-row>-->
           <!-- <el-row type="flex" justify="center"> -->
           <!-- <el-button type="warning" v-on:click="nextPage(-1)">上一页</el-button> -->
@@ -76,19 +87,16 @@
 // import $ from 'jquery'
 /* eslint-disable */
 import echarts from "echarts";
-import Progressing from './Progressing.vue';
 
 import "echarts/extension/bmap/bmap.js";
 export default {
   name: "Map",
-  components: {
-    Progressing
-  },
   data() {
     return {
       now_time: "加载中，请稍后",
       activeName: "first",
       chart: echarts.ECharts,
+      order_processed: 0,
       loading: true,
       all_taxi: [],
       circle: null,
@@ -101,7 +109,8 @@ export default {
       // chosen_taxi: [{'value':[[104.06, 30.65918619836269],[104.07, 30.65918619836269]], 'itemStyle': {'color':'white'}}],
       chosen_taxi: [],
       dataset: [],
-      mapContorller: null
+      mapContorller: null,
+      order_finished: []
     };
   },
   computed: {
@@ -262,6 +271,10 @@ export default {
         } else if (data["type"] === "debug") {
           //alert(data['content'])
           _this.$message(data["content"]);
+        } else if (data["type"] === "order_finished") {
+          //alert(data['content'])
+          _this.order_finished = data["content"];
+          _this.order_processed = data["num"];
         }
       };
     },
@@ -316,7 +329,12 @@ export default {
   color: #9e7d60ff !important;
   border-color: #9e7d60ff !important;
   font-size: 10px;
+  display: block;
   height: 8% !important;
+  padding: 3px;
+}
+.el-progress {
+  margin: 3px;
 }
 .el-pagination .btn-next,
 .el-pagination .btn-prev,
@@ -327,6 +345,12 @@ export default {
   background-color: #2f4050 !important;
   color: #9e7d60ff !important;
   border-color: #9e7d60ff !important;
+}
+/* .el-progress-bar__inner {
+  background-color: #9e7d60ff !important;
+} */
+.el-progress-bar__innerText {
+  color: #303133;
 }
 .el-input__inner {
   background-color: #3f444c !important;
@@ -381,15 +405,15 @@ export default {
   letter-spacing: 3px;
 }
 .clearfix:before,
-  .clearfix:after {
-    display: table;
-    content: "";
-  }
-  .clearfix:after {
-    clear: both
-  }
+.clearfix:after {
+  display: table;
+  content: "";
+}
+.clearfix:after {
+  clear: both;
+}
 
-  .box-card {
-    width: 480px;
-  }
+.box-card {
+  width: 480px;
+}
 </style>

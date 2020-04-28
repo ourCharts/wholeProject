@@ -4,6 +4,7 @@ from mTshare.Path import Path
 import time
 print('载入Taxi中')
 
+king_make_order_finished = set()
 
 class Taxi:
     cur_total_cost = 0
@@ -24,7 +25,24 @@ class Taxi:
         self.seat_left = seat_left
         self.capability = self.seat_left
         self.color = random_color()
+        self.complete_index = 0
+        self.__guest = None
+    
+    def __guest_clear(self):
+        for i in self.__guest:
+           king_make_order_finished.add(i)
+        self.__guest = None
 
+    def get_guest(self):
+        return self.__guest
+
+
+    def add_guest(self, order_id:int):
+        if self.__guest == None:
+            self.__guest = set([order_id])
+        else:
+            self.__guest.add(order_id)
+        return
 
     def show_schedule(self):
         print('showing schedule: This is taxi {}'.format(self.taxi_id))
@@ -86,19 +104,30 @@ class Taxi:
         print()
         print('$ taxi id is {}'.format(self.taxi_id))
         print('before updating, the position is lon: {}, lat: {}'.format(self.cur_lon, self.cur_lat))
-        self.cur_lon, self.cur_lat = self.path.get_position(moment)
-        print('after updating, the position is lon: {}, lat: {}'.format(self.cur_lon, self.cur_lat))
-        self.partition_id_belongto = check_in_which_partition(
+        tmp_result = self.path.get_position(moment)
+        print("schedule_node_list长度：{}".format(len(self.schedule_list)))
+        if len(tmp_result) == 3 and len(self.schedule_list) != 0:
+            self.cur_lon, self.cur_lat,self.complete_index = tmp_result
+            self.partition_id_belongto = check_in_which_partition(
             self.cur_lon, self.cur_lat)
-        if self.path.is_over(moment) == -1 or len(self.schedule_list) == 0:
-            if self.path.is_over(moment) == -1:
-                print("self.path.is_over(moment)")
-            else:
-                print("len(self.schedule_list) == 0")
+        elif len(tmp_result)==2  or len(self.schedule_list) == 0:
+            self.__guest_clear()
+            if len(tmp_result) == 3:
+                self.cur_lon, self.cur_lat,self.complete_index = tmp_result
+
+            self.partition_id_belongto = check_in_which_partition(
+            self.cur_lon, self.cur_lat)
+        # print('after updating, the position is lon: {}, lat: {}'.format(self.cur_lon, self.cur_lat))
+        # if self.path.is_over(moment) == -1 or len(self.schedule_list) == 0:
+            # if self.path.is_over(moment) == -1:
+            #     print("self.path.is_over(moment)")
+            # else:
+            #     print("len(self.schedule_list) == 0")
             self.path = Path(moment)
             self.schedule_list = [{'request_id': -1, 'schedule_type': 'NO_ORDER',
                                    'lon': self.cur_lon, 'lat': self.cur_lat, 'arrival_time': self.__last_update_time}]
             self.mobility_vector = None
+            self.complete_index = 0
             non_empty_taxi_set.remove(self)
             print('taxi_{}update over(path over)'.format(self.taxi_id))
             return

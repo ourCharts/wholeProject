@@ -3,10 +3,8 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import {Container, Main, Aside, Tabs, TabPane, Row, Input, Col, Tag, Pagination, Button, TableColumn, Table, Header, Loading, Message} from 'element-ui'
+import {Container, Progress, Main, Aside, Tabs, TabPane, Row, Input, Col, Tag, Pagination, Button, TableColumn, Table, Header, Loading, Message} from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import 'bootstrap'
-import $ from 'jquery'
 
 Vue.config.productionTip = false
 Vue.use(Container)
@@ -23,6 +21,8 @@ Vue.use(Button)
 Vue.use(TableColumn)
 Vue.use(Table)
 Vue.use(Header)
+Vue.use(Progress)
+
 Vue.use(Loading.directive)
 
 Vue.prototype.$message = Message
