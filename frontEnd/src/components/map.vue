@@ -22,25 +22,19 @@
         <el-tab-pane label="订单信息" name="first">
           <i class="el-icon-document" id="diy" style="display: inline-block"></i>
           <p class="situationBar1">详细路径ID</p>
-          <el-card class="box-card" v-for="x in taxi_path"
-              :key="x.name">
-            <div slot="header" class="clearfix">
-              <span>{{x.name}}.{{x.ok}}</span>
-              <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
-            </div>
-            <div v-for="o in 4" :key="o" class="text item">{{'列表内容 ' + o }}</div>
-          </el-card>
-          <!-- <el-row>
+          
+       <el-row>
             <el-tag
-              v-for="x in taxi_path"
-              :key="x.name"
               closable
               type="warning"
-              @close="handleClose(x)"
-              :disable-transitions="true"
-              size="small"
-            >{{x.name}}.{{x.ok}}</el-tag>
-          </el-row> -->
+            >
+            
+            </el-tag>
+            <div>
+              hello
+            </div>
+            <progressing :progress_s = '100'></progressing>
+          </el-row>
         </el-tab-pane>
         <el-tab-pane label="状态栏" name="third">
           <i class="el-icon-data-analysis" id="diy"></i>
@@ -82,9 +76,14 @@
 // import $ from 'jquery'
 /* eslint-disable */
 import echarts from "echarts";
+import Progressing from './Progressing.vue';
+
 import "echarts/extension/bmap/bmap.js";
 export default {
   name: "Map",
+  components: {
+    Progressing
+  },
   data() {
     return {
       now_time: "加载中，请稍后",

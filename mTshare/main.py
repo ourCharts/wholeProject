@@ -793,7 +793,7 @@ def main(socket1):
                                                 'coords': [wgs84_to_bd09(node.lon, node.lat) for node in item.path.path_node_list], 
                                                 'lineStyle':{'color': item.color},
                                                 'name': "的士_{}".format(item.taxi_id),
-                                                'ok': '0%'
+                                                'ok': 21,
                                                 }
                                                 for item in non_empty_taxi_set]}
                 send_info(socket_taxi_path)
