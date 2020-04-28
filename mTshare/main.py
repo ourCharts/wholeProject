@@ -517,7 +517,8 @@ def taxi_scheduling(candidate_taxi_list, req, req_id, mode=1):
     selected_taxi_path = None
     res = []
 
-    for taxi_it in tqdm(candidate_taxi_list, 'scheduling'):
+    # for taxi_it in tqdm(candidate_taxi_list, 'scheduling'):
+    for taxi_it in candidate_taxi_list:
         possible_insertion.clear()
         bnd = len(taxi_list[taxi_it].schedule_list)
         ori_cost = taxi_list[taxi_it].cur_total_cost
@@ -595,7 +596,8 @@ def empty_taxi_scheduling(candidate_taxi_list, req, req_id, mode=1):
     min_distance = 10 ** 10
     order_start_point = ox.get_nearest_node(
         osm_map, (req.start_lat, req.start_lon))
-    for taxi_it in tqdm(candidate_taxi_list, 'scheduling'):
+    # for taxi_it in tqdm(candidate_taxi_list, 'scheduling'):
+    for taxi_it in candidate_taxi_list:
         taxi_pos_node = ox.get_nearest_node(
             osm_map, (taxi_list[taxi_it].cur_lat, taxi_list[taxi_it].cur_lon))
         distance_taxi2order = node_distance_matrix[id_hash_map[order_start_point]
@@ -683,7 +685,7 @@ def main(socket1):
     system_init()
     order_index = 0
     last_time = SYSTEM_INIT_TIME - TIME_OFFSET  # 初始化为开始时间
-    f = open('D:\\Pycharm-project\\wholeProject\\mTshare\\data\\testresult.txt', 'w')
+    f = open('mTshare/data/testresult.txt', 'w')
     while True:
         if req_cnt > REQUESTS_TO_PROCESS:
             break
@@ -693,7 +695,8 @@ def main(socket1):
         if len(reqs) == 0:
             continue
         else:
-            for req_item in tqdm(reqs, desc='Processing requests...'):
+            # for req_item in tqdm(reqs, desc='Processing requests...'):
+            for req_item in reqs:
                 color = random_color()
                 print(
                     '**********************************************************************')
@@ -786,7 +789,12 @@ def main(socket1):
                     print('taxi_{}:{} {}'.format(item.taxi_id, item.cur_lon, item.cur_lat))
 
                 socket_taxi_path = {'type': 'taxi_path',
-                                    'content': [{'coords': [wgs84_to_bd09(node.lon, node.lat) for node in item.path.path_node_list], 'lineStyle':{'color': item.color}}
+                                    'content': [{
+                                                'coords': [wgs84_to_bd09(node.lon, node.lat) for node in item.path.path_node_list], 
+                                                'lineStyle':{'color': item.color},
+                                                'name': "的士_{}".format(item.taxi_id),
+                                                'ok': '0%'
+                                                }
                                                 for item in non_empty_taxi_set]}
                 send_info(socket_taxi_path)
                 socket_taxi_path_start = {'type': 'taxi_path_start',
