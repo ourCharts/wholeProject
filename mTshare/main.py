@@ -184,6 +184,7 @@ def taxi_req_matching(req: Request):
     delta_t = req.delivery_deadline - node_distance_matrix[id_hash_map[nearest_start_id]][id_hash_map[nearest_end_id]] / TYPICAL_SPEED - req.release_time
     # 得到搜索范围的半径
     search_range = delta_t * TYPICAL_SPEED
+    search_range = max(search_range, 0)
     after_tranform = wgs84_to_bd09(u_lon, u_lat)
     send_info({'type': 'circle', 'content': {
               'lon': after_tranform[0], 'lat': after_tranform[1], 'range': search_range}})
@@ -641,7 +642,7 @@ general_mobility_vector = []
 
 TYPICAL_SPEED = 13.8889  # 单位是m/s
 TAXI_TOTAL_NUM = 100
-REQUESTS_TO_PROCESS = 100  # 总共要处理多少个request
+REQUESTS_TO_PROCESS = 500  # 总共要处理多少个request
 partition_filter_param = 1.0
 
 Lambda = 0.5
@@ -700,8 +701,7 @@ def main(socket1):
                     '**************************新订单{}**************************************'.format(req_cnt))
                 print(
                     '**********************************************************************')
-                end_time = req_item[1] + \
-                    datetime.timedelta(minutes=15).seconds
+                end_time = req_item[1] + datetime.timedelta(minutes=15).seconds
                 """
                 0: order_id,
                 1: start_time,
@@ -729,12 +729,10 @@ def main(socket1):
                                                                  req_item.start_lat), wgs84_to_bd09(req_item.end_lon, req_item.end_lat)))
                 divide_group2()
 
-                req_item.config_pickup_deadline(
-                    req_item.delivery_deadline - time_on_tour)
+                req_item.config_pickup_deadline(req_item.delivery_deadline - time_on_tour)
                 request_list[req_cnt] = req_item
                 req_cnt += 1
-                print('release time is {}'.format(time.strftime(
-                    "%Y-%m-%d %H:%M:%S", time.localtime(req_item.release_time))))
+                print('release time is {}'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(req_item.release_time))))
                 # 用当前moment来更新所有taxi, mobility_cluster和general_cluster
                 update(req_item)
                 candidate_taxi_list, candidate_empty_list, candidate_non_empty_list = taxi_req_matching(req_item)
@@ -746,10 +744,8 @@ def main(socket1):
                 print('mv 不 符合的非空车: ')
                 print(candidate_non_empty_list)
                 # 发送的士的位置
-                socket_taxi_list = [wgs84_to_bd09(
-                    i.cur_lon, i.cur_lat) for i in taxi_list]
-                socket_taxi_list = {'type': 'all_taxi',
-                                    'content': socket_taxi_list}
+                socket_taxi_list = [wgs84_to_bd09(i.cur_lon, i.cur_lat) for i in taxi_list]
+                socket_taxi_list = {'type': 'all_taxi', 'content': socket_taxi_list}
                 send_info(socket_taxi_list)
                 divide_group2()
                 # 如果没有候选taxi会返回none
@@ -758,6 +754,7 @@ def main(socket1):
                     print('这个订单没有taxi')
                     print('该订单结束//////////////////////////////////////')
                     input('天啊！居然出现了没有人回应的订单！！！点击回车继续')
+                    continue
                     divide_group2()
                 elif len(candidate_taxi_list) != 0:
                     chosen_taxi, cost = taxi_scheduling(candidate_taxi_list, req_item, req_item.request_id, 1)
