@@ -5,6 +5,8 @@ import App from './App'
 import router from './router'
 import {Container, Main, Aside, Tabs, TabPane, Row, Input, Col, Tag, Pagination, Button, TableColumn, Table, Header, Loading, Message} from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import 'bootstrap'
+import $ from 'jquery'
 
 Vue.config.productionTip = false
 Vue.use(Container)
