@@ -1,23 +1,26 @@
 <template>
   <div id="app">
-    <el-container style="height: 100%">
-        <el-header>
+    <!-- <el-container style="height: 100%"> -->
+        <!-- <el-header>
           <i class="el-icon-location-outline" ></i>
           基于大数据的拼车优化系统
-        </el-header>
-        <Map></Map>
-    </el-container>
+        </el-header> -->
+        <!-- <Map></Map> -->
+        <index></index>
+    <!-- </el-container> -->
     <!-- <copy></copy> -->
   </div>
 </template>
 
 <script>
-import Map from './components/map'
+// import Map from './components/map'
+import index from './components/index'
 // import copy from './components/trytable'
 export default {
   name: 'App',
   components: {
-    Map
+    // Map
+    index
   }
 
 }

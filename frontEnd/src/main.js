@@ -5,6 +5,15 @@ import App from './App'
 import router from './router'
 import {Container, Progress, Main, Aside, Tabs, TabPane, Row, Input, Col, Tag, Pagination, Button, TableColumn, Table, Header, Loading, Message} from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import dataV from '@jiaminghi/data-view'
+import Icon from 'vue-awesome/components/Icon'
+import 'vue-awesome/icons/index.js'
+// 引入全局css
+import './assets/scss/style.scss'
+Vue.use(dataV)
+
+// 全局注册图标
+Vue.component('icon', Icon)
 
 Vue.config.productionTip = false
 Vue.use(Container)
