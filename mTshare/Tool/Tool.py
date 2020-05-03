@@ -101,7 +101,8 @@ id_hash_map = dict(tool_node_list)
 
 
 SYSTEM_INIT_TIME = time.time()
-EARLIEST_TIME = 1477929720   # 预先从数据库中查询出最早时间
+# 1477958400
+EARLIEST_TIME = 1477958400   # 预先从数据库中查询出最早时间
 TIME_OFFSET = SYSTEM_INIT_TIME - EARLIEST_TIME
 
 

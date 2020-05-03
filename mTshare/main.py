@@ -683,9 +683,9 @@ def main(socket1):
     req_cnt = 0
     system_init()
     order_index = 0
-    last_time = SYSTEM_INIT_TIME - TIME_OFFSET  # 初始化为开始时间
+    last_time = EARLIEST_TIME  # 初始化为开始时间
     f = open('mTshare/data/testresult.txt', 'w')
-    while isThreadAlive==True:
+    while isThreadAlive == True:
         if req_cnt > REQUESTS_TO_PROCESS:
             break
         now_time = time.time() - TIME_OFFSET

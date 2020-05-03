@@ -60,11 +60,11 @@
               :key="x"
               type="warning"
               :disable-transitions="true"
-            >{{x}}</el-tag>
+            >{{ x }}</el-tag>
           </el-row>
 
           <!-- <el-row>
-                        <el-tag v-for="x in taxi_path" :key="x.name" closable type="warning" 
+                        <el-tag v-for="x in taxi_path" :key="x.name" closable type="warning"
                             :disable-transitions="true" size="small"> 111 </el-tag>
           </el-row>-->
           <!-- <el-row type="flex" justify="center"> -->
