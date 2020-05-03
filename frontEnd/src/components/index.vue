@@ -1,6 +1,6 @@
 <template>
   <div id="index">
-    <dv-full-screen-container class="bg">
+    <dv-full-screen-container style="position:initial">
       <dv-loading v-if="loading">Loading...</dv-loading>
       <div v-else class="host-body">
         <div class="d-flex jc-center">

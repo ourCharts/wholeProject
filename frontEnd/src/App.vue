@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" style="margin:0">
     <!-- <el-container style="height: 100%"> -->
         <!-- <el-header>
           <i class="el-icon-location-outline" ></i>
