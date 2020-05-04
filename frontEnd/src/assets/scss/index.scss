@@ -96,15 +96,19 @@
 
       //下方区域的布局
       .content-box {
-        display: grid;
-        grid-template-columns: 2fr 3fr 5fr 3fr 2fr;
+        height:100%;
+        display: flex;
+        // grid-template-columns: 3fr 9fr 3fr;
+        flex-wrap: nowrap;
       }
 
       // 底部数据
       .bototm-box {
         margin-top: 10px;
-        display: grid;
-        grid-template-columns: repeat(2, 50%);
+        display: flex;
+        // grid-template-columns: repeat(2, 50%);
+        flex-wrap: nowrap;
+
       }
     }
   }

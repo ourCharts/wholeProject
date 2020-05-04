@@ -1,6 +1,6 @@
 <template>
   <div id="index">
-    <dv-full-screen-container style="position:initial">
+    <!-- <dv- full-screen-container style="position:initial"> -->
       <dv-loading v-if="loading">Loading...</dv-loading>
       <div v-else class="host-body">
         <div class="d-flex jc-center">
@@ -56,26 +56,44 @@
         <div class="body-box">
           <!-- 第三行数据 -->
           <div class="content-box">
-            <div>
+            <!-- <div>
               <dv-border-box-12>
                 <centreLeft1 />
               </dv-border-box-12>
-            </div>
-            <div>
+            </div> -->
+            <!-- <div>
               <dv-border-box-12>
                 <centreLeft2 />
               </dv-border-box-12>
+            </div> -->
+            <!-- 中间 -->
+            
+            <div style="flex-grow:2;">
+              <dv-border-box-13 style="flex-grow:2;">
+                <centreRight1 />
+              </dv-border-box-13>
+            </div>
+            <div style="flex-grow:7;">
+              
+            <dv-border-box-13 id="bottomLeft" >
+              <div class="d-flex pt-2 pl-2" >
+                <span >
+                  <icon name="chart-bar" id="icon-map"></icon>
+                </span>
+                <div class="d-flex">
+                  <span class="fs-xl text mx-2">数据统计图</span>
+                </div>
+              </div>
+              <Map />
+            </dv-border-box-13>
+
             </div>
             <!-- 中间 -->
-            <div>
-              <center />
-            </div>
-            <!-- 中间 -->
-            <div>
+            <!-- <div>
               <centreRight2 />
-            </div>
-            <div>
-              <dv-border-box-13>
+            </div> -->
+            <div style="flex-grow:2;">
+              <dv-border-box-13 style="flex-grow:2;">
                 <centreRight1 />
               </dv-border-box-13>
             </div>
@@ -92,7 +110,7 @@
           </div>
         </div>
       </div>
-    </dv-full-screen-container>
+    <!-- </dv-full-screen-container> -->
   </div>
 </template>
 
@@ -104,6 +122,7 @@ import centreRight2 from "./display/centreRight2";
 import center from "./display/center";
 import bottomLeft from "./display/bottomLeft";
 import bottomRight from "./display/bottomRight";
+import Map from "./map";
 export default {
   name: "index",
   data() {
@@ -112,12 +131,13 @@ export default {
     };
   },
   components: {
+    Map,
+    bottomLeft,
     centreLeft1,
     centreLeft2,
     centreRight1,
     centreRight2,
     center,
-    bottomLeft,
     bottomRight
   },
   mounted() {
@@ -134,5 +154,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#icon-map{
+  color:#5cd9e8 !important
+}
+#bottomLeft {
+  padding: 1.5rem 1rem;
+  height: 750px;
+  min-width: 300px;
+  border-radius: 5px;
+  .text {
+    color: #c3cbde;
+  }
+  .chart-box {
+    margin-top: 1rem;
+    width: 170px;
+    height: 1200px;
+    .active-ring-name {
+      padding-top: 10px;
+    }
+  }
+}
 @import "../assets/scss/index.scss";
 </style>

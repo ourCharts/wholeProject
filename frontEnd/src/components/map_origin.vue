@@ -1,5 +1,86 @@
 <template>
-    <div ref="map" id="map-container"></div>
+  <el-container>
+    <el-main v-loading="loading">
+      <div ref="map" id="map-container"></div>
+    </el-main>
+    <el-aside
+      element-loading-text="载入路径中.."
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(65, 81, 95, 0.6)"
+      style="height:100%"
+    >
+      <el-tabs v-model="activeName" stretch>
+        <el-tab-pane label="系统信息" name="second">
+          <i class="el-icon-alarm-clock" id="diy"></i>
+          <el-row type="flex">
+            <el-col :span="16">
+              <p class="situationBar">系统时间</p>
+            </el-col>
+            <el-input v-model="now_time" readonly></el-input>
+          </el-row>
+        </el-tab-pane>
+        <el-tab-pane label="订单信息" name="first">
+          <i class="el-icon-document" id="diy" style="display: inline-block"></i>
+          <p class="situationBar1">出租车信息</p>
+
+          <el-row>
+            <el-tag v-for="x in taxi_path" :key="x.name" type="warning" :disable-transitions="true">
+              {{x.name}}
+              <p>处理订单：{{x.guest}}</p>
+              <el-progress
+                :text-inside="true"
+                :stroke-width="20"
+                :percentage="x.ok"
+                :color="x.lineStyle.color"
+              ></el-progress>
+            </el-tag>
+          </el-row>
+        </el-tab-pane>
+        <el-tab-pane label="状态栏" name="third">
+          <i class="el-icon-data-analysis" id="diy"></i>
+          <el-row type="flex">
+            <el-col :span="20">
+              <p class="situationBar">处理订单总数</p>
+            </el-col>
+            <el-input v-model="order_processed" readonly></el-input>
+          </el-row>
+          <el-row type="flex">
+            <el-col :span="20">
+              <p class="situationBar">完成订单总数</p>
+            </el-col>
+            <el-input v-model="order_finished.length" readonly></el-input>
+          </el-row>
+
+          <i class="el-icon-document" id="diy" style="display: inline-block"></i>
+          <p class="situationBar1">已完成订单清单</p>
+
+          <el-row>
+            <el-tag
+              v-for="x in order_finished"
+              :key="x"
+              type="warning"
+              :disable-transitions="true"
+            >{{ x }}</el-tag>
+          </el-row>
+
+          <!-- <el-row>
+                        <el-tag v-for="x in taxi_path" :key="x.name" closable type="warning"
+                            :disable-transitions="true" size="small"> 111 </el-tag>
+          </el-row>-->
+          <!-- <el-row type="flex" justify="center"> -->
+          <!-- <el-button type="warning" v-on:click="nextPage(-1)">上一页</el-button> -->
+          <!-- <el-pagination v-show="totalPage" id="fenye" layout="prev, pager, next" small
+                            :page-count="totalPage" :pager-count="5" @prev-click="nextPage(-1)" @current-change="goPage"
+                            @next-click="nextPage(1)">
+                        </el-pagination>
+          </el-row>-->
+          <!-- <el-row type="flex" justify="center">
+                        <el-button type="warning" v-on:click="clearPage()" v-show="totalPage">清空</el-button>
+          </el-row>-->
+        </el-tab-pane>
+      </el-tabs>
+    </el-aside>
+  </el-container>
 </template>
 
 <script>
@@ -228,8 +309,8 @@ export default {
 #map-container {
   width: 100%;
   height: 100%;
-  border-radius: 30px;
-  padding-bottom: 25px;
+  margin: 0;
+  border-radius: 10px;
 }
 #diy {
   color: #9e7d60ff;
