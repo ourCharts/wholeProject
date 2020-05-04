@@ -9,23 +9,28 @@
 
   .bg {
     padding: 1rem;
-    background-image: url("../assets/pageBg.png");
+    background-image: url("../assets/pageBg.jpg");
   }
 
   .host-body {
     .title {
       position: relative;
-      width: 500px;
+      width: 700px;
       text-align: center;
       background-size: cover;
       background-repeat: no-repeat;
 
       .title-text {
-        font-size: 2rem;
+        font-size: 3rem;
+        letter-spacing: 3px;
         position: absolute;
         bottom: 0px;
         left: 50%;
         transform: translate(-50%);
+        color: #00fbfe;
+      text-shadow: 0 0 25px #00fbfe;
+      // font-size: 28px;
+      font-weight: bolder;
       }
 
       .title-bototm {

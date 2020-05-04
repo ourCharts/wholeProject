@@ -1,115 +1,94 @@
 <template>
   <div id="index">
     <!-- <dv- full-screen-container style="position:initial"> -->
-      <dv-loading v-if="loading">Loading...</dv-loading>
-      <div v-else class="host-body">
+    <!-- <dv-loading v-if="loading">Loading...</dv-loading> -->
+    <div  class="host-body">
+      <div class="d-flex jc-center">
+        <dv-decoration-10 style="width:33.3%;height:5px;" />
         <div class="d-flex jc-center">
-          <dv-decoration-10 style="width:33.3%;height:5px;" />
-          <div class="d-flex jc-center">
-            <dv-decoration-8 :color="['#568aea', '#000000']" style="width:200px;height:50px;" />
-            <div class="title">
-              <span class="title-text">大数据可视化平台</span>
-              <dv-decoration-6
-                class="title-bototm"
-                :reverse="true"
-                :color="['#50e3c2', '#67a1e5']"
-                style="width:250px;height:8px;"
-              />
-            </div>
-            <dv-decoration-8
+          <dv-decoration-8 :color="['#568aea', '#000000']" style="width:200px;height:50px;" />
+          <div class="title">
+            <span class="title-text">大数据可视化平台</span>
+            <dv-decoration-5
+              class="title-bototm"
               :reverse="true"
-              :color="['#568aea', '#000000']"
-              style="width:200px;height:50px;"
+              :color="['#50e3c2', '#67a1e5']"
+              style="width:250px;height:40px;padding-top:30px"
             />
           </div>
-          <dv-decoration-10 style="width:33.3%;height:5px;" />
+          <dv-decoration-8
+            :reverse="true"
+            :color="['#568aea', '#000000']"
+            style="width:200px;height:50px;"
+          />
         </div>
+        <dv-decoration-10 style="width:33.3%;height:5px;" />
+      </div>
 
-        <!-- 第二行 -->
-        <div class="d-flex jc-between px-2">
-          <div class="d-flex" style="width: 40%">
-            <div
-              class="react-right ml-4"
-              style="width: 500px; text-align: left;background-color: #0f1325;"
-            >
-              <span class="react-before"></span>
-              <span class="text fw-b">数据分析1</span>
-            </div>
-            <div class="react-right ml-3" style="background-color: #0f1325;">
-              <span class="text colorBlue fw-b">数据分析2</span>
-            </div>
-          </div>
-          <div style="width: 40%" class="d-flex">
-            <div class="react-left bg-color-blue mr-3">
-              <span class="text fw-b">数据分析3</span>
-            </div>
-            <div
-              class="react-left mr-4"
-              style="width: 500px; background-color: #0f1325; text-align: right;"
-            >
-              <span class="react-after"></span>
-              <span class="text">2020年03月16日 周一 12:00</span>
-            </div>
+      <!-- 第二行 -->
+      <div class="d-flex jc-between px-2">
+
+        <div style="width: 40%" class="d-flex">
+          <div
+            class="react-left mr-4"
+            style="width: 500px; background-color: #0f1325; text-align: right;"
+          >
+            <span class="react-after"></span>
+            <span class="text">2020年03月16日 周一 12:00</span>
           </div>
         </div>
+      </div>
 
-        <div class="body-box">
-          <!-- 第三行数据 -->
-          <div class="content-box">
-            <!-- <div>
-              <dv-border-box-12>
-                <centreLeft1 />
-              </dv-border-box-12>
-            </div> -->
-            <!-- <div>
-              <dv-border-box-12>
-                <centreLeft2 />
-              </dv-border-box-12>
-            </div> -->
-            <!-- 中间 -->
-            
-            <div style="flex-grow:2;">
-              <dv-border-box-13 style="flex-grow:2;">
-                <centreRight1 />
-              </dv-border-box-13>
-            </div>
-            <div style="flex-grow:7;">
-              
-            <dv-border-box-13 id="bottomLeft" >
-              <div class="d-flex pt-2 pl-2" >
-                <span >
+      <div class="body-box">
+        <!-- 第三行数据 -->
+        <div class="content-box">
+          <div style="flex-shrink:7; width:2000px">
+            <dv-border-box-10 style="flex-shrink:7;">
+              <div class="d-flex pt-2 pl-2">
+                <span>
                   <icon name="chart-bar" id="icon-map"></icon>
                 </span>
                 <div class="d-flex">
-                  <span class="fs-xl text mx-2">数据统计图</span>
+                  <span class="fs-xl text mx-2">总体信息</span>
+                </div>
+              </div>
+              <center/>
+            </dv-border-box-10>
+          </div>
+          <dv-decoration-2 :reverse="true" style="width:10px;height:500px;"  />
+          <div style="flex-shrink:2; width:2000px">
+            <dv-border-box-13 id="bottomLeft">
+              <div class="d-flex pt-2 pl-2">
+                <span>
+                  <icon name="chart-bar" id="icon-map"></icon>
+                </span>
+                <div class="d-flex">
+                  <span class="fs-xl text mx-2">实时路径地图</span>
                 </div>
               </div>
               <Map />
             </dv-border-box-13>
-
-            </div>
-            <!-- 中间 -->
-            <!-- <div>
-              <centreRight2 />
-            </div> -->
-            <div style="flex-grow:2;">
-              <dv-border-box-13 style="flex-grow:2;">
-                <centreRight1 />
-              </dv-border-box-13>
-            </div>
           </div>
-
-          <!-- 第四行数据 -->
-          <div class="bototm-box">
-            <dv-border-box-13>
-              <bottomLeft />
+          <dv-decoration-2 :reverse="true" style="width:5px;height:500px;" />
+          <div style="flex-shrink:7; width:2000px">
+            <dv-border-box-13 style="flex-shrink:7;">
+              <centreRight1 />
             </dv-border-box-13>
-            <dv-border-box-12>
-              <bottomRight />
-            </dv-border-box-12>
           </div>
         </div>
+
+        <dv-decoration-10 style="width:100%;height:5px;padding-top:5px;padding-bottom:5px" />
+        <!-- 第四行数据 -->
+        <div class="bototm-box">
+          <dv-border-box-13>
+            <bottomLeft />
+          </dv-border-box-13>
+          <dv-border-box-12>
+            <bottomRight />
+          </dv-border-box-12>
+        </div>
       </div>
+    </div>
     <!-- </dv-full-screen-container> -->
   </div>
 </template>
@@ -154,8 +133,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#icon-map{
-  color:#5cd9e8 !important
+#icon-map {
+  color: #5cd9e8 !important;
 }
 #bottomLeft {
   padding: 1.5rem 1rem;
