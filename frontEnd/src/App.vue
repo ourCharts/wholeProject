@@ -1,26 +1,13 @@
 <template>
   <div id="app" style="margin:0">
-    <!-- <el-container style="height: 100%"> -->
-        <!-- <el-header>
-          <i class="el-icon-location-outline" ></i>
-          基于大数据的拼车优化系统
-        </el-header> -->
-        <!-- <Map></Map> -->
-        <index></index>
-    <!-- </el-container> -->
-    <!-- <copy></copy> -->
+    <router-view/>
   </div>
 </template>
 
 <script>
-// import Map from './components/map'
-import index from './components/index'
-// import copy from './components/trytable'
 export default {
   name: 'App',
   components: {
-    // Map
-    index
   }
 
 }
@@ -32,7 +19,6 @@ export default {
     height: 100%;
     width: 100%;
     margin: 0;
-    background-color: #3F444C;
   }
   .anchorBL {
     display: none;
