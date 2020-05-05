@@ -1,5 +1,5 @@
 <template>
-    <div ref="map" id="map-container"></div>
+  <div ref="map" id="map-container"></div>
 </template>
 
 <script>
@@ -12,23 +12,14 @@ export default {
   name: "Map",
   data() {
     return {
-      activeName: "first",
-      chart: echarts.ECharts,
-      order_processed: 0,
-      loading: true,
-      all_taxi: [],
-      circle: null,
-      taxi_path: [],
-      all_request_start: [],
-      all_request_end: [],
-      taxi_path_start: [],
-      temp_node: [], //
-      all_non_empty_taxi: [],
       // chosen_taxi: [{'value':[[104.06, 30.65918619836269],[104.07, 30.65918619836269]], 'itemStyle': {'color':'white'}}],
-      chosen_taxi: [],
-      dataset: [],
-      mapContorller: null,
-      order_finished: []
+      chart: echarts.ECharts,
+      taxi_path: [], // 元素是数组A, 每个A里面都装着若干个二维数组（装着坐标）
+      all_request_start: [],//所有订单起点 ， 元素是一个二维数组（装着坐标）
+      all_request_end: [],  //所有订单终点 ， 元素是一个二维数组（装着坐标）
+      taxi_path_start: [],  // 所有的士 接单时的位置 ， 元素是一个二维数组（装着坐标）
+      all_non_empty_taxi: [],// 元素是所有已接单的的士id 
+      order_finished: []  // 元素是所有已经完成的订单的id
     };
   },
   computed: {
@@ -59,14 +50,6 @@ export default {
               position: "start",
               formatter: "起点: {c}",
               backgroundColor: "yellow"
-            }
-          },
-          {
-            type: "scatter",
-            coordinateSystem: "bmap",
-            data: this.all_taxi,
-            itemStyle: {
-              color: "#778899"
             }
           },
           {
@@ -140,39 +123,13 @@ export default {
       };
       chatSocket.onmessage = function(e) {
         heartCheck.reset().start(); // 收到服务器任何响应都应重置计时器
-        // console.log("pong");
-        _this.loading = false;
         var data = JSON.parse(e.data);
-        if (data["type"] === "all_taxi") {
-          _this.all_taxi = data["content"];
-          _this.chart.setOption(_this.options);
-        } else if (data["type"] === "chosen_taxi") {
+        if (data["type"] === "request_pos") {
           // 显示被选中的taxi的路径点
-          _this.temp_node = data["content"]["coords"];
-          _this.all_taxi = [];
-          _this.chart.setOption(_this.options);
-        } else if (data["type"] === "request_pos") {
-          // 显示被选中的taxi的路径点
-          _this.all_request_start.push(data["content"]);
           _this.now_time = data["time"];
-          _this.all_request_end.push(data["content1"]);
-          //alert('更新订单')
-          _this.$message("更新订单");
-          _this.chart.setOption(_this.options);
-        } else if (data["type"] === "circle") {
-          // 显示被选中的taxi的路径点
-          var tmp = data["content"];
-          var point = new BMap.Point(tmp.lon, tmp.lat);
-          _this.circle = new BMap.Circle(point, tmp.range, {
-            strokeColor: "white",
-            strokeWeight: 1,
-            strokeOpacity: 0
-          });
-          _this.mapContorller.addOverlay(_this.circle);
         } else if (data["type"] === "taxi_path") {
           // 所有taxi的路径
           _this.taxi_path = data["content"];
-          _this.mapContorller.removeOverlay(_this.circle);
           _this.chart.setOption(_this.options);
         } else if (data["type"] === "all_request_start") {
           _this.all_request_start = data["content"];
@@ -186,13 +143,13 @@ export default {
         } else if (data["type"] === "taxi_path_start") {
           _this.taxi_path_start = data["content"];
           _this.chart.setOption(_this.options);
-        } else if (data["type"] === "debug") {
-          //alert(data['content'])
-          _this.$message(data["content"]);
         } else if (data["type"] === "order_finished") {
           //alert(data['content'])
-          _this.order_finished = data["content"];
-          _this.order_processed = data["num"];
+          _this.$bus.$emit("order_finished", [
+            data["content"],
+            data["num"],
+            data["fail"]
+          ]);
         }
       };
     },
@@ -205,13 +162,11 @@ export default {
         .getComponent("bmap")
         .getBMap();
       // eslint-disable-next-line
-      bmap.addControl(new BMap.NavigationControl());
-      var goodsData = require('../assets/scss/custom_map_config.json')
+      var goodsData = require("../assets/scss/custom_map_config.json");
       bmap.setMapStyleV2({
         // styleId:'f20aa46cedf21b09b47a71d84116c411'
-        styleJson:goodsData
+        styleJson: goodsData
       });
-      this.mapContorller = bmap;
 
       this.after_connect();
     }

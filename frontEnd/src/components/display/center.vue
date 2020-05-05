@@ -29,18 +29,25 @@ export default {
   },
   data() {
     return {
-      titleItem: [
+      order_finished:[],
+      order_got:0,
+      order_fail:0
+    };
+  },
+  computed:{
+    titleItem: function () {
+      return [
         {
           title: "今日订单数",
-          number: 120
+          number: this.order_got
         },
         {
           title: "已完成订单数",
-          number: 7
+          number: this.order_finished.length
         },
         {
           title: "处理订单数",
-          number: 9
+          number: this.order_got - this.order_fail
         },
         {
           title: "拼车订单数",
@@ -54,9 +61,17 @@ export default {
           title: "空闲出租车",
           number: 24
         }
-      ],
-    };
+      ]
+    }
   },
+  mounted(){
+      this.$bus.$on('order_finished',(data) =>{
+          this.order_finished=data[0],
+          this.order_got=data[1],
+          this.order_fail=data[2]
+      });
+
+  }
 };
 </script>
 

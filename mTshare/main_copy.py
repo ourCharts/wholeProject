@@ -181,13 +181,14 @@ def taxi_req_matching(req: Request):
     req_start_node = ox.get_nearest_node(osm_map, (u_lat, u_lon))
     nearest_start_id = ox.get_nearest_node(osm_map, (u_lat, u_lon))
     nearest_end_id = ox.get_nearest_node(osm_map, (v_lat, v_lon))
-    delta_t = req.delivery_deadline - \
-        node_distance_matrix[id_hash_map[nearest_start_id]
-                             ][id_hash_map[nearest_end_id]] / TYPICAL_SPEED - req.release_time
+    delta_t = req.delivery_deadline - node_distance_matrix[id_hash_map[nearest_start_id]][id_hash_map[nearest_end_id]] / TYPICAL_SPEED - req.release_time
     # 得到搜索范围的半径
     search_range = delta_t * TYPICAL_SPEED
     search_range = max(search_range, 0)
     after_tranform = wgs84_to_bd09(u_lon, u_lat)
+    send_info({'type': 'circle', 'content': {
+              'lon': after_tranform[0], 'lat': after_tranform[1], 'range': search_range}})
+    print('search range is {}'.format(search_range))
     partition_intersected = set()
     for idx, node_it in enumerate(node_list):
         if node_it.cluster_id_belongto in partition_intersected:
@@ -237,22 +238,18 @@ def taxi_req_matching(req: Request):
     print('C_li is: ')
     print(C_li)
 
-    best_candidate_taxi = set(taxi_in_intersected).intersection(
-        set(C_li))  # 取交集, 计算出所有候选taxi的list
-    secondary_candidate_non_empty_taxi = set(
-        taxi_in_intersected).difference(best_candidate_taxi)
+    best_candidate_taxi = set(taxi_in_intersected).intersection(set(C_li))  # 取交集, 计算出所有候选taxi的list
+    secondary_candidate_non_empty_taxi = set(taxi_in_intersected).difference(best_candidate_taxi)
     secondary_candidate_empty_taxi = list()
 
     for taxi_id in secondary_candidate_non_empty_taxi:
         if taxi_list[taxi_id].is_empty():
             secondary_candidate_empty_taxi.append(taxi_id)
 
-    secondary_candidate_non_empty_taxi = secondary_candidate_non_empty_taxi.difference(
-        set(secondary_candidate_empty_taxi))
+    secondary_candidate_non_empty_taxi = secondary_candidate_non_empty_taxi.difference(set(secondary_candidate_empty_taxi))
 
     best_candidate_taxi = list(best_candidate_taxi)
-    secondary_candidate_non_empty_taxi = list(
-        secondary_candidate_non_empty_taxi)
+    secondary_candidate_non_empty_taxi = list(secondary_candidate_non_empty_taxi)
     divide_group2()
     return best_candidate_taxi, secondary_candidate_empty_taxi, secondary_candidate_non_empty_taxi
     # best_candidate_taxi是mv也符合的车，secondary_candidate_empty_taxi是能到达但mv不符合的空车，
@@ -413,20 +410,15 @@ def basic_routing(Slist, taxi_it):    # 根据论文P7
         pre_subgraph_nodes = []
         for filtered_partition_item in filtered_partition:
             for node_it in filtered_partition_item.node_list:
-                pre_subgraph_nodes.append(
-                    node_list[id_hash_map[node_it]].node_id)
+                pre_subgraph_nodes.append(node_list[id_hash_map[node_it]].node_id)
 
         if taxi_it == 0 and idx == 0:
             # print('writing log')
-            nodes_in_filtered_partition_lon_file = open(
-                './mTshare/log/nodes_in_filtered_partition_lon_file.txt', 'w+')
-            nodes_in_filtered_partition_lat_file = open(
-                './mTshare/log/nodes_in_filtered_partition_lat_file.txt', 'w+')
+            nodes_in_filtered_partition_lon_file = open('./mTshare/log/nodes_in_filtered_partition_lon_file.txt', 'w+')
+            nodes_in_filtered_partition_lat_file = open('./mTshare/log/nodes_in_filtered_partition_lat_file.txt', 'w+')
             for nn in pre_subgraph_nodes:
-                nodes_in_filtered_partition_lon_file.write(
-                    '%f,\n' % node_list[id_hash_map[nn]].lon)
-                nodes_in_filtered_partition_lat_file.write(
-                    '%f,\n' % node_list[id_hash_map[nn]].lat)
+                nodes_in_filtered_partition_lon_file.write('%f,\n' % node_list[id_hash_map[nn]].lon)
+                nodes_in_filtered_partition_lat_file.write('%f,\n' % node_list[id_hash_map[nn]].lat)
             nodes_in_filtered_partition_lon_file.close()
             nodes_in_filtered_partition_lat_file.close()
 
@@ -451,11 +443,9 @@ def basic_routing(Slist, taxi_it):    # 根据论文P7
         subgraph.remove_nodes_from(to_remove_nodes)
         # 此时得到的subgraph是没有孤立点, 且只有一个连通分量
 
-        start_node = ox.get_nearest_node(
-            subgraph, (Slist[idx]['lat'], Slist[idx]['lon']))
-
-        end_node = ox.get_nearest_node(
-            subgraph, (Slist[idx + 1]['lat'], Slist[idx + 1]['lon']))
+        start_node = ox.get_nearest_node(subgraph, (Slist[idx]['lat'], Slist[idx]['lon']))
+        
+        end_node = ox.get_nearest_node(subgraph, (Slist[idx + 1]['lat'], Slist[idx + 1]['lon']))
         # print('start_node is {}'.format(start_node))
         # if taxi_it == 0:
         #     print('start_node lon and lat is {}, {}'.format(node_list[id_hash_map[start_node]].lon, node_list[id_hash_map[start_node]].lat))
@@ -463,8 +453,7 @@ def basic_routing(Slist, taxi_it):    # 根据论文P7
         # if taxi_it == 0:
         #     print('end_node lon and lat is {}, {}'.format(node_list[id_hash_map[end_node]].lon, node_list[id_hash_map[end_node]].lat))
 
-        tmp_list = nx.dijkstra_path(
-            subgraph, source=start_node, target=end_node, weight='length')
+        tmp_list = nx.dijkstra_path(subgraph, source=start_node, target=end_node, weight='length')
 
         #############################################
         # if taxi_it == 0 and idx == 1:
@@ -476,15 +465,11 @@ def basic_routing(Slist, taxi_it):    # 根据论文P7
                          node_list[id_hash_map[x]].cluster_id_belongto) for x in tmp_list]
 
         taxi_path.path_node_list += tmp_list
-        path_distance = nx.dijkstra_path_length(
-            subgraph, source=start_node, target=end_node, weight='length')
+        path_distance = nx.dijkstra_path_length(subgraph, source=start_node, target=end_node, weight='length')
 
-        Slist[idx + 1]['arrival_time'] = Slist[idx]['arrival_time'] + \
-            path_distance / TYPICAL_SPEED
-        print("Slist[idx]['arrival_time'] is " + time.strftime("%Y-%m-%d %H:%M:%S",
-                                                               time.localtime(Slist[idx]['arrival_time'])))
-        print("Slist[idx + 1]['arrival_time'] is " + time.strftime(
-            "%Y-%m-%d %H:%M:%S", time.localtime(Slist[idx + 1]['arrival_time'])))
+        Slist[idx + 1]['arrival_time'] = Slist[idx]['arrival_time'] + path_distance / TYPICAL_SPEED
+        print("Slist[idx]['arrival_time'] is " + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(Slist[idx]['arrival_time'])))
+        print("Slist[idx + 1]['arrival_time'] is " + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(Slist[idx + 1]['arrival_time'])))
         # Slist[idx]['arrival_time'] = now_time
         """
         here!!!!
@@ -547,8 +532,7 @@ def taxi_scheduling(candidate_taxi_list, req, req_id, mode=1):
             Slist.insert(1, start_point)
             Slist.insert(2, end_point)
             if mode:
-                new_path, cost = basic_routing(
-                    Slist, taxi_it)  # 写完basic routing就ok了
+                new_path, cost = basic_routing(Slist, taxi_it)  # 写完basic routing就ok了
             else:
                 new_path, cost = possibility_routing(Slist, taxi_it)
             if cost - ori_cost < minimum_cost:
@@ -572,8 +556,7 @@ def taxi_scheduling(candidate_taxi_list, req, req_id, mode=1):
                 Slist.insert(insertion[0], start_point)
                 Slist.insert(insertion[1] + 1, end_point)
                 if mode:
-                    new_path, cost = basic_routing(
-                        Slist, taxi_it)  # 写完basic routing就ok了
+                    new_path, cost = basic_routing(Slist, taxi_it)  # 写完basic routing就ok了
                 else:
                     new_path, cost = possibility_routing(Slist, taxi_it)
                 if cost - ori_cost < minimum_cost:
@@ -681,18 +664,16 @@ now_time = 0
 socket = None
 
 total_detour_cost = 0
-isThreadAlive = True  # 用于控制当前线程的死活的全局变量
+isThreadAlive = True # 用于控制当前线程的死活的全局变量
 # ==================================全局变量==============================================
 
 
 def send_info(msg):
     socket.send(text_data=json.dumps(msg))
 
-
 def defSwitch():
     global isThreadAlive
-    isThreadAlive = not isThreadAlive  # 前端页面更新后
-
+    isThreadAlive = not isThreadAlive # 前端页面更新后
 
 def main(socket1):
     global socket
@@ -735,11 +716,8 @@ def main(socket1):
                 """
                 start_node_id = ox.get_nearest_node(
                     osm_map, (req_item[4], req_item[3]))
-                socket_request = {'type': 'time',  'time': time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(now_time))}
-                '''
-                        socket备注：
-                            时间
-                '''
+                socket_request = {'type': 'request_pos', 'content': {'value': wgs84_to_bd09(req_item[3], req_item[4]), 'itemStyle': {'color': 'white'}},
+                                  'content1': {'value': wgs84_to_bd09(req_item[5], req_item[6]), 'itemStyle': {'color': 'white'}}, 'time': time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(now_time))}
                 send_info(socket_request)
                 end_node_id = ox.get_nearest_node(
                     osm_map, (req_item[6], req_item[5]))
@@ -749,164 +727,100 @@ def main(socket1):
                 req_item = Request(req_cnt, req_item[3], req_item[4], req_item[5],
                                    req_item[6], start_node_id, end_node_id, req_item[1], req_item[2])
                 divide_group1()
+                print('订单消息：')
+                print('起点经纬度：{} ,终点经纬度：{} '.format(wgs84_to_bd09(req_item.start_lon,
+                                                                 req_item.start_lat), wgs84_to_bd09(req_item.end_lon, req_item.end_lat)))
                 divide_group2()
 
-                req_item.config_pickup_deadline(
-                    req_item.delivery_deadline - time_on_tour)
+                req_item.config_pickup_deadline(req_item.delivery_deadline - time_on_tour)
                 request_list[req_cnt] = req_item
                 req_cnt += 1
-
+                print('release time is {}'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(req_item.release_time))))
                 # 用当前moment来更新所有taxi, mobility_cluster和general_cluster
                 update(req_item)
-                candidate_taxi_list, candidate_empty_list, candidate_non_empty_list = taxi_req_matching(
-                    req_item)
+                candidate_taxi_list, candidate_empty_list, candidate_non_empty_list = taxi_req_matching(req_item)
                 divide_group1()
+                print('mv符合的非空车: ')
+                print(candidate_taxi_list)
+                print('mv 不 符合的空车: ')
+                print(candidate_empty_list)
+                print('mv 不 符合的非空车: ')
+                print(candidate_non_empty_list)
                 # 发送的士的位置
+                socket_taxi_list = [wgs84_to_bd09(i.cur_lon, i.cur_lat) for i in taxi_list]
+                socket_taxi_list = {'type': 'all_taxi', 'content': socket_taxi_list}
+                send_info(socket_taxi_list)
                 divide_group2()
                 # 如果没有候选taxi会返回none
                 cost = None
-                if isThreadAlive == False:
+                if isThreadAlive==False:
                     break
                 elif candidate_taxi_list == None and candidate_empty_list == None and candidate_non_empty_list == None:
                     print('这个订单没有taxi')
                     print('该订单结束//////////////////////////////////////')
                     input('天啊！居然出现了没有人回应的订单！！！点击回车继续')
                     fail += 1
-                    socket_order_finished = {'type': 'order_finished', 'content': [
-                        i for i in king_make_order_finished], 'num': req_cnt, 'fail': fail}
-
-                    '''
-                        socket备注：
-                            content：数组，里面是已经完成的订单的id
-                            num：今日订单数
-                            fail：未响应的订单
-                    '''
-
+                    socket_order_finished = {'type':'order_finished','content':[i for i in king_make_order_finished],'num':req_cnt,'fail':fail}
                     send_info(socket_order_finished)
                     continue
-
                     divide_group2()
                 elif len(candidate_taxi_list) != 0:
-                    chosen_taxi, cost = taxi_scheduling(
-                        candidate_taxi_list, req_item, req_item.request_id, 1)
+                    chosen_taxi, cost = taxi_scheduling(candidate_taxi_list, req_item, req_item.request_id, 1)
                 if cost == None and len(candidate_empty_list) != 0:
-                    chosen_taxi, cost = empty_taxi_scheduling(
-                        candidate_empty_list, req_item, req_item.request_id, 1)
+                    chosen_taxi, cost = empty_taxi_scheduling(candidate_empty_list, req_item, req_item.request_id, 1)
                 if cost == None and len(candidate_non_empty_list) != 0:
-                    chosen_taxi, cost = taxi_scheduling(
-                        candidate_non_empty_list, req_item, req_item.request_id, 1)
+                    chosen_taxi, cost = taxi_scheduling(candidate_non_empty_list, req_item, req_item.request_id, 1)
                 show_taxi = taxi_list[chosen_taxi]
                 show_taxi.add_guest(req_cnt-1)
                 req_item.color = show_taxi.color
                 non_empty_taxi_set.add(show_taxi)
                 print('这个订单选中的taxi是{}'.format(chosen_taxi))
 
+                socket_chosen_taxi = {'type': 'chosen_taxi', 'content': {'coords': [
+                    wgs84_to_bd09(node.lon, node.lat) for node in show_taxi.path.path_node_list]}}
+                send_info(socket_chosen_taxi)
+                # socket_order_details =
+
                 socket_all_request_start = {'type': 'all_request_start', 'content':
                                             [{'value': wgs84_to_bd09(item.start_lon, item.start_lat), 'itemStyle': {'color': item.color}, 'name': "起点_{}".format(item.request_id)} for item in request_list.values()]}
                 send_info(socket_all_request_start)
-                '''
-                        socket备注：
-                            content：数组，所有非空的士的信息
-                            数组中每个元素是一个对象
-                            {
-                                value: 的士当前的位置
-                                itemStyle：{
-                                    color：的士的颜色
-                                    name：的士名（的士_id）
-                                }
-                            }
-                '''
                 socket_all_request_end = {'type': 'all_request_end', 'content':
                                           [{'value': wgs84_to_bd09(item.end_lon, item.end_lat), 'itemStyle': {'color': item.color}, 'name': "终点_{}".format(item.request_id)} for item in request_list.values()]}
                 send_info(socket_all_request_end)
-                '''
-                        socket备注：
-                            content：数组，所有非空的士的信息
-                            数组中每个元素是一个对象
-                            {
-                                value: 的士当前的位置
-                                itemStyle：{
-                                    color：的士的颜色
-                                    name：的士名（的士_id）
-                                }
-                            }
-                '''
                 socket_all_non_empty_taxi = {'type': 'all_non_empty_taxi', 'content':
                                              [{'value': wgs84_to_bd09(item.cur_lon, item.cur_lat), 'itemStyle': {'color': item.color}, 'name': "的士_{}".format(item.taxi_id)} for item in non_empty_taxi_set]}
                 send_info(socket_all_non_empty_taxi)
-                '''
-                        socket备注：
-                            content：数组，所有非空的士的信息
-                            数组中每个元素是一个对象
-                            {
-                                value: 的士当前的位置
-                                itemStyle：{
-                                    color：的士的颜色
-                                    name：的士名（的士_id）
-                                }
-                            }
-                '''
-
-
-
+                print('的士的位置：')
+                for item in non_empty_taxi_set:
+                    print('taxi_{}:{} {}'.format(item.taxi_id, item.cur_lon, item.cur_lat))
 
                 socket_taxi_path = {'type': 'taxi_path',
                                     'content': [{
-                                                'coords': [wgs84_to_bd09(node.lon, node.lat) for node in item.path.path_node_list],
+                                                'coords': [wgs84_to_bd09(node.lon, node.lat) for node in item.path.path_node_list], 
                                                 'lineStyle':{'color': item.color},
                                                 'name': "的士编号：{}".format(item.taxi_id),
                                                 'ok': round(item.complete_index/len(item.path.path_node_list)*100),
-                                                'guest': [i for i in item.get_guest()]
+                                                'guest':[i for i in item.get_guest()]
                                                 }
                                                 for item in non_empty_taxi_set]}
                 send_info(socket_taxi_path)
-                '''
-                        socket备注：
-                            content：数组，所有非空的士的信息
-                            数组中每个元素是一个对象
-                            {
-                                'coords': 数组，装着路径上各个点的坐标
-                                'lineStyle':{'color': 颜色},
-                                'name': 的士名（的士_id）
-                                'ok': 完成程度
-                                'guest': 数组，装着所载订单的id
-                            }
-                '''
                 socket_taxi_path_start = {'type': 'taxi_path_start',
                                           'content': [{'value': wgs84_to_bd09(item.path.path_node_list[0].lon, item.path.path_node_list[0].lat), 'itemStyle':{'color': item.color}, 'name': "taxi_{}起点".format(item.taxi_id)}
                                                       for item in non_empty_taxi_set]}
                 send_info(socket_taxi_path_start)
-                '''
-                        socket备注：
-                            content：数组，所有非空的士的信息
-                            数组中每个元素是一个对象
-                            {
-                                value: 的士接单时的位置
-                                itemStyle：{
-                                    color：的士的颜色
-                                    name：的士名（的士_id）
-                                }
-                            }
-                '''
                 show_taxi.show_schedule()
                 show_taxi.show_pos()
                 # 发送最新状态
-                socket_order_finished = {'type': 'order_finished', 'content': [
-                    i for i in king_make_order_finished], 'num': req_cnt, 'fail': fail}
+                print("king_make_order_finished: {}".format(king_make_order_finished))
+                socket_order_finished = {'type':'order_finished','content':[i for i in king_make_order_finished],'num':req_cnt,'fail':fail}
                 send_info(socket_order_finished)
-                '''
-                        socket备注：
-                            content：数组，所有已完成订单的id
-                            num：今日订单总数
-                            fail：失败订单
-                '''
-
+                print('该订单结束//////////////////////////////////////')
                 global total_detour_cost
                 f.write('total served requests: %d\n' % req_cnt)
                 f.write('total detour time: %f\n' % total_detour_cost)
                 divide_group2()
-    defSwitch()  # 多线程之间共享全局变量，调用函数通知新线程取消阻塞  多么糟糕的线程通信方式！
-    sys.exit(0)  # 退出当前线程
+    defSwitch() # 多线程之间共享全局变量，调用函数通知新线程取消阻塞  多么糟糕的线程通信方式！
+    sys.exit(0) # 退出当前线程
 
 
 print('载入完毕')
