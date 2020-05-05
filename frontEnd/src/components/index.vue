@@ -2,7 +2,7 @@
   <div id="index">
     <!-- <dv- full-screen-container style="position:initial"> -->
     <!-- <dv-loading v-if="loading">Loading...</dv-loading> -->
-    <div  class="host-body">
+    <div class="host-body">
       <div class="d-flex jc-center">
         <dv-decoration-10 style="width:33.3%;height:5px;" />
         <div class="d-flex jc-center">
@@ -27,7 +27,6 @@
 
       <!-- 第二行 -->
       <div class="d-flex jc-between px-2">
-
         <div style="width: 40%" class="d-flex">
           <div
             class="react-left mr-4"
@@ -52,10 +51,10 @@
                   <span class="fs-xl text mx-2">总体信息</span>
                 </div>
               </div>
-              <center/>
+              <center />
             </dv-border-box-10>
           </div>
-          <dv-decoration-2 :reverse="true" style="width:10px;height:500px;"  />
+          <dv-decoration-2 :reverse="true" style="width:10px;height:500px;" />
           <div style="flex-shrink:2; width:2000px">
             <dv-border-box-13 id="bottomLeft">
               <div class="d-flex pt-2 pl-2">
@@ -78,14 +77,34 @@
         </div>
 
         <dv-decoration-10 style="width:100%;height:5px;padding-top:5px;padding-bottom:5px" />
-        <!-- 第四行数据 -->
+        <!-- 热力图、订单的士比、碳排放量 -->
         <div class="bototm-box">
-          <dv-border-box-13>
-            <bottomLeft />
-          </dv-border-box-13>
-          <dv-border-box-12>
-            <bottomRight />
-          </dv-border-box-12>
+          <div style="flex-shrink:2; width:2000px">
+            <dv-border-box-13 id="bottomLeft">
+              <div class="d-flex pt-2 pl-2">
+                <span>
+                  <icon name="chart-bar" id="icon-map"></icon>
+                </span>
+                <div class="d-flex">
+                  <span class="fs-xl text mx-2">实时路径地图</span>
+                </div>
+              </div>
+              <Heat />
+            </dv-border-box-13>
+          </div>
+          <div style="flex-shrink:2; width:2000px">
+            <dv-border-box-13 id="bottomLeft">
+              <div class="d-flex pt-2 pl-2">
+                <span>
+                  <icon name="chart-bar" id="icon-map"></icon>
+                </span>
+                <div class="d-flex">
+                  <span class="fs-xl text mx-2">实时路径地图</span>
+                </div>
+              </div>
+              <bottomRightChart />
+            </dv-border-box-13>
+          </div>
         </div>
       </div>
     </div>
@@ -94,14 +113,12 @@
 </template>
 
 <script>
-import centreLeft1 from "./display/centreLeft1";
-import centreLeft2 from "./display/centreLeft2";
 import centreRight1 from "./display/centreRight1";
-import centreRight2 from "./display/centreRight2";
 import center from "./display/center";
 import bottomLeft from "./display/bottomLeft";
-import bottomRight from "./display/bottomRight";
+import bottomRightChart from "./echart/bottom/bottomRightChart"
 import Map from "./map";
+import Heat from "./heat";
 export default {
   name: "index",
   data() {
@@ -110,14 +127,11 @@ export default {
     };
   },
   components: {
-    Map,
+    Map,bottomRightChart,
+    Heat,
     bottomLeft,
-    centreLeft1,
-    centreLeft2,
     centreRight1,
-    centreRight2,
     center,
-    bottomRight
   },
   mounted() {
     this.cancelLoading();

@@ -12,7 +12,6 @@ export default {
   name: "Map",
   data() {
     return {
-      now_time: "加载中，请稍后",
       activeName: "first",
       chart: echarts.ECharts,
       order_processed: 0,
@@ -207,8 +206,10 @@ export default {
         .getBMap();
       // eslint-disable-next-line
       bmap.addControl(new BMap.NavigationControl());
+      var goodsData = require('../assets/scss/custom_map_config.json')
       bmap.setMapStyleV2({
-        styleId: "59a80bc22d507e09700207fce541bc16"
+        // styleId:'f20aa46cedf21b09b47a71d84116c411'
+        styleJson:goodsData
       });
       this.mapContorller = bmap;
 
@@ -235,104 +236,5 @@ export default {
   color: #9e7d60ff;
   font-size: 200%;
   margin-bottom: 10px;
-}
-.el-row {
-  margin-bottom: 10px;
-}
-.loading {
-  color: red;
-}
-.el-tag {
-  margin-bottom: 6px;
-  background-color: #2f4050 !important;
-  color: #9e7d60ff !important;
-  border-color: #9e7d60ff !important;
-  font-size: 10px;
-  display: block;
-  height: 8% !important;
-  padding: 3px;
-}
-.el-progress {
-  margin: 3px;
-}
-.el-pagination .btn-next,
-.el-pagination .btn-prev,
-.el-dialog,
-.el-pager li,
-.el-input-number__decrease,
-.el-input-number__increase {
-  background-color: #2f4050 !important;
-  color: #9e7d60ff !important;
-  border-color: #9e7d60ff !important;
-}
-/* .el-progress-bar__inner {
-  background-color: #9e7d60ff !important;
-} */
-.el-progress-bar__innerText {
-  color: #303133;
-}
-.el-input__inner {
-  background-color: #3f444c !important;
-  color: #9e7d60ff !important;
-  border-color: #9e7d60ff !important;
-}
-.el-input__inner:focus {
-  border-color: white !important;
-}
-.el-button {
-  margin-top: 0px !important;
-  padding: 5px !important;
-}
-.el-button,
-.el-button:focus {
-  background-color: #2f4050 !important;
-  color: #9e7d60ff !important;
-  border-color: #9e7d60ff !important;
-}
-.el-button:hover,
-.el-input-number__decrease:hover,
-.el-input-number__increase:hover,
-.el-tag:hover {
-  background-color: #3f444c !important;
-  color: #9e7d60ff;
-  border-color: #9e7d60ff;
-}
-.el-tabs__active-bar {
-  background-color: #9e7d60ff !important;
-}
-.el-loading-spinner .el-loading-text,
-.el-icon-loading:before,
-.el-tabs__item.is-active,
-.el-tabs__item:hover {
-  color: #9e7d60ff !important;
-  letter-spacing: 3px;
-  font-weight: bolder;
-}
-.el-tabs__item {
-  color: #9e7d60ff !important;
-  letter-spacing: 3px;
-}
-.situationBar {
-  color: #9e7d60ff !important;
-  line-height: 10px;
-  letter-spacing: 2px;
-}
-.situationBar1 {
-  display: inline-block;
-  color: #9e7d60ff !important;
-  line-height: 20px;
-  letter-spacing: 3px;
-}
-.clearfix:before,
-.clearfix:after {
-  display: table;
-  content: "";
-}
-.clearfix:after {
-  clear: both;
-}
-
-.box-card {
-  width: 480px;
 }
 </style>

@@ -12,388 +12,117 @@ export default {
   },
   mounted() {
     this.drawPie();
-    this.charTimg();
   },
   methods: {
-    charTimg() {
-      setInterval(() => {
-        this.drawPie();
-      }, 6000);
-    },
     drawPie() {
       // 基于准备好的dom，初始化echarts实例
       let myChartPieLeft = echarts.init(
         document.getElementById("bottomRightChart")
       );
-      //  ----------------------------------------------------------------
-      // 数据
-      let dateBase = new Date();
-      let year = dateBase.getFullYear();
-      let dottedBase = +dateBase + 1000 * 3600 * 24;
-      let weekCategory = [];
-
-      let radarData = [];
-      let radarDataAvg = [];
-      let maxData = 12000;
-      let weekMaxData = [];
-      let weekLineData = [];
-
-      // 周数据
-      for (let i = 0; i < 7; i++) {
-        // 日期
-        var date = new Date((dottedBase -= 1000 * 3600 * 24));
-        weekCategory.unshift([date.getMonth() + 1, date.getDate()].join("/"));
-
-        // 折线图数据
-        weekMaxData.push(maxData);
-        var distance = Math.round(Math.random() * 11000 + 500);
-        weekLineData.push(distance);
-
-        // 雷达图数据
-        // 我的指标
-        var averageSpeed = +(Math.random() * 5 + 3).toFixed(3);
-        var maxSpeed = averageSpeed + +(Math.random() * 3).toFixed(2);
-        var hour = +(distance / 1000 / averageSpeed).toFixed(1);
-        var radarDayData = [distance, averageSpeed, maxSpeed, hour];
-        radarData.unshift(radarDayData);
-
-        // 平均指标
-        var distanceAvg = Math.round(Math.random() * 8000 + 4000);
-        var averageSpeedAvg = +(Math.random() * 4 + 4).toFixed(3);
-        var maxSpeedAvg = averageSpeedAvg + +(Math.random() * 2).toFixed(2);
-        var hourAvg = +(distance / 1000 / averageSpeed).toFixed(1);
-        var radarDayDataAvg = [
-          distanceAvg,
-          averageSpeedAvg,
-          maxSpeedAvg,
-          hourAvg
-        ];
-        radarDataAvg.unshift(radarDayDataAvg);
-      }
-
-      // 颜色设置
-      let color = {
-        linearYtoG: {
-          type: "linear",
-          x: 0,
-          y: 0,
-          x2: 1,
-          y2: 1,
-          colorStops: [
-            {
-              offset: 0,
-              color: "#f5b44d"
-            },
-            {
-              offset: 1,
-              color: "#28f8de"
-            }
-          ]
-        },
-        linearGtoB: {
-          type: "linear",
-          x: 0,
-          y: 0,
-          x2: 1,
-          y2: 0,
-          colorStops: [
-            {
-              offset: 0,
-              color: "#43dfa2"
-            },
-            {
-              offset: 1,
-              color: "#28f8de"
-            }
-          ]
-        },
-        linearBtoG: {
-          type: "linear",
-          x: 0,
-          y: 0,
-          x2: 1,
-          y2: 0,
-          colorStops: [
-            {
-              offset: 0,
-              color: "#1c98e8"
-            },
-            {
-              offset: 1,
-              color: "#28f8de"
-            }
-          ]
-        },
-        areaBtoG: {
-          type: "linear",
-          x: 0,
-          y: 0,
-          x2: 0,
-          y2: 1,
-          colorStops: [
-            {
-              offset: 0,
-              color: "rgba(35,184,210,.2)"
-            },
-            {
-              offset: 1,
-              color: "rgba(35,184,210,0)"
-            }
-          ]
-        }
-      };
+      var treeDataURI =
+        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAA2CAYAAADUOvnEAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA5tJREFUeNrcWE1oE0EUnp0kbWyUpCiNYEpCFSpIMdpLRTD15s2ePHixnj00N4/GoyfTg2fbiwdvvagHC1UQ66GQUIQKKgn1UAqSSFua38b3prPJZDs7s5ufKn0w7CaZ2W/fe9/73kyMRqNB3Nrj1zdn4RJ6du9T2u1a2iHYSxjP4d41oOHGQwAIwSUHIyh8/RA8XeiXh0kLGFoaXiTecw/hoTG4ZCSAaFkY0+BpsZceLtiAoV2FkepZSDk5EpppczBvpuuQCqx0YnkYcVVoqQYMyeCG+lFdaGkXeVOFNu4aEBalOBk6sbQrQF7gSdK5JXjuHXuYVIVyr0TZ0FjKDeCs6km7JYMUdrWAUVmZUBtmRnVPK+x6nIR2xomH06R35ggwJPeofWphr/W5UjPIxq8B2bKgE8C4HVHWvg+2gZjXj19PkdFztY7bk9TDCH/g6oafDPpaoMvZIRI5WyMB/0Hv++HkpTKE0kM+A+h20cPAfN4GuRyp9G+LMTW+z8rCLI8b46XO9zRcYZTde/j0AZm8WGb3Y2F9KLlE2nqYkjFLJAsDOl/lea0q55mqxXcL7YBc++bsCPMe8mUyU2ZIpnCoblca6TZA/ga2Co8PGg7UGUlEDd0ueptglbrRZLLE7poti6pCaWUo2pu1oaYI1CF9b9cCZPO3F8ikJQ/rPpQT5YETht26ss+uCIL2Y8vHwJGpA96GI5mjOlaKhowUy6BcNcgIhDviTGWCGFaqEuufWz4pgcbCh+w0gEOyOjTlTtYYlIWPYWKEsLDzOs+nhzaO1KEpd+MXpOoTUgKiNyhdy5aSMPNVqxtSsJFgza5EWA4zKtCJ2OGbLn0JSLu8+SL4G86p1Fpr7ABXdGFF/UTD4rfmFYFw4G9VAJ9SM3aF8l3yok4/J6IV9sDVb36ynmtJ2M5+CwxTYBdKNMBaocKGV2nYgkz6r+cHBP30MzAfi4Sy+BebSoPIOi8PW1PpCCvr/KOD4k9Zu0WSH0Y0+SxJ2awp/nlwKtcGyHOJ8vNHtRJzhPlsHr8MogtlVtwUU0tSM1x58upSKbfJnSKUR07GVMKkDNfXpzpv0RTHy3nZMVx5IOWdZIaPabGFvfpwpjnvfmJHXLaEvZUTseu/TeLc+xgAPhEAb/PbjO6PBaOTf6LQRh/dERde23zxLtOXbaKNhfq2L/1fAOPHDUhOpIf5485h7l+GNHHiSYPKE3Myz9sFxoJuAyazvwIMAItferha5LTqAAAAAElFTkSuQmCC";
+      var beginYear = 1;
+      var endYear = 2050;
+      var lineCount = 10;
       let option = {
-        title: {
-          text: "",
-          textStyle: {
-            color: "#D3D6DD",
-            fontSize: 24,
-            fontWeight: "normal"
+        color: ["#e54035"],
+        xAxis: {
+          axisLine: { show: false },
+          axisLabel: { show: false },
+          axisTick: { show: false },
+          splitLine: { show: false },
+          name: beginYear,
+          nameLocation: "middle",
+          nameGap: 40,
+          nameTextStyle: {
+            color: "green",
+            fontSize: 30,
+            fontFamily: "Arial"
           },
-          subtext: year + "/" + weekCategory[6],
-          subtextStyle: {
-            color: "#fff",
-            fontSize: 16
-          },
-          top: 50,
-          left: 80
+          min: -2800,
+          max: 2800
         },
-        legend: {
-          top: 120,
-          left: 80,
-          orient: "vertical",
-          itemGap: 15,
-          itemWidth: 12,
-          itemHeight: 12,
-          data: ["平均指标", "我的指标"],
-          textStyle: {
-            color: "#fff",
-            fontSize: 14
-          }
-        },
-        tooltip: {
-          trigger: "item"
-        },
-        radar: {
-          center: ["68%", "27%"],
-          radius: "40%",
-          name: {
-            color: "#fff"
-          },
-          splitNumber: 8,
-          axisLine: {
-            lineStyle: {
-              color: color.linearYtoG,
-              opacity: 0.6
-            }
-          },
-          splitLine: {
-            lineStyle: {
-              color: color.linearYtoG,
-              opacity: 0.6
-            }
-          },
-          splitArea: {
-            areaStyle: {
-              color: "#fff",
-              opacity: 0.1,
-              shadowBlur: 25,
-              shadowColor: "#000",
-              shadowOffsetX: 0,
-              shadowOffsetY: 5
-            }
-          },
-          indicator: [
-            {
-              name: "服务态度",
-              max: maxData
-            },
-            {
-              name: "产品质量",
-              max: 10
-            },
-            {
-              name: "任务效率",
-              max: 12
-            },
-            {
-              name: "售后保障",
-              max: 3.5
-            }
-          ]
+        yAxis: {
+          data: makeCategoryData(),
+          show: false
         },
         grid: {
-          left: 90,
-          right: 80,
-          bottom: 40,
-          top: "60%"
-        },
-        xAxis: {
-          type: "category",
-          position: "bottom",
-          axisLine: true,
-          axisLabel: {
-            color: "rgba(255,255,255,.8)",
-            fontSize: 12
-          },
-          data: weekCategory
-        },
-        // 下方Y轴
-        yAxis: {
-          name: "工单",
-          nameLocation: "end",
-          nameGap: 24,
-          nameTextStyle: {
-            color: "rgba(255,255,255,.5)",
-            fontSize: 14
-          },
-          max: maxData,
-          splitNumber: 4,
-
-          axisLine: {
-            lineStyle: {
-              opacity: 0
-            }
-          },
-          splitLine: {
-            show: true,
-            lineStyle: {
-              color: "#fff",
-              opacity: 0.1
-            }
-          },
-          axisLabel: {
-            color: "rgba(255,255,255,.8)",
-            fontSize: 12
-          }
+          top: "center",
+          height: 280
         },
         series: [
           {
-            name: "",
-            type: "radar",
-            symbolSize: 0,
-            data: [
-              {
-                value: radarDataAvg[6],
-                name: "平均指标",
-                itemStyle: {
-                  normal: {
-                    color: "#f8d351"
-                  }
-                },
-                lineStyle: {
-                  normal: {
-                    opacity: 0
-                  }
-                },
-                areaStyle: {
-                  normal: {
-                    color: "#f8d351",
-                    shadowBlur: 25,
-                    shadowColor: "rgba(248,211,81,.3)",
-                    shadowOffsetX: 0,
-                    shadowOffsetY: -10,
-                    opacity: 1
-                  }
-                }
-              },
-              {
-                value: radarData[6],
-                name: "我的指标",
-                itemStyle: {
-                  normal: {
-                    color: "#43dfa2"
-                  }
-                },
-                lineStyle: {
-                  normal: {
-                    opacity: 0
-                  }
-                },
-                areaStyle: {
-                  normal: {
-                    color: color.linearGtoB,
-                    shadowBlur: 15,
-                    shadowColor: "rgba(0,0,0,.2)",
-                    shadowOffsetX: 0,
-                    shadowOffsetY: 5,
-                    opacity: 0.8
-                  }
-                }
-              }
-            ]
+            name: "all",
+            type: "pictorialBar",
+            symbol: "image://" + treeDataURI,
+            symbolSize: [30, 55],
+            symbolRepeat: true,
+            data: makeSeriesData(beginYear),
+            animationEasing: "elasticOut"
           },
           {
-            name: "",
-            type: "line",
-            smooth: true,
-            symbol: "emptyCircle",
-            symbolSize: 8,
-            itemStyle: {
-              normal: {
-                color: "#fff"
-              }
-            },
-            lineStyle: {
-              normal: {
-                color: color.linearBtoG,
-                width: 3
-              }
-            },
-            areaStyle: {
-              normal: {
-                color: color.areaBtoG
-              }
-            },
-            data: weekLineData,
-            lineSmooth: true,
-            markLine: {
-              silent: true,
-              data: [
-                {
-                  type: "average",
-                  name: "平均值"
-                }
-              ],
-              precision: 0,
-              label: {
-                normal: {
-                  formatter: "平均值: \n {c}"
-                }
-              },
-              lineStyle: {
-                normal: {
-                  color: "rgba(248,211,81,.7)"
-                }
-              }
-            },
-            tooltip: {
-              position: "top",
-              formatter: "{c} m",
-              backgroundColor: "rgba(28,152,232,.2)",
-              padding: 6
-            }
-          },
-          {
-            name: "占位背景",
-            type: "bar",
-            itemStyle: {
-              normal: {
-                show: true,
-                color: "#000",
-                opacity: 0
-              }
-            },
-            silent: true,
-            barWidth: "50%",
-            data: weekMaxData,
-            animation: false
-          },
-          
+            name: "all",
+            type: "pictorialBar",
+            symbol: "image://" + treeDataURI,
+            symbolSize: [30, 55],
+            symbolRepeat: true,
+            data: makeSeriesData(beginYear, true),
+            animationEasing: "elasticOut"
+          }
         ]
       };
 
+      // Make fake data.
+      function makeCategoryData() {
+        var categoryData = [];
+        for (var i = 0; i < lineCount; i++) {
+          categoryData.push(i + "a");
+        }
+        return categoryData;
+      }
+
+      function makeSeriesData(year, negative) {
+        // make a fake value just for demo.
+        var r = (year - beginYear + 1) * 10;
+        var seriesData = [];
+
+        for (var i = 0; i < lineCount; i++) {
+          var sign = negative
+            ? -1 * (i % 3 ? 0.9 : 1)
+            : 1 * ((i + 1) % 3 ? 0.9 : 1);
+          seriesData.push({
+            value: 0,
+            value: sign * (
+              year <= beginYear + 1
+                ? (Math.abs(i - lineCount / 2 + 0.5) < lineCount / 5 ? 5 : 0)
+                : (lineCount - Math.abs(i - lineCount / 2 + 0.5)) * r),
+            symbolOffset: i % 2 ? ["50%", 0] : null
+          });
+        }
+        return seriesData;
+      }
       myChartPieLeft.setOption(option);
+      // Set dynamic data.
+      var currentYear = beginYear;
+      setInterval(function() {
+        currentYear++;
+        if (currentYear > endYear) {
+          currentYear = beginYear;
+        }
+        myChartPieLeft.setOption({
+          xAxis: {
+            name: currentYear
+          },
+          series: [
+            {
+              data: makeSeriesData(currentYear)
+            },
+            {
+              data: makeSeriesData(currentYear, true)
+            }
+          ]
+        });
+      }, 800);
       // -----------------------------------------------------------------
       // 响应式变化
       window.addEventListener("resize", () => myChartPieLeft.resize(), false);

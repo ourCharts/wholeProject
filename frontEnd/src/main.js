@@ -3,38 +3,33 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import {Container, Progress, Main, Aside, Tabs, TabPane, Row, Input, Col, Tag, Pagination, Button, TableColumn, Table, Header, Loading, Message} from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
-import dataV from '@jiaminghi/data-view'
+import {decoration10, loading, decoration8, decoration6, decoration5,borderBox13
+  ,borderBox10,borderBox8, borderBox12, decoration2, scrollBoard,scrollRankingBoard} from '@jiaminghi/data-view'
 import Icon from 'vue-awesome/components/Icon'
 import 'vue-awesome/icons/index.js'
 // 引入全局css
 import './assets/scss/style.scss'
-Vue.use(dataV)
+Vue.use(decoration10);
+Vue.use(decoration2);
+Vue.use(loading);
+Vue.use(decoration8);
+Vue.use(decoration5);
+Vue.use(decoration6);
+Vue.use(borderBox12);
+Vue.use(borderBox10);
+Vue.use(borderBox8);
+Vue.use(borderBox13);
+Vue.use(scrollRankingBoard);
+Vue.use(scrollBoard);
 
 // 全局注册图标
 Vue.component('icon', Icon)
 
 Vue.config.productionTip = false
-Vue.use(Container)
-Vue.use(Main)
-Vue.use(Aside)
-Vue.use(Tabs)
-Vue.use(TabPane)
-Vue.use(Row)
-Vue.use(Input)
-Vue.use(Col)
-Vue.use(Tag)
-Vue.use(Pagination)
-Vue.use(Button)
-Vue.use(TableColumn)
-Vue.use(Table)
-Vue.use(Header)
-Vue.use(Progress)
 
-Vue.use(Loading.directive)
-
-Vue.prototype.$message = Message
+import VueBus from './router/vue_bus'
+Vue.use(VueBus)
+// Vue.prototype.$message = Message
 
 /* eslint-disable no-new */
 new Vue({
