@@ -2,20 +2,19 @@
   <div id="center">
     <div class="up">
       <div class="item bg-color-black" v-for="item in titleItem" :key="item.title">
-        <dv-border-box-8 >
+        <dv-border-box-8>
           <p class="colorBlue fw-b" style="line-height: 30px; font-size:1.5rem">{{item.title}}</p>
           <div>
-
             <p class="conuts">{{item.number}}</p>
           </div>
         </dv-border-box-8>
       </div>
     </div>
     <div class="down">
-        <div class="colorBlue item fw-b" style="line-height: 30px; font-size:1.5rem">
-          <span>今日订单组成</span>
-          <centerChart1 />
-        </div>
+      <div class="colorBlue item fw-b" style="line-height: 30px; font-size:1.5rem">
+        <span>今日订单组成</span>
+        <centerChart1 />
+      </div>
     </div>
   </div>
 </template>
@@ -24,18 +23,26 @@
 import centerChart1 from "@/components/echart/center/centerChart1";
 
 export default {
-  components:{
+  components: {
     centerChart1
   },
   data() {
     return {
-      order_finished:[],
-      order_got:0,
-      order_fail:0
+      order_finished: [],
+      order_got: 0,
+      order_fail: 0,
+      non_empty_taxi: 0,
+      share_order:0,
     };
   },
-  computed:{
-    titleItem: function () {
+  computed: {
+    order_processed: function() {
+      return this.order_got - this.order_fail;
+    },
+    empty_taxi: function() {
+      return 100 - this.non_empty_taxi;
+    },
+    titleItem: function() {
       return [
         {
           title: "今日订单数",
@@ -47,45 +54,52 @@ export default {
         },
         {
           title: "处理订单数",
-          number: this.order_got - this.order_fail
+          number: this.order_processed
         },
         {
           title: "拼车订单数",
-          number: 12
+          number: this.share_order
         },
         {
           title: "在线出租车",
-          number: 23
+          number: 100
         },
         {
           title: "空闲出租车",
-          number: 24
+          number: this.empty_taxi
         }
-      ]
+      ];
     }
   },
-  mounted(){
-      this.$bus.$on('order_finished',(data) =>{
-          this.order_finished=data[0],
-          this.order_got=data[1],
-          this.order_fail=data[2]
-      });
-
+  mounted() {
+    this.$bus.on("order_finished", data => {
+      (this.order_finished = data[0]),
+        (this.order_got = data[1]),
+        (this.order_fail = data[2]);
+      this.non_empty_taxi = data[3];
+    });
+    this.$bus.on("type_of_share_true", data => {
+        this.share_order += 2;
+    });
+  },
+  beforeDestroy() {
+    this.$bus.off("all_taxi");
+    this.$bus.off("type_of_share_true");
   }
 };
 </script>
 
 <style lang="scss" scoped>
 .conuts {
-    color: #00fbfe;
-    text-shadow: 0 0 25px #00fbfe;
-    font-size: 28px;
-    font-weight: bolder;
-    text-align: center;
-    width:100px;
-    margin: auto;
-    height:50px;
-    line-height: 30px;
+  color: #00fbfe;
+  text-shadow: 0 0 25px #00fbfe;
+  font-size: 28px;
+  font-weight: bolder;
+  text-align: center;
+  width: 100px;
+  margin: auto;
+  height: 50px;
+  line-height: 30px;
 }
 #center {
   display: flex;

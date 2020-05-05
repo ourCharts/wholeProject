@@ -15,11 +15,11 @@ export default {
       // chosen_taxi: [{'value':[[104.06, 30.65918619836269],[104.07, 30.65918619836269]], 'itemStyle': {'color':'white'}}],
       chart: echarts.ECharts,
       taxi_path: [], // 元素是数组A, 每个A里面都装着若干个二维数组（装着坐标）
-      all_request_start: [],//所有订单起点 ， 元素是一个二维数组（装着坐标）
-      all_request_end: [],  //所有订单终点 ， 元素是一个二维数组（装着坐标）
-      taxi_path_start: [],  // 所有的士 接单时的位置 ， 元素是一个二维数组（装着坐标）
-      all_non_empty_taxi: [],// 元素是所有已接单的的士id 
-      order_finished: []  // 元素是所有已经完成的订单的id
+      all_request_start: [], //所有订单起点 ， 元素是一个二维数组（装着坐标）
+      all_request_end: [], //所有订单终点 ， 元素是一个二维数组（装着坐标）
+      taxi_path_start: [], // 所有的士 接单时的位置 ， 元素是一个二维数组（装着坐标）
+      all_non_empty_taxi: [], // 元素是所有已接单的的士id
+      order_finished: [] // 元素是所有已经完成的订单的id
     };
   },
   computed: {
@@ -27,7 +27,7 @@ export default {
       return {
         bmap: {
           center: this.centerCoords,
-          zoom: 14,
+          zoom: 15,
           roam: true
         },
         tooltip: {
@@ -125,12 +125,17 @@ export default {
         heartCheck.reset().start(); // 收到服务器任何响应都应重置计时器
         var data = JSON.parse(e.data);
         if (data["type"] === "request_pos") {
-          // 显示被选中的taxi的路径点
           _this.now_time = data["time"];
         } else if (data["type"] === "taxi_path") {
-          // 所有taxi的路径
           _this.taxi_path = data["content"];
+          _this.$bus.emit("taxi_path", data["content"]);
           _this.chart.setOption(_this.options);
+        } else if (data["type"] === "req_to_taxi_map") {
+          _this.$bus.emit("req_to_taxi_map", [
+            data["order"],
+            data["taxi"],
+            data["share"]
+          ]);
         } else if (data["type"] === "all_request_start") {
           _this.all_request_start = data["content"];
           _this.chart.setOption(_this.options);
@@ -139,16 +144,20 @@ export default {
           _this.chart.setOption(_this.options);
         } else if (data["type"] === "all_non_empty_taxi") {
           _this.all_non_empty_taxi = data["content"];
+
           _this.chart.setOption(_this.options);
         } else if (data["type"] === "taxi_path_start") {
           _this.taxi_path_start = data["content"];
           _this.chart.setOption(_this.options);
+        } else if (data["type"] === "type_of_share_true") {
+          _this.$bus.emit("type_of_share_true", "");
         } else if (data["type"] === "order_finished") {
           //alert(data['content'])
-          _this.$bus.$emit("order_finished", [
+          _this.$bus.emit("order_finished", [
             data["content"],
             data["num"],
-            data["fail"]
+            data["fail"],
+            data["non_empty_taxi"]
           ]);
         }
       };
@@ -172,6 +181,15 @@ export default {
     }
   },
   mounted() {
+    // setTimeout(() => {
+    //   this.$bus.emit(
+    //   "taxi_path",
+    //   [{
+    //       name: 'asd',
+    //       value: 13
+    //     }]
+    // );
+    // }, 2000);
     this.init();
   },
   beforeDestroy() {

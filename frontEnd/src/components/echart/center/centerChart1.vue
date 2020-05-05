@@ -7,31 +7,28 @@
 <script>
 const echarts = require("echarts");
 export default {
-  name:'tmp',
+  name: "tmp",
   data() {
     return {
-      share: 31,
-      non_share:10,
-      fail:5
+      myChart: null,
+      share: 0,
+      fail: 0,
+      order_processed: 0,
     };
   },
-  computed:{
-    data_king:function () {
+  computed: {
+    non_share:function () {
+      return this.order_processed - this.share;
+    },
+    data_king: function() {
       return [
         { value: this.share, name: "拼车" },
         { value: this.non_share, name: "独享" },
         { value: this.fail, name: "接单失败" }
-      ]
-    }
-  },
-  mounted() {
-    this.drawPie();
-  },
-  methods: {
-    drawPie: function() {
-      var myChart = echarts.init(document.getElementById("centerChart1"));
-      var data = this.data_king;
-      var option = {
+      ];
+    },
+    option: function() {
+      return {
         backgroundColor: "rgba(0,0,0,0)",
         tooltip: {
           trigger: "item",
@@ -78,7 +75,7 @@ export default {
                 formatter: "{d}%",
                 textStyle: {
                   color: "#fff",
-                  fontSize:20
+                  fontSize: 20
                 }
               },
               emphasis: {
@@ -88,7 +85,7 @@ export default {
                 }
               }
             },
-            data: data
+            data: this.data_king
           },
           {
             name: "",
@@ -111,15 +108,37 @@ export default {
                 show: false
               }
             },
-            data: data
+            data: this.data_king
           }
         ]
       };
+    }
+  },
+  mounted() {
+    this.$bus.on("order_finished", data => {
+      this.fail = data[2];
+      this.order_processed = data[1] - data[2]
+      this.myChart.setOption(this.option);
+    });
+    this.$bus.on("type_of_share_true", data => {
+      this.share+=2;
+      this.myChart.setOption(this.option);
+    });
+    this.drawPie();
+  },
+  beforeDestroy() {
+    this.$bus.off("order_finished");
+    this.$bus.off("num_of_non_empty_taxi");
+  },
+  methods: {
+    drawPie: function() {
+      this.myChart = echarts.init(document.getElementById("centerChart1"));
 
       // 使用刚指定的配置项和数据显示图表。
-      myChart.setOption(option);
+      this.myChart.setOption(this.option);
+      var _this = this;
       window.addEventListener("resize", function() {
-        myChart.resize();
+        _this.myChart.resize();
       });
     }
   },
