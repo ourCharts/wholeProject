@@ -68,7 +68,7 @@
     "featureType": "scenicspots",
     "elementType": "geometry",
     "stylers": {
-        "visibility": "off",
+        "visibility": "on",
         "color": "#12223dff"
     }
 }, {
@@ -248,7 +248,7 @@
     "featureType": "continent",
     "elementType": "labels",
     "stylers": {
-        "visibility": "off"
+        "visibility": "on"
     }
 }, {
     "featureType": "continent",
@@ -326,7 +326,7 @@
     "featureType": "poilabel",
     "elementType": "labels",
     "stylers": {
-        "visibility": "off"
+        "visibility": "on"
     }
 }, {
     "featureType": "districtlabel",
@@ -392,8 +392,7 @@
     "featureType": "entertainment",
     "elementType": "geometry",
     "stylers": {
-        "color": "#12223dff",
-        "visibility": "off"
+        "color": "#12223dff"
     }
 }, {
     "featureType": "shopping",
@@ -954,7 +953,7 @@
     "featureType": "educationlabel",
     "elementType": "labels",
     "stylers": {
-        "visibility": "off"
+        "visibility": "on"
     }
 }, {
     "featureType": "educationlabel",
@@ -1311,64 +1310,16 @@
         "color": "#ffffff00"
     }
 }, {
-    "featureType": "background",
-    "elementType": "geometry",
-    "stylers": {
-        "visibility": "on"
-    }
-}, {
     "featureType": "airportlabel",
     "elementType": "labels",
     "stylers": {
-        "visibility": "off"
+        "visibility": "on"
     }
 }, {
     "featureType": "scenicspotslabel",
     "elementType": "labels",
     "stylers": {
-        "visibility": "off"
-    }
-}, {
-    "featureType": "entertainmentlabel",
-    "elementType": "labels",
-    "stylers": {
-        "visibility": "off"
-    }
-}, {
-    "featureType": "estatelabel",
-    "elementType": "labels",
-    "stylers": {
-        "visibility": "off"
-    }
-}, {
-    "featureType": "businesstowerlabel",
-    "elementType": "labels",
-    "stylers": {
-        "visibility": "off"
-    }
-}, {
-    "featureType": "companylabel",
-    "elementType": "labels",
-    "stylers": {
-        "visibility": "off"
-    }
-}, {
-    "featureType": "governmentlabel",
-    "elementType": "labels",
-    "stylers": {
-        "visibility": "off"
-    }
-}, {
-    "featureType": "restaurantlabel",
-    "elementType": "labels",
-    "stylers": {
-        "visibility": "off"
-    }
-}, {
-    "featureType": "hotellabel",
-    "elementType": "labels",
-    "stylers": {
-        "visibility": "off"
+        "visibility": "on"
     }
 }, {
     "featureType": "lifeservicelabel",
@@ -1383,26 +1334,14 @@
         "visibility": "off"
     }
 }, {
-    "featureType": "financelabel",
+    "featureType": "hotellabel",
     "elementType": "labels",
     "stylers": {
         "visibility": "off"
     }
 }, {
-    "featureType": "medicallabel",
+    "featureType": "restaurantlabel",
     "elementType": "labels",
-    "stylers": {
-        "visibility": "off"
-    }
-}, {
-    "featureType": "shoppinglabel",
-    "elementType": "labels",
-    "stylers": {
-        "visibility": "off"
-    }
-}, {
-    "featureType": "scenicspotsway",
-    "elementType": "geometry",
     "stylers": {
         "visibility": "off"
     }

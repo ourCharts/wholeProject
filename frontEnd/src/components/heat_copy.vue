@@ -33,31 +33,43 @@ export default {
   computed: {
     options: function() {
       return {
-        animation: true,
         bmap: {
-            center: this.centerCoords,
-            zoom: 14,
-            roam: true
+          center: this.centerCoords,
+          zoom: 14,
+          roam: true
         },
-        visualMap: {
-            show: false,
-            top: 'top',
-            min: 0,
-            max: 5,
-            seriesIndex: 0,
-            calculable: true,
-            inRange: {
-                color: ['blue', 'blue', 'green', 'yellow', 'red']
-            }
-        },
-        series: [{
-            type: 'heatmap',
-            coordinateSystem: 'bmap',
-            data: [[104.06, 30.65918619836269],[104.06, 30],[104.06, 30.6689],[104.06, 30.65918619836269]],
-            pointSize: 8,
-            blurSize: 19
-        }]
-    };
+        series: [
+          {
+            type: "lines",
+            coordinateSystem: "bmap",
+            polyline: true,
+            data: this.busLines,
+            silent: true,
+            lineStyle: {
+              opacity: 0.2,
+              width: 10
+            },
+            progressiveThreshold: 500,
+            progressive: 200
+          },
+          {
+            type: "lines",
+            coordinateSystem: "bmap",
+            polyline: true,
+            data: this.busLines,
+            lineStyle: {
+              width: 0
+            },
+            effect: {
+              constantSpeed: 40,
+              show: true,
+              trailLength: 0.3,
+              symbolSize: 10
+            },
+            zlevel: 1
+          }
+        ]
+      };
     }
   },
   methods: {
@@ -71,9 +83,9 @@ export default {
         .getBMap();
       // eslint-disable-next-line
       bmap.addControl(new BMap.NavigationControl());
-      var goodsData = require("../assets/scss/heat_map.json");
+      var goodsData = require("../assets/scss/custom_map_config.json");
       bmap.setMapStyleV2({
-        styleJson: goodsData
+        styleId: "59a80bc22d507e09700207fce541bc16"
       });
       this.mapContorller = bmap;
     }

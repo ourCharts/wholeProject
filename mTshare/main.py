@@ -181,8 +181,7 @@ def taxi_req_matching(req: Request):
     req_start_node = ox.get_nearest_node(osm_map, (u_lat, u_lon))
     nearest_start_id = ox.get_nearest_node(osm_map, (u_lat, u_lon))
     nearest_end_id = ox.get_nearest_node(osm_map, (v_lat, v_lon))
-    delta_t = req.delivery_deadline - \
-        node_distance_matrix[id_hash_map[nearest_start_id]
+    delta_t = req.delivery_deadline - node_distance_matrix[id_hash_map[nearest_start_id]
                              ][id_hash_map[nearest_end_id]] / TYPICAL_SPEED - req.release_time
     # 得到搜索范围的半径
     search_range = delta_t * TYPICAL_SPEED
@@ -658,7 +657,7 @@ TAXI_TOTAL_NUM = 100
 REQUESTS_TO_PROCESS = 500  # 总共要处理多少个request
 partition_filter_param = 1.0
 
-Lambda = 0.5
+Lambda = 0.6
 # alpha = 0.999999921837146
 node_list = []  # Node对象
 taxi_list = []  # Taxi对象
@@ -717,9 +716,19 @@ def main(socket1):
             # for req_item in tqdm(reqs, desc='Processing requests...'):
             for req_item in reqs:
                 color = random_color()
+<<<<<<< HEAD
                 print('**********************************************************************')
                 print('**************************新订单{}**************************************'.format(req_cnt))
                 print('**********************************************************************')
+=======
+                print('now time is {}'.format(now_time))
+                print(
+                    '**********************************************************************')
+                print(
+                    '**************************新订单{}**************************************'.format(req_cnt))
+                print(
+                    '**********************************************************************')
+>>>>>>> e6289cf7cd17d4704dd4ef3597de8bc45be45ed3
                 end_time = req_item[1] + datetime.timedelta(minutes=15).seconds
                 """
                 0: order_id,
@@ -762,6 +771,8 @@ def main(socket1):
                 divide_group2()
                 # 如果没有候选taxi会返回none
                 cost = None
+                
+                type_of_share = False
                 if isThreadAlive == False:
                     break
                 elif candidate_taxi_list == None and candidate_empty_list == None and candidate_non_empty_list == None:
@@ -786,18 +797,36 @@ def main(socket1):
                 elif len(candidate_taxi_list) != 0:
                     chosen_taxi, cost = taxi_scheduling(
                         candidate_taxi_list, req_item, req_item.request_id, 1)
+                    type_of_share = True
                 if cost == None and len(candidate_empty_list) != 0:
                     chosen_taxi, cost = empty_taxi_scheduling(
                         candidate_empty_list, req_item, req_item.request_id, 1)
+                    type_of_share = False
                 if cost == None and len(candidate_non_empty_list) != 0:
                     chosen_taxi, cost = taxi_scheduling(
                         candidate_non_empty_list, req_item, req_item.request_id, 1)
+                    type_of_share = True
+                if type_of_share:
+                    send_info({'type':'type_of_share_true'})
                 show_taxi = taxi_list[chosen_taxi]
                 show_taxi.add_guest(req_cnt-1)
                 req_item.color = show_taxi.color
                 non_empty_taxi_set.add(show_taxi)
                 print('这个订单选中的taxi是{}'.format(chosen_taxi))
-
+                # if type_of_share:
+                #     send_info({
+                #         'type':'req_to_taxi_map',
+                #         'order':req_cnt-1,
+                #         'taxi':chosen_taxi,
+                #         'share':True
+                #         })
+                # else:
+                #     send_info({
+                #     'type':'req_to_taxi_map',
+                #     'order':req_cnt-1,
+                #     'taxi':chosen_taxi,
+                #     'share':False
+                #     })
                 socket_all_request_start = {'type': 'all_request_start', 'content':
                                             [{'value': wgs84_to_bd09(item.start_lon, item.start_lat), 'itemStyle': {'color': item.color}, 'name': "起点_{}".format(item.request_id)} for item in request_list.values()]}
                 send_info(socket_all_request_start)
@@ -889,7 +918,8 @@ def main(socket1):
                 show_taxi.show_pos()
                 # 发送最新状态
                 socket_order_finished = {'type': 'order_finished', 'content': [
-                    i for i in king_make_order_finished], 'num': req_cnt, 'fail': fail}
+                    i for i in king_make_order_finished], 'num': req_cnt, 'fail': fail,'non_empty_taxi':len(non_empty_taxi_set)}
+                
                 send_info(socket_order_finished)
                 '''
                         socket备注：

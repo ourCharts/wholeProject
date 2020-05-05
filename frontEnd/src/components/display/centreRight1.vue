@@ -27,20 +27,24 @@
 export default {
   data() {
     return {
-      config: {
-        header: ["订单编号", "对应的士", "完成情况"],
-        data: [
-          ["组件1", "dev-1", "<span  class='colorGrass'>↑75%</span>"],
-          ["组件2", "dev-2", "<span  class='colorRed'>↓33%</span>"],
-          ["组件3", "dev-3", "<span  class='colorGrass'>↑100%</span>"],
-          ["组件4", "rea-1", "<span  class='colorGrass'>↑94%</span>"],
-          ["组件5", "rea-2", "<span  class='colorGrass'>↑95%</span>"],
-          ["组件6", "fix-2", "<span  class='colorGrass'>↑63%</span>"],
-          ["组件7", "fix-4", "<span  class='colorGrass'>↑84%</span>"],
-          ["组件8", "fix-7", "<span  class='colorRed'>↓46%</span>"],
-          ["组件9", "dev-2", "<span  class='colorRed'>↓13%</span>"],
-          ["组件10", "dev-9", "<span  class='colorGrass'>↑76%</span>"]
-        ],
+      config_arr: [
+        ["ding", "da", "sd"],
+        ["ding", "da", "sd"],
+        ["ding", "da", "sd"],
+        ["ding", "da", "sd"]
+      ],
+      ranking: {
+        data: [],
+        waitTime: 4000,
+        unit: "%"
+      }
+    };
+  },
+  computed: {
+    config: function() {
+      return {
+        header: ["订单编号", "对应的士", "订单类型"],
+        data: this.config_arr,
         rowNum: 7, //表格行数
         headerHeight: 40,
         headerBGC: "#0f1325", //表头
@@ -49,50 +53,40 @@ export default {
         index: true,
         columnWidth: [50],
         align: ["center"]
-      },
-      ranking: {
-        data: [
-          {
-            name: "周口",
-            value: 55
-          },
-          {
-            name: "南阳",
-            value: 100
-          },
-          {
-            name: "西峡",
-            value: 78
-          },
-          {
-            name: "驻马店",
-            value: 66
-          },
-          {
-            name: "新乡",
-            value: 80
-          },
-          {
-            name: "新乡",
-            value: 80
-          },
-          {
-            name: "新乡",
-            value: 80
-          },
-          {
-            name: "新乡",
-            value: 80
-          }
-        ],
-        waitTime: 4000,
-        unit: "%",
-      },
-    };
+      };
+    }
   },
-  components: {},
-  mounted() {},
-  methods: {}
+  mounted() {
+    this.$bus.on("taxi_path", tmp => {
+      var taxi_situation = tmp.map(x => {
+        return {
+          name: x["name"],
+          value: x["ok"]
+        };
+      });
+      var order_to_taxi = [];
+      for(var idx = 0; idx<tmp.length; idx++){
+        var taxiId = tmp[idx]['name'].replace('的士编号：','');
+        if(tmp[idx]['guest'].length==1){
+          order_to_taxi.push([tmp[idx]['guest'][0],taxiId,"<span  class='colorRed'>独享</span>"]);
+        }
+        else{
+          for(let index = 0; index < tmp[idx]['guest'].length ; index++)
+            order_to_taxi.push([tmp[idx]['guest'][index],taxiId,"<span  class='colorGrass'>拼车</span>"]);
+        }
+      }
+      this.config_arr = order_to_taxi;
+      this.ranking = {
+        data: taxi_situation,
+        waitTime: 4000,
+        unit: "%"
+      };
+    });
+  },
+  beforeDestroy() {
+    this.$bus.off("taxi_path");
+    // this.$bus.off("req_to_taxi_map");
+  }
 };
 </script>
 
@@ -113,6 +107,5 @@ export default {
     border-radius: 10px;
     overflow: hidden;
   }
-  
 }
 </style>
