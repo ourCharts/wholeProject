@@ -4,10 +4,20 @@ import time
 from django.http import request
 from mTshare.main import *
 import threading
+from multiprocessing import Process
+from multiprocessing import Pool
+from copy import deepcopy
 
+def defMain():
+    _self = nothing.pop
+    main(_self)
+
+nothing = []
 
 class ChatConsumer(WebsocketConsumer):
-    __thread = False
+    __process = Process()
+    pool = Pool()
+    firstIn = False
     # def __init__(self, scope):
     #     self.scope = scope
 
@@ -15,14 +25,16 @@ class ChatConsumer(WebsocketConsumer):
         self.accept()
         print('连接上客户端!')
         # os.system(main(self))
-        if ChatConsumer.__thread!=False:
-            defSwitch()
-            while(isThreadAlive==False): # 阻塞直到前一刷新前的程序已经退出才开始下一次进程
-                time.sleep(1)
-        ChatConsumer.__thread = True
-        th = threading.Thread(target=main, args=[self])
-        print('{} start'.format(threading.currentThread().getName()))
-        th.start()
+        if ChatConsumer.firstIn==True:
+            ChatConsumer.pool.close()
+        #     ChatConsumer.__process.terminate()
+        #     ChatConsumer.__process.close()
+        ChatConsumer.firstIn = True
+        nothing.append(self)
+        # ChatConsumer.__process = Process(target=main, args=((self,)))
+        # ChatConsumer.__process.start()      
+        ChatConsumer.pool.apply_async(func=defMain)
+        print('{} start'.format(os.getpid()))
 
     def disconnect(self, close_code):
         print("bye bye!", close_code)
@@ -36,6 +48,10 @@ class ChatConsumer(WebsocketConsumer):
                   'message': "pong"
             }))
             # print("pong")
+
+    def ExecuteMain(self):
+        _self = nothing.pop()
+        main(_self)
 
     # def receive(self, text_data):
     #     text_data_json = json.loads(text_data)
