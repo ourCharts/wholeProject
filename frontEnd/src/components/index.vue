@@ -33,7 +33,7 @@
             style="width: 500px; background-color: #0f1325; text-align: right;"
           >
             <span class="react-after"></span>
-            <span class="text">2020年03月16日 周一 12:00</span>
+            <span class="text" ref="realTime">{{realTime}}</span>
           </div>
         </div>
       </div>
@@ -136,7 +136,8 @@ export default {
   name: "index",
   data() {
     return {
-      loading: true
+      loading: true,
+      realTime: ''
     };
   },
   components: {
@@ -149,6 +150,9 @@ export default {
   },
   mounted() {
     this.cancelLoading();
+    this.$bus.on('realTime', (value) => {
+      this.realTime = value || '0.0'
+    });
   },
   methods: {
     cancelLoading() {

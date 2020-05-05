@@ -150,6 +150,9 @@ export default {
             data["num"],
             data["fail"]
           ]);
+        } else if (data["type"] === "time") {
+          //alert(data['content'])
+          _this.$bus.$emit('realTime', data['time']);
         }
       };
     },
