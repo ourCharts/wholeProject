@@ -56,7 +56,7 @@
           </div>
           <dv-decoration-2 :reverse="true" style="width:10px;height:500px;" />
           <div style="flex-shrink:2; width:2000px">
-            <dv-border-box-13 id="bottomLeft">
+            <dv-border-box-13 id="first_line">
               <div class="d-flex pt-2 pl-2">
                 <span>
                   <icon name="chart-bar" id="icon-map"></icon>
@@ -80,7 +80,7 @@
         <!-- 热力图、订单的士比、碳排放量 -->
         <div class="bototm-box">
           <div style="flex-shrink:2; width:2000px">
-            <dv-border-box-13 id="bottomLeft">
+            <dv-border-box-13 id="second_line">
               <div class="d-flex pt-2 pl-2">
                 <span>
                   <icon name="chart-bar" id="icon-map"></icon>
@@ -93,13 +93,26 @@
             </dv-border-box-13>
           </div>
           <div style="flex-shrink:2; width:2000px">
-            <dv-border-box-13 id="bottomLeft">
+            <dv-border-box-13 id="second_line">
               <div class="d-flex pt-2 pl-2">
                 <span>
                   <icon name="chart-bar" id="icon-map"></icon>
                 </span>
                 <div class="d-flex">
-                  <span class="fs-xl text mx-2">实时路径地图</span>
+                  <span class="fs-xl text mx-2">订单的士比</span>
+                </div>
+              </div>
+              <bottomLeftChart/>
+            </dv-border-box-13>
+          </div>
+          <div style="flex-shrink:2; width:2000px">
+            <dv-border-box-13 id="second_line">
+              <div class="d-flex pt-2 pl-2">
+                <span>
+                  <icon name="chart-bar" id="icon-map"></icon>
+                </span>
+                <div class="d-flex">
+                  <span class="fs-xl text mx-2">碳排放量</span>
                 </div>
               </div>
               <bottomRightChart />
@@ -115,7 +128,7 @@
 <script>
 import centreRight1 from "./display/centreRight1";
 import center from "./display/center";
-import bottomLeft from "./display/bottomLeft";
+import bottomLeftChart from '@/components/echart/bottom/bottomLeftChart';
 import bottomRightChart from "./echart/bottom/bottomRightChart"
 import Map from "./map";
 import Heat from "./heat";
@@ -127,9 +140,10 @@ export default {
     };
   },
   components: {
-    Map,bottomRightChart,
+    Map,
+    bottomRightChart,
+    bottomLeftChart,
     Heat,
-    bottomLeft,
     centreRight1,
     center,
   },
@@ -150,7 +164,7 @@ export default {
 #icon-map {
   color: #5cd9e8 !important;
 }
-#bottomLeft {
+#first_line {
   padding: 1.5rem 1rem;
   height: 750px;
   min-width: 300px;
@@ -158,14 +172,12 @@ export default {
   .text {
     color: #c3cbde;
   }
-  .chart-box {
-    margin-top: 1rem;
-    width: 170px;
-    height: 1200px;
-    .active-ring-name {
-      padding-top: 10px;
-    }
-  }
+}
+#second_line{
+  padding: 1.5rem 1rem;
+  height: 400px;
+  min-width: 300px;
+  border-radius: 5px;
 }
 @import "../assets/scss/index.scss";
 </style>

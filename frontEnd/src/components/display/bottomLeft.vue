@@ -19,6 +19,7 @@
 <script>
 import bottomLeftChart from '@/components/echart/bottom/bottomLeftChart';
 export default {
+  name:'bottomLeft',
   data () {
     return {};
   },
@@ -34,13 +35,9 @@ export default {
 <style lang="scss">
 #bottomLeft {
   padding: 1.5rem 1rem;
-  height: 520px;
+  height: 300px;
   min-width: 300px;
   border-radius: 5px;
-  .bg-color-black {
-    height: 485px;
-    border-radius: 10px;
-  }
   .text {
     color: #c3cbde;
   }
