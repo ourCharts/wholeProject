@@ -953,7 +953,7 @@
     "featureType": "educationlabel",
     "elementType": "labels",
     "stylers": {
-        "visibility": "on"
+        "visibility": "off"
     }
 }, {
     "featureType": "educationlabel",
@@ -1341,6 +1341,12 @@
     }
 }, {
     "featureType": "restaurantlabel",
+    "elementType": "labels",
+    "stylers": {
+        "visibility": "off"
+    }
+}, {
+    "featureType": "medicallabel",
     "elementType": "labels",
     "stylers": {
         "visibility": "off"

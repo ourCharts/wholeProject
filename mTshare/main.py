@@ -735,12 +735,6 @@ def main(socket1):
                 """
                 start_node_id = ox.get_nearest_node(
                     osm_map, (req_item[4], req_item[3]))
-                socket_request = {'type': 'time',  'time': time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(now_time))}
-                '''
-                        socket备注：
-                            时间
-                '''
-                send_info(socket_request)
                 end_node_id = ox.get_nearest_node(
                     osm_map, (req_item[6], req_item[5]))
                 time_on_tour = node_distance_matrix[id_hash_map[start_node_id]
@@ -800,8 +794,6 @@ def main(socket1):
                     chosen_taxi, cost = taxi_scheduling(
                         candidate_non_empty_list, req_item, req_item.request_id, 1)
                     type_of_share = True
-                if type_of_share:
-                    send_info({'type':'type_of_share_true'})
                 show_taxi = taxi_list[chosen_taxi]
                 show_taxi.add_guest(req_cnt-1)
                 req_item.color = show_taxi.color
@@ -911,8 +903,12 @@ def main(socket1):
                 show_taxi.show_schedule()
                 show_taxi.show_pos()
                 # 发送最新状态
+                str_of_share = 'false'
+                if type_of_share:
+                    str_of_share = 'true'
                 socket_order_finished = {'type': 'order_finished', 'content': [
-                    i for i in king_make_order_finished], 'num': req_cnt, 'fail': fail,'non_empty_taxi':len(non_empty_taxi_set)}
+                    i for i in king_make_order_finished], 'num': req_cnt, 'fail': fail,'non_empty_taxi':len(non_empty_taxi_set),'time':time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(now_time)),
+                    'share_or_not':str_of_share}
                 
                 send_info(socket_order_finished)
                 '''

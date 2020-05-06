@@ -20,9 +20,10 @@
 </template>
 
 <script>
-import centerChart1 from "@/components/echart/center/centerChart1";
+import centerChart1 from "@/components/echart/centerChart1";
 
 export default {
+  name:'general',
   components: {
     centerChart1
   },
@@ -32,7 +33,7 @@ export default {
       order_got: 0,
       order_fail: 0,
       non_empty_taxi: 0,
-      share_order:0,
+      share_order: 0
     };
   },
   computed: {
@@ -73,18 +74,25 @@ export default {
   },
   mounted() {
     this.$bus.on("order_finished", data => {
-      (this.order_finished = data[0]),
-        (this.order_got = data[1]),
-        (this.order_fail = data[2]);
+      this.order_finished = data[0];
+      this.order_got = data[1];
+      this.order_fail = data[2];
       this.non_empty_taxi = data[3];
+      if (data[5] == "true") this.share_order += 2;
+      this.$bus.emit("proportion", [
+        this.order_got,
+        this.order_fail,
+        this.share_order,
+        data[4]
+      ]);
     });
-    this.$bus.on("type_of_share_true", data => {
-        this.share_order += 2;
-    });
+    // this.$bus.on("type_of_share_true", data => {
+    //     this.share_order += 2;
+    // });
   },
   beforeDestroy() {
-    this.$bus.off("all_taxi");
-    this.$bus.off("type_of_share_true");
+    this.$bus.off("order_finished");
+    // this.$bus.off("type_of_share_true");
   }
 };
 </script>

@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import {decoration10, loading, decoration8, decoration6, decoration5,borderBox13
+import {decoration10, loading, decoration8, decoration11, decoration6, decoration5,borderBox13
   ,borderBox10,borderBox8, borderBox12, decoration2, scrollBoard,scrollRankingBoard} from '@jiaminghi/data-view'
 import Icon from 'vue-awesome/components/Icon'
 import 'vue-awesome/icons/index.js'
@@ -13,6 +13,7 @@ Vue.use(decoration10);
 Vue.use(decoration2);
 Vue.use(loading);
 Vue.use(decoration8);
+Vue.use(decoration11);
 Vue.use(decoration5);
 Vue.use(decoration6);
 Vue.use(borderBox12);

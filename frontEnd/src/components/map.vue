@@ -53,6 +53,17 @@ export default {
             }
           },
           {
+            type: 'scatter',
+            coordinateSystem: 'bmap',
+            symbol:
+              "path://M512 959.469288c-10.69969 0-16.60519-1.283226-20.36584-5.689582-2.261507-2.64934-229.644237-272.535093-290.237267-403.232784-21.890566-46.818305-33.44267-97.655134-33.44267-147.265018 0-187.090049 154.331971-339.226005 344.045777-339.226005s344.045777 153.187915 344.045777 341.429183c0 56.871265-10.660804 99.841939-36.789904 148.300604C747.006362 687.675068 534.795169 950.618713 532.675902 953.24247c-2.532683 3.166109-7.055696 6.227842-20.145829 6.227842L512 959.470311zM512 272.403087c-72.959685 0-132.325771 59.365062-132.325771 132.325771S439.040315 537.054629 512 537.054629s132.325771-59.365062 132.325771-132.325771S584.959685 272.403087 512 272.403087z",
+            symbolSize: 50,
+            itemStyle:{
+              color:'#1A5CD7'
+            },
+            data: [[104.06, 30.65918619836269]],
+        },
+          {
             type: "scatter",
             coordinateSystem: "bmap",
             symbolSize: 30,
@@ -138,9 +149,15 @@ export default {
           ]);
         } else if (data["type"] === "all_request_start") {
           _this.all_request_start = data["content"];
+          _this.$bus.emit("heat", data['content'].map(x=>{
+            return x['value']
+          }));
           _this.chart.setOption(_this.options);
         } else if (data["type"] === "all_request_end") {
           _this.all_request_end = data["content"];
+          _this.$bus.emit("heat", data['content'].map(x=>{
+            return x['value']
+          }));
           _this.chart.setOption(_this.options);
         } else if (data["type"] === "all_non_empty_taxi") {
           _this.all_non_empty_taxi = data["content"];
@@ -157,7 +174,9 @@ export default {
             data["content"],
             data["num"],
             data["fail"],
-            data["non_empty_taxi"]
+            data["non_empty_taxi"],
+            data["time"],
+            data["share_or_not"]
           ]);
         }
       };

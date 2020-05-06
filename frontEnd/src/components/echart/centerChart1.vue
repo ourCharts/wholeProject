@@ -34,19 +34,19 @@ export default {
           trigger: "item",
           formatter: "{b}: <br/>{c} ({d}%)"
         },
-        color: ["#1A5CD7", "#4ac7f5", "#0089ff"],
+        color: ["#1A5CD7", "#4ac7f5", "#ac89ff"],
         legend: {
           //图例组件，颜色和名字
           x: "73%",
           y: "center",
           orient: "vertical",
           itemGap: 12, //图例每项之间的间隔
-          itemWidth: 10,
-          itemHeight: 10,
-          icon: "circle",
+          itemWidth: 15,
+          itemHeight: 15,
+          icon: "rec",
           data: ["拼车", "独享", "接单失败"],
           textStyle: {
-            color: [],
+            color: 'rgba(255,255,255,0.8)',
             fontStyle: "normal",
             fontFamily: "微软雅黑",
             fontSize: 28
