@@ -30,9 +30,8 @@
         <div style="width: 49%" class="d-flex">
           <div
             class="react-left mr-4"
-            style="width: 500px; background-color: #0f1325; text-align: right;"
+            style="width: 500px; background-color: 'rgba(0,0,0,0)'; text-align: right;"
           >
-            <span class="react-after"></span>
             <span class="text"></span>
           </div>
         </div>

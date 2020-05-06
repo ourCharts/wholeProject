@@ -13,13 +13,10 @@ export default {
       myChart: null,
       share: 0,
       fail: 0,
-      order_processed: 0,
+      non_share: 0,
     };
   },
   computed: {
-    non_share:function () {
-      return this.order_processed - this.share;
-    },
     data_king: function() {
       return [
         { value: this.share, name: "拼车" },
@@ -115,20 +112,16 @@ export default {
     }
   },
   mounted() {
-    this.$bus.on("order_finished", data => {
-      this.fail = data[2];
-      this.order_processed = data[1] - data[2]
-      this.myChart.setOption(this.option);
-    });
-    this.$bus.on("type_of_share_true", data => {
-      this.share+=2;
+    this.$bus.on("proportion", data => {
+      this.fail = data[1];
+      this.share = data[2]
+      this.non_share = data[0] - data[1] - data[2]
       this.myChart.setOption(this.option);
     });
     this.drawPie();
   },
   beforeDestroy() {
     this.$bus.off("order_finished");
-    this.$bus.off("num_of_non_empty_taxi");
   },
   methods: {
     drawPie: function() {
