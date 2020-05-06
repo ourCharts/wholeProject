@@ -104,7 +104,7 @@ export default {
         .getComponent("bmap")
         .getBMap();
       // eslint-disable-next-line
-      bmap.addControl(new BMap.NavigationControl());
+      // bmap.addControl(new BMap.NavigationControl());
       var goodsData = require("../assets/scss/heat_map.json");
       bmap.setMapStyleV2({
         styleJson: goodsData
@@ -118,6 +118,10 @@ export default {
       for(var i = 0 ; i<data.length;i++)
         if(Math.random()<0.3)
           random.push(data[i]);
+      for(var i = 0 ; i<5;i++){
+        if(this.busLines.length>3)
+          this.busLines.shift();
+      }
       this.busLines = this.busLines.concat(random);
       this.chart.setOption(this.options);
     });

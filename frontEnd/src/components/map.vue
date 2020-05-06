@@ -26,7 +26,7 @@ export default {
     options: function() {
       return {
         bmap: {
-          center: this.centerCoords,
+          center: [104.06, 30.65918619836269],
           zoom: 15,
           roam: true
         },
@@ -183,14 +183,14 @@ export default {
     },
     init: function() {
       this.chart = echarts.init(this.$refs.map);
-      this.centerCoords = [104.06, 30.65918619836269];
+      // this.centerCoords = [104.06, 30.65918619836269];
       this.chart.setOption(this.options);
       let bmap = this.chart
         .getModel()
         .getComponent("bmap")
         .getBMap();
       // eslint-disable-next-line
-      var goodsData = require("../assets/scss/custom_map_config.json");
+      var goodsData = require("../assets/scss/map_map.json");
       bmap.setMapStyleV2({
         // styleId:'f20aa46cedf21b09b47a71d84116c411'
         styleJson: goodsData

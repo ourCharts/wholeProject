@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import index from '@/components/index'
-import Map from '@/components/map_origin'
+import Map from '@/components/map'
 import heat from '@/components/heat'
 // import bottomLeft from '@/components/display/bottomLeft'
 Vue.use(Router)
