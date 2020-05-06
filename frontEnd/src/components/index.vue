@@ -33,7 +33,7 @@
             style="width: 500px; background-color: #0f1325; text-align: right;"
           >
             <span class="react-after"></span>
-            <span class="text" ref="realTime">{{realTime}}</span>
+            <span class="text">{{realTime}}</span>
           </div>
         </div>
       </div>
@@ -137,7 +137,7 @@ export default {
   data() {
     return {
       loading: true,
-      realTime: ''
+      realTime: '2016年11月01日 周二 12:00'
     };
   },
   components: {
@@ -149,10 +149,13 @@ export default {
     center,
   },
   mounted() {
+    this.$bus.on('realTime', (val)=>{
+      this.realTime = val
+    })
     this.cancelLoading();
-    this.$bus.on('realTime', (value) => {
-      this.realTime = value || '0.0'
-    });
+  },
+  beforeDestroy() {
+    this.$bus.off('realTime')
   },
   methods: {
     cancelLoading() {

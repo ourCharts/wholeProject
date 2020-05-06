@@ -149,6 +149,8 @@ export default {
         } else if (data["type"] === "taxi_path_start") {
           _this.taxi_path_start = data["content"];
           _this.chart.setOption(_this.options);
+        } else if (data["type"] === "time") {
+            _this.$bus.emit("realTime", data['time'])
         } else if (data["type"] === "type_of_share_true") {
           _this.$bus.emit("type_of_share_true", "");
         } else if (data["type"] === "order_finished") {
@@ -159,9 +161,6 @@ export default {
             data["fail"],
             data["non_empty_taxi"]
           ]);
-        } else if (data["type"] === "time") {
-          //alert(data['content'])
-          _this.$bus.$emit('realTime', data['time']);
         }
       };
     },

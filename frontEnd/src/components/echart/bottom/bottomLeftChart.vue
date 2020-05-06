@@ -175,16 +175,14 @@ export default {
           axisTick: {
             show: false
           }
-        //   boundaryGap: true // x轴两边是否留白
         },
         yAxis: [
           {
             splitLine: { show: false },
             axisLine: {
               lineStyle: {
-                color: "#B4B4B4"                
+                color: "#B4B4B4"
               }
-            //   onZero: false
             },
 
             axisLabel: {

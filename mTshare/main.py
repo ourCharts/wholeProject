@@ -926,8 +926,8 @@ def main(socket1):
                 f.write('total served requests: %d\n' % req_cnt)
                 f.write('total detour time: %f\n' % total_detour_cost)
                 divide_group2()
-    # defSwitch()  # 多线程之间共享全局变量，调用函数通知新线程取消阻塞  多么糟糕的线程通信方式！
-    # sys.exit(0)  # 退出当前线程
+    defSwitch()  # 多线程之间共享全局变量，调用函数通知新线程取消阻塞  多么糟糕的线程通信方式！
+    sys.exit(0)  # 退出当前线程
 
 
 print('载入完毕')

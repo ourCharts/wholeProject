@@ -83,7 +83,7 @@ export default {
 
       function makeSeriesData(year, negative) {
         // make a fake value just for demo.
-        var r = (year - beginYear + 1) * 1;
+        var r = (year - beginYear + 1) * 10;
         var seriesData = [];
 
         for (var i = 0; i < lineCount; i++) {
