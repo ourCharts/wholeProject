@@ -47,7 +47,7 @@ export default {
   },
   computed: {
     name: function() {
-      return "今天由于拼车而减少的二氧化碳\n相当于种了 "+this.result+ " 棵树哦~";
+      return "相当于种了 "+this.result+ " 棵树哦~";
     },
     option: function() {
       return {
