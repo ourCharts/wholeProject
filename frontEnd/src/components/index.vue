@@ -27,15 +27,16 @@
 
       <!-- 第二行 -->
       <div class="d-flex jc-between px-2">
-        <div style="width: 40%" class="d-flex">
+        <div style="width: 49%" class="d-flex">
           <div
             class="react-left mr-4"
             style="width: 500px; background-color: #0f1325; text-align: right;"
           >
             <span class="react-after"></span>
-            <span class="text">2020年03月16日 周一 12:00</span>
+            <span class="text"></span>
           </div>
         </div>
+        
       </div>
 
       <div class="body-box">
@@ -43,27 +44,18 @@
         <div class="content-box">
           <div style="flex-shrink:7; width:2000px">
             <dv-border-box-10 style="flex-shrink:7;">
-              <div class="d-flex pt-2 pl-2">
-                <span>
-                  <icon name="chart-bar" id="icon-map"></icon>
-                </span>
-                <div class="d-flex">
-                  <span class="fs-xl text mx-2">总体信息</span>
-                </div>
+              <div class="d-flex pt-2 pl-2" style="text-align:center">
+                <dv-decoration-11 class="king_subtitle">总体信息</dv-decoration-11>
               </div>
-              <center />
+              <general />
             </dv-border-box-10>
           </div>
           <dv-decoration-2 :reverse="true" style="width:10px;height:500px;" />
           <div style="flex-shrink:2; width:2000px">
             <dv-border-box-13 id="first_line">
-              <div class="d-flex pt-2 pl-2">
-                <span>
-                  <icon name="chart-bar" id="icon-map"></icon>
-                </span>
-                <div class="d-flex">
-                  <span class="fs-xl text mx-2">实时路径地图</span>
-                </div>
+              <div class="d-flex pt-2 pl-2" style="text-align:center">
+                <dv-decoration-11 class="king_subtitle">实时路径地图</dv-decoration-11>
+                <!-- <span class="fs-xl text mx-2">实时路径地图</span> -->
               </div>
               <Map />
             </dv-border-box-13>
@@ -71,7 +63,7 @@
           <dv-decoration-2 :reverse="true" style="width:5px;height:500px;" />
           <div style="flex-shrink:7; width:2000px">
             <dv-border-box-13 style="flex-shrink:7;">
-              <centreRight1 />
+              <orderAndTaxi />
             </dv-border-box-13>
           </div>
         </div>
@@ -79,43 +71,28 @@
         <dv-decoration-10 style="width:100%;height:5px;padding-top:5px;padding-bottom:5px" />
         <!-- 热力图、订单的士比、碳排放量 -->
         <div class="bototm-box">
-          <div style="flex-shrink:2; width:2000px">
-            <dv-border-box-13 id="second_line">
-              <div class="d-flex pt-2 pl-2">
-                <span>
-                  <icon name="chart-bar" id="icon-map"></icon>
-                </span>
-                <div class="d-flex">
-                  <span class="fs-xl text mx-2">实时路径地图</span>
-                </div>
+          <div style="flex-shrink:7; width:3000px">
+            <dv-border-box-13 id="second_line" style="flex-shrink:7;">
+              <div class="d-flex pt-2 pl-2" style="text-align:center">
+                <dv-decoration-11 class="king_subtitle">实时热力图</dv-decoration-11>
               </div>
               <Heat />
             </dv-border-box-13>
           </div>
-          <div style="flex-shrink:2; width:2000px">
-            <dv-border-box-13 id="second_line">
-              <div class="d-flex pt-2 pl-2">
-                <span>
-                  <icon name="chart-bar" id="icon-map"></icon>
-                </span>
-                <div class="d-flex">
-                  <span class="fs-xl text mx-2">订单的士比</span>
-                </div>
+          <div style="flex-shrink:2; width:3000px">
+            <dv-border-box-13 id="second_line" style="flex-shrink:2;">
+              <div class="d-flex pt-2 pl-2" style="text-align:center">
+                <dv-decoration-11 class="king_subtitle">优化总结</dv-decoration-11>
               </div>
-              <bottomLeftChart/>
+              <significance />
             </dv-border-box-13>
           </div>
-          <div style="flex-shrink:2; width:2000px">
-            <dv-border-box-13 id="second_line">
-              <div class="d-flex pt-2 pl-2">
-                <span>
-                  <icon name="chart-bar" id="icon-map"></icon>
-                </span>
-                <div class="d-flex">
-                  <span class="fs-xl text mx-2">碳排放量</span>
-                </div>
+          <div style="flex-shrink:7; width:3000px">
+            <dv-border-box-13 id="second_line" style="flex-shrink:7;">
+              <div class="d-flex pt-2 pl-2" style="text-align:center">
+                <dv-decoration-11 class="king_subtitle">环保效应</dv-decoration-11>
               </div>
-              <bottomRightChart />
+              <tree />
             </dv-border-box-13>
           </div>
         </div>
@@ -126,10 +103,10 @@
 </template>
 
 <script>
-import centreRight1 from "./display/centreRight1";
-import center from "./display/center";
-import bottomLeftChart from '@/components/echart/bottom/bottomLeftChart';
-import bottomRightChart from "./echart/bottom/bottomRightChart"
+import orderAndTaxi from "./orderAndTaxi";
+import general from "./general";
+import significance from "./significance";
+import tree from "./tree";
 import Map from "./map";
 import Heat from "./heat";
 export default {
@@ -141,11 +118,12 @@ export default {
   },
   components: {
     Map,
-    bottomRightChart,
-    bottomLeftChart,
+    general,
+    tree,
+    significance,
     Heat,
-    centreRight1,
-    center,
+    orderAndTaxi
+    // centreRight1,
   },
   mounted() {
     this.cancelLoading();
@@ -161,6 +139,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.king_subtitle {
+  width: 200px;
+  height: 35px;
+  margin: auto;
+  margin-top: -10px;
+  line-height: 20px;
+  font-size: 1.6rem;
+  letter-spacing: 3px;
+}
 #icon-map {
   color: #5cd9e8 !important;
 }
@@ -173,11 +160,13 @@ export default {
     color: #c3cbde;
   }
 }
-#second_line{
+#second_line {
   padding: 1.5rem 1rem;
-  height: 400px;
+  height: 500px;
   min-width: 300px;
   border-radius: 5px;
+  justify-content: center;
+  display: flex;
 }
 @import "../assets/scss/index.scss";
 </style>
