@@ -8,7 +8,7 @@
         <div class="d-flex jc-center">
           <dv-decoration-8 :color="['#568aea', '#000000']" style="width:200px;height:50px;" />
           <div class="title">
-            <span class="title-text">大数据可视化平台</span>
+            <span class="title-text">出租车共享出行系统</span>
             <dv-decoration-5
               class="title-bototm"
               :reverse="true"
@@ -78,22 +78,22 @@
               <Heat />
             </dv-border-box-13>
           </div>
-          <div style="flex-shrink:2; width:3000px">
-            <dv-border-box-13 id="second_line" style="flex-shrink:2;">
-              <div class="d-flex pt-2 pl-2" style="text-align:center">
-                <dv-decoration-11 class="king_subtitle">优化总结</dv-decoration-11>
-              </div>
-              <significance />
-            </dv-border-box-13>
-          </div>
-          <div style="flex-shrink:7; width:3000px">
-            <dv-border-box-13 id="second_line" style="flex-shrink:7;">
-              <div class="d-flex pt-2 pl-2" style="text-align:center">
-                <dv-decoration-11 class="king_subtitle">环保效应</dv-decoration-11>
-              </div>
-              <tree />
-            </dv-border-box-13>
-          </div>
+            <div style="flex-shrink:2; width:3000px">
+              <dv-border-box-13 id="second_line" style="flex-shrink:2;">
+                <div class="d-flex pt-2 pl-2" style="text-align:center">
+                  <dv-decoration-11 class="king_subtitle">优化总结</dv-decoration-11>
+                </div>
+                <significance />
+              </dv-border-box-13>
+            </div>
+            <div style="flex-shrink:7; width:3000px">
+              <dv-border-box-13 id="second_line" style="flex-shrink:7;">
+                <div class="d-flex pt-2 pl-2" style="text-align:center">
+                  <dv-decoration-11 class="king_subtitle">环保效应</dv-decoration-11>
+                </div>
+                <tree />
+              </dv-border-box-13>
+            </div>
         </div>
       </div>
     </div>

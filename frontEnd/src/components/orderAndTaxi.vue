@@ -95,7 +95,7 @@ export default {
 #centreRight1 {
   padding: 1rem;
   height: 410px;
-  min-width: 300px;
+  min-width: 500px;
   border-radius: 5px;
   .bg-color-black {
     height: 385px;

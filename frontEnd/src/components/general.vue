@@ -54,7 +54,7 @@ export default {
           number: this.order_finished.length
         },
         {
-          title: "处理订单数",
+          title: "受理订单数",
           number: this.order_processed
         },
         {

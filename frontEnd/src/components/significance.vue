@@ -84,7 +84,7 @@ export default {
           {
             type: "value",
             scale: true,
-            name: "乘客运载增量 / 人",
+            name: "乘客运载增量/人",
             min: 0,
             boundaryGap: [0.2, 0.2],
             splitLine: { show: false },
